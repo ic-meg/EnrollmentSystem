@@ -7,8 +7,14 @@
   <link rel="stylesheet" href="notif-drop.css">
 	<script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  
 </head>
-
+<style>
+.notification_dd ul{
+  padding: 0;
+  list-style-type:  none;
+}
+</style>
 <body>
 
   <div class="navbar">
@@ -26,7 +32,7 @@
           </svg>
         </div>
         <!-- Dropdown -->
-        <div class="notification_dd" style="d">
+        <div class="notification_dd">
             <ul class="notification_ul">
                 <!-- Header inside the dropdown -->
                 <div class="notification_header">
