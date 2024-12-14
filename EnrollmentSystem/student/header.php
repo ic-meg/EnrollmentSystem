@@ -8,7 +8,12 @@
 	<script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 </head>
-
+<style>
+.notification_dd ul{
+  padding: 0;
+  list-style-type:  none;
+}
+</style>
 <body>
   <div class="navbar">
     <div class="navbar_left">
@@ -187,7 +192,7 @@
         </div>
       </div>
       </div>
-    </ul>
+    </ul></div>
   </body>
 </html>
 <script type="text/javascript" src="notif.js" defer></script>
@@ -227,4 +232,5 @@
         ul.previousElementSibling.classList.remove('rotate');
       });
     }
+    
   </script>
