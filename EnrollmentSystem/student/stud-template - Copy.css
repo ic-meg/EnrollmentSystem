@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+:root{
+    --color: white;
+    --background:#3F83E6;
+    
+}
+*{
+    margin: 0; 
+    padding: 0;
+}
+
+main{
+    font-family:'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.Welcome {
+    background: var(--background);
+    min-height: 30dvh;
+    width: 100%;
+    border-radius: 25px;
+    padding: 20px 30px;
+    color: var(--color);
+    display: flex;
+    align-items: center; /* Align items vertically */
+    gap: 20px; /* Space between image and text content */
+}
+
+.Welcome img {
+    max-width: 100px; 
+    height: auto;
+    border-radius: 50%; 
+}
+
+.text-content {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    gap: 5px; 
+}
+.welcome-greeting{
+    font-size: 50px;
+    font-weight: bold;
+}
+
+.message{
+    font-weight: 100;
+    font-size: 15px;
+    margin-top: 2%;
+
+}
+
+.cards, .cards1{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}
+
+.card, .card1{
+    
+    padding: 20px 30px;
+    margin-top: 5%;
+    margin-right: 2%;
+    background:white;
+    width: 20%;
+    height: 50%;
+    border-radius: 25px;
+}
+
+.image{
+    align-items: center;
+}
+
+.card p{
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0px;
+}
+
+.card ~ .stud-db-logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.cards1 ~ .notif-news{
+    display: flex;
+    width: 300px;
+    background: white;
+
+}
+
+.sub-btn{
+    width: 100px;
+    height: 10px;
+    border: none;
+}

@@ -1,0 +1,143 @@
+:root {
+    --color: #000;
+    --background: #2DB2FF;
+    --txt-color: #B6B1B1;
+    --secondary-color: white;
+    --line-color:#777777;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header-container{
+    height: 100dvb;
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    background: #FFFFFF;
+}
+
+.header--wrapper{
+    display: flex;
+    width: 100%;
+    height: 50px;
+    background: var(--background);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.side--container{
+    background: #B6B1B1;
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    margin-top: 50px;
+    padding-left: 20px;
+}
+
+p{
+    border: 1px var(--line-color);
+}
+
+.side--container {
+    background: #DADADA; /* Background for the left side */
+    display: flex;
+    flex-direction: column;
+    width: 20%; 
+    height: 95dvb;
+    color: var(--secondary-color);
+    padding-right: 10px;
+}
+.side--container .regular p {
+    margin: 10px 10px;
+    padding: 10px;
+    background: var(--secondary-color);
+    color: var(--color);
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.side--container .regular p:hover {
+    background: var(--line-color);
+    color: var(--secondary-color);
+}
+
+.Form-regular label,
+.Form-regular p,
+.Form-regular h3 {
+    color:var(--txt-color);
+    outline: none;
+}
+.Form-regular{
+    margin-top: 10%;
+    height: 95dvb;
+}
+
+/* Form Section */
+.Form-regular {
+    width: 75%;
+    padding: 20px;
+    background: var(--secondary-color);
+    overflow-y: auto;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--line-color);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    outline: non;
+    
+}
+
+input::placeholder {
+    color: var(--line-color)
+}
+
+button {
+    padding: 10px 20px;
+    background: var(--background);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #005a9e;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .side--container {
+        width: 100%;
+    }
+
+    .Form-regular {
+        width: 100%;
+    }
+}
