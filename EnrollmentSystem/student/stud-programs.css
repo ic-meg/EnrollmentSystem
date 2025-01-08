@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+:root {
+    --color: white;
+    --background: #3F83E6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--background);
+}
+
+.main--header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+h3 {
+    font-size: 30px;
+    background: #5C83AD;
+    width: 100%;
+    text-align: center;
+    color: var(--color);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.program-table {
+    width: 75%; 
+    margin: 0 auto; 
+    text-align: center;
+    border: 1px solid;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    table-layout: fixed;
+}
+
+.program-table td {
+    padding: 10px;
+    vertical-align: top;
+}
+
+.program-table img {
+    width: 100%;
+    max-width: 100px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.program-name {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 20px; 
+    width: 100%;
+}
+
+aside{
+    flex: 1;
+}
+
+apply-container {
+    margin-top: 20px;
+    text-align: center; 
+}
+
+.apply-button {
+    background-color: #5C83AD;
+    color: var(--color);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.apply-button:hover {
+    background-color: #3F83E6;
+    transform: scale(1.05);
+}
+
+.apply-button:active {
+    background-color: #2C66B3;
+    transform: scale(0.95);
+}
