@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="enrollment-regular.css">
-  <title>Enrollment - Regular</title>
+  <title>Oxford Academe | Enrollment Form - Freshmen </title>
 </head>
 <style>
     .content-wrapper {
@@ -41,8 +41,10 @@
                 <div class="side--container">
             
                         <div class="regular">
-                            <p>REGULAR</p>
-                            <p>IRREGULAR</p>
+                            <p>Freshmen</p>
+                            <p>Transferee</p>
+                            <p>Returnee</p>
+                            <p>Non-sequential Students</p>
                         </div>
                         </div>
 
