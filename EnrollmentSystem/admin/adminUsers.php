@@ -9,6 +9,7 @@
     <title>User Roles | Admin Panel</title>
     <!-- Bootstrap CSS -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome Icons -->
     <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
@@ -20,6 +21,19 @@
 
     <!-- Custom Master Styles -->
     <link href="assets/css/master.css" rel="stylesheet">
+    <script>
+        // JavaScript function to generate a random password
+        function generatePassword() {
+            const length = 12; // Password length
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset[randomIndex];
+            }
+            document.getElementById("passwordOutput").value = password;
+        }
+    </script>
  
 </head>
 <style>
@@ -59,8 +73,13 @@
                                                     <input type="text" class="form-control" id="firstname">
                                                     <label for="lastname" class="col-form-label">Last name:</label>
                                                     <input type="text" class="form-control" id="lastname">
-                                                    <label for="role" class="col-form-label">Role:</label>
-                                                    <input type="text" class="form-control" id="role">
+                                                    <div>
+                                                        <div>
+                                                            <label for="lastname" class="col-form-label">Password:</label>
+                                                            <input type="text" id="passwordOutput" class="form-control" placeholder="Generated Password" readonly>
+                                                            <button type="button" class="btn btn-primary input-group mb-3" onclick="generatePassword()">Generate</button>
+                                                        </div>
+                                                    </div>   
                                                     <label for="type" class="col-form-label">Type:</label>
                                                     <input type="text" class="form-control" id="type">
                                                 </div>
@@ -82,7 +101,7 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email</th>
-                                        <th>Role</th>
+                                        
                                         <th>Type</th>
                                         <th class="text-center">Action</th>
                                         
@@ -96,9 +115,9 @@
                                         <td>001</td>
                                         <td>Giuliani Calais</td>
                                         <td>giulianicalais@example.com</td>
-                                        <td>Manager</td>
+                                        
                                         <td>Admin</td>
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <!-- Modal Info -->
                                             <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
                                                 <i class="fa fa-info-circle"></i>
@@ -142,8 +161,7 @@
                                                             <input type="text" class="form-control" id="recipient-name">
                                                             <label for="recipient-name" class="col-form-label">Edit Last name:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Role:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
+                                                            
                                                             <label for="recipient-name" class="col-form-label">Edit Type:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
                                                         </div>
@@ -184,9 +202,9 @@
                                         <td>002</td>
                                         <td>Meg Angeline Fabian</td>
                                         <td>megfabian@example.com</td>
-                                        <td>IT Support</td>
+                                        
                                         <td>Admin</td>
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <!-- Modal Info -->
                                             <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalMeg">
                                                 <i class="fa fa-info-circle"></i>
@@ -230,8 +248,7 @@
                                                             <input type="text" class="form-control" id="recipient-name">
                                                             <label for="recipient-name" class="col-form-label">Edit Last name:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Role:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
+                                                           
                                                             <label for="recipient-name" class="col-form-label">Edit Type:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
                                                         </div>
@@ -272,9 +289,9 @@
                                         <td>003</td>
                                         <td>Shanley Galo</td>
                                         <td>shanleygalo@example.com</td>
-                                        <td>Registrar</td>
+                                        
                                         <td>Staff</td>
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <!-- Modal Info -->
                                             <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalLey">
                                                 <i class="fa fa-info-circle"></i>
@@ -318,8 +335,7 @@
                                                             <input type="text" class="form-control" id="recipient-name">
                                                             <label for="recipient-name" class="col-form-label">Edit Last name:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Role:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
+                                                            
                                                             <label for="recipient-name" class="col-form-label">Edit Type:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
                                                         </div>
@@ -355,15 +371,14 @@
                                                 </div> 
                                         </td>
                                     </tr>
-                                 
                                 <!------- PAMELA MURILLO ------>
                                     <tr>
                                         <td>004</td>
                                         <td>Pamela Murillo</td>
                                         <td>pamelamurillo@example.com</td>
-                                        <td>Financial Officer</td>
+                                        
                                         <td>Admin</td>
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <!-- Modal Info -->
                                             <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalPam">
                                                 <i class="fa fa-info-circle"></i>
@@ -407,8 +422,7 @@
                                                             <input type="text" class="form-control" id="recipient-name">
                                                             <label for="recipient-name" class="col-form-label">Edit Last name:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Role:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
+                                                            
                                                             <label for="recipient-name" class="col-form-label">Edit Type:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
                                                         </div>
@@ -449,9 +463,9 @@
                                         <td>005</td>
                                         <td>Kate Serrano</td>
                                         <td>kateserrano@example.com</td>
-                                        <td>Instructor</td>
+                                        
                                         <td>Staff</td>
-                                        <td class="text-end">
+                                        <td class="text-center">
                                             <!-- Modal Info -->
                                             <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalKate">
                                                 <i class="fa fa-info-circle"></i>
@@ -495,8 +509,7 @@
                                                             <input type="text" class="form-control" id="recipient-name">
                                                             <label for="recipient-name" class="col-form-label">Edit Last name:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Role:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
+                                                            
                                                             <label for="recipient-name" class="col-form-label">Edit Type:</label>
                                                             <input type="text" class="form-control" id="recipient-name">
                                                         </div>
@@ -562,6 +575,8 @@
     <script src="assets/vendor/datatables/datatables.min.js"></script>
     <script src="assets/js/initiate-datatables.js"></script>
     <script src="assets/js/script.js"></script>
+    
+    
 </body>
 
 </html>
