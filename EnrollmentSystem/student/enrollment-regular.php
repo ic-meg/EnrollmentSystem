@@ -6,6 +6,26 @@
   <link rel="stylesheet" href="enrollment-regular.css">
   <title>Enrollment - Regular</title>
 </head>
+<style>
+    .content-wrapper {
+    display: flex; /* Align sidebar and form horizontally */
+    justify-content: space-between; /* Distribute space evenly between the sidebar and form */
+}
+
+.Form-regular {
+    margin-top: 50px;
+    flex: 2; /* The form will take up more space */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+
+
+}
+
+.side--container{
+    /* background-color: #2db2ff; */
+}
+</style>
 <body>
   <?php include "stud-sidebar.php"; ?>
 
@@ -14,11 +34,12 @@
             <div class="header">
                 <h1>Student Enrollment</h1>
             </div>
-
-            <!-- Content Wrapper -->
-            <div class="content-wrapper">
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+                
                 <!-- Sidebar -->
                 <div class="side--container">
+            
                         <div class="regular">
                             <p>REGULAR</p>
                             <p>IRREGULAR</p>
@@ -26,7 +47,7 @@
                         </div>
 
                         <!-- Main Form -->
-                        <div class="Form-regular">
+                        <div class="Form-regular" style="background-color: #f9f9f9;">
                         <p class="description">Regular Application</p>
                         <p class="description--1">
                             Please complete the application form below to apply as a regular student at our institution. Thank you!
@@ -123,8 +144,8 @@
                             </div>
 
                             <!-- Submit Section -->
-                            <div class="form-actions">
-                            <button type="submit">Submit</button>
+                            <!-- <div class="form-actions"> -->
+                            <button type="submit"> <a href="stud-summary.php" style="color: white;">Submit</a></button>
                             </div>
                         </form>
                     </div>
