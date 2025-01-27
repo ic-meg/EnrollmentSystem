@@ -138,10 +138,30 @@
                                 </div>
                                 </div>
 
-                                <!-- Archive Info -->
-                                <button type="button" class="btn btn-outline-danger btn-rounded" onclick="window.location.href='AdminFeeArchive.php';">
+                                <!-- Archive Button -->
+                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveConfirmationModal">
                                     <i class="fas fa-archive"></i>
                                 </button>
+
+                                <!-- Confirmation Modal -->
+                                <div class="modal fade" id="archiveConfirmationModal" tabindex="-1" aria-labelledby="archiveConfirmationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="archiveConfirmationModalLabel">Confirm Archive</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to archive this item?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-danger" onclick="archiveItem()">Archive</button>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+
 
                                         </td>
                                     </tr>
@@ -165,9 +185,10 @@
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalMeg">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveConfirmationModal">
                                                     <i class="fas fa-archive"></i>
                                                 </button>
+
                                         
                                                 </div> 
                                         </td>
@@ -192,7 +213,7 @@
                                                  <i class="fas fa-pen"></i>
                                                 </button>
                                                 <!-- Archive Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" onclick="window.location.href='AdminFeeArchive.php';">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveConfirmationModal">
                                                     <i class="fas fa-archive"></i>
                                                 </button>
 
@@ -220,9 +241,10 @@
                                                 <i class="fas fa-pen"></i>
                                                 </button>
                                                 <!-- Archive Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" onclick="window.location.href='AdminFeeArchive.php';">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveConfirmationModal">
                                                     <i class="fas fa-archive"></i>
                                                 </button>
+
 
                                             
                                                 </div> 
@@ -248,7 +270,7 @@
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                             <!-- Archive Info -->
-                                            <button type="button" class="btn btn-outline-danger btn-rounded" onclick="window.location.href='AdminFeeArchive.php';">
+                                            <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveConfirmationModal">
                                                 <i class="fas fa-archive"></i>
                                             </button>
 
