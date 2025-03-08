@@ -1,0 +1,464 @@
+body {
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: linear-gradient(to bottom right, #0073e6, #005bb5);
+    color: white;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px; 
+}
+
+header h1 {
+    font-size: 24px;
+    margin: 0;
+    line-height: 1; 
+}
+
+header h1 .oxfo {
+    color: #2DB2FF;
+}
+
+header h1 .rd {
+    color: black;
+}
+
+header nav {
+    display: flex;
+    gap: 10px; 
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 1; 
+    display: inline-flex;
+    align-items: center;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+.button {
+    min-width: 100px;
+    position: relative;
+    cursor: pointer;
+    padding: 12px 15px;
+    border: 0;
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: radial-gradient(ellipse at bottom, rgb(18, 82, 151) 0%, rgb(6, 58, 104) 45%);
+    color: rgb(250, 250, 250);
+    transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+
+.button::before {
+    content: "";
+    width: 70%;
+    height: 1px;
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    background: rgb(255, 255, 255);
+    background: linear-gradient(90deg, rgba(88, 112, 218, 0) 0%, rgba(255, 255, 255, 1) 50%, rgb(82, 54, 167) 100%);
+    opacity: 0.2;
+    transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+
+.button:hover {
+    color: rgb(255, 255, 255);
+    transform: scale(1.1) translateY(-3px);
+}
+
+.button:hover::before {
+    opacity: 1;
+}
+
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    color: white;
+    background: url('images/campus.png') no-repeat center center;
+    opacity: 85%;
+    background-size: cover;
+}
+
+.image-container {
+    flex: 1;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    max-width: 500px; /* Limit image size */
+    border-radius: 10px; /* Rounded corners */
+    margin-left: 60px; /* Moves the image 20px to the right */
+}
+
+
+.hero-content {
+    flex: 1;
+    text-align: left;
+    padding: 15px;
+}
+
+.hero-content h2 {
+    font-size: 36px;
+    margin: 0;
+}
+
+.hero-content p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.hero-content button {
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.hero-content button:hover {
+    background-color: #005bb5;
+}
+
+.about-section {
+    padding: 50px 20px;
+    text-align: center;
+    background: url('images/bg.png') no-repeat center center;
+    background-size: cover;
+}
+
+.about-section h2 {
+    font-size: 28px;
+    color: white;
+    margin-top: -15px; /* Moves the heading 10px upwards */
+}
+
+
+.about-section p {
+    font-size: 16px;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.mission-section .image-container {
+    display: flex;
+    justify-content: space-evenly; /* Equal spacing between images */
+    align-items: flex-start; /* Align images to the top */
+    gap: 20px; /* Optional, adds space between images */
+}
+
+.image-item {
+    text-align: center; /* Centers text below each image */
+    display: flex;
+    flex-direction: column; /* Stacks the image, h2, and p vertically */
+    align-items: center; /* Centers the text horizontally */
+}
+
+.mission-image {
+    width: 250px;
+    height: auto;
+    margin-top: -20px;
+}
+
+.image-item h2 {
+    margin-top: -50px; /* Adds space between the image and the text */
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    color: #0E2F74; /* You can change this color to suit your design */
+}
+
+.image-item p {
+    margin-top: 10px; /* Adds space between the heading and the paragraph */
+    font-size: 12px; /* Adjust the font size */
+    font-family: 'Montserrat', sans-serif; 
+    color: black; /* You can change this color to suit your design */
+    max-width: 250px; /* Optional: Limit the paragraph width to fit better */
+}
+
+.programs-section {
+    padding: 50px 20px;
+    text-align: center;
+    background-color: #DBDBDB;
+}
+
+.programs-section h2 {
+    font-size: 28px;
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    color: #0E2F74; /* You can change this color to suit your design */
+    margin-top: -25px; /* Moves the heading 10px upwards */
+    font-weight: bolder;
+}
+
+.programs-section .image-container {
+    display: flex;
+    justify-content: space-evenly; /* Equal spacing between images */
+    align-items: flex-start; /* Align images to the top */
+    gap: 20px; /* Optional, adds space between images */
+}
+
+.programs-item {
+    text-align: center; /* Centers text below each image */
+    display: flex;
+    flex-direction: column; /* Stacks the image, h2, and p vertically */
+    align-items: center; /* Centers the text horizontally */
+}
+
+.programs-image {
+    width: 150px;
+    height: auto;
+    margin-top: -20px;
+}
+
+.programs-item h5 {
+    margin-top: -10px; /* Adds space between the image and the text */
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    color: #0E2F74; /* Custom color for the heading */
+}
+
+.programs-item p {
+    margin-top: -10px; /* Adds space between the heading and the paragraph */
+    font-size: 12px; /* Adjust the font size */
+    font-family: 'Montserrat', sans-serif;
+    color: black; /* You can change this color to suit your design */
+    max-width: 250px; /* Optional: Limit the paragraph width to fit better */
+}
+
+.guide-section {
+    padding: 50px 20px;
+    text-align: center;
+    background: url('images/bg.png') no-repeat center center;
+    background-size: cover;
+}
+
+.guide-section h2 {
+    font-size: 28px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    margin-top: -25px;
+    font-weight: bolder;
+}
+
+.guide-section .image-container {
+    display: flex;
+    justify-content: center; /* Changed from space-evenly to center for centering the images */
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.guide-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.guide-image {
+    width: 150px;
+    height: auto;
+    margin-top: 10px;
+}
+
+.guide-next {
+    width: 25px;
+    height: auto;
+    margin-top: 55px;
+    margin-left: 20px; /* Added margin to give space between the guide items */
+}
+
+.guide-item h5 {
+    margin-top: -10px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    margin-left: 30px;
+}
+
+.frequently-section {
+    padding: 50px 20px 10px; /* Adjusted padding: top: 50px, sides: 20px, bottom: 20px */
+    text-align: center;
+    background-color: #ffffff;
+}
+
+.frequently-section h2 {
+    font-size: 28px;
+    font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+    color: #0E2F74; /* You can change this color to suit your design */
+    margin-top: -25px; /* Moves the heading 10px upwards */
+    font-weight: bolder;
+}
+
+.frequently-section .image-container {
+    display: flex;
+    justify-content: space-evenly; /* Equal spacing between images */
+    align-items: flex-start; /* Align images to the top */
+    gap: 20px; /* Optional, adds space between images */
+}
+
+.frequently-item {
+    text-align: center; /* Centers text below each image */
+    display: flex;
+    flex-direction: column; /* Stacks the image, h2, and p vertically */
+    align-items: center; /* Centers the text horizontally */
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto; /* Reduced margin to lessen top spacing */
+    text-align: left;
+    margin-bottom: 0; /* Remove any bottom margin */
+
+}
+
+.faq-item {
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0; /* Reduced padding to decrease vertical space */
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+.faq-toggle {
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 28px;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.faq-toggle:hover {
+    background: white;
+}
+
+.faq-answer {
+    display: none;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.hidden-questions {
+    display: none; /* Hide extra questions initially */
+}
+
+.view-more-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px; /* Reduce margin at the bottom */
+
+}
+
+.view-more-btn:hover {
+    background-color: white;
+}
+
+.footer-section {
+    padding: 50px 20px;
+    text-align: left; /* Changed to align content to the left */
+    background: url('images/footer.png') no-repeat center center;
+    background-size: cover;
+    color: white;
+    position: relative; /* To position the logo correctly */
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.footer-logo {
+    position: absolute; /* Positioned absolute for top-left placement */
+    top: 20px;
+    left: 20px;
+}
+
+.footer-logo img {
+    width: 100px; /* Adjust the size of the logo */
+    height: auto;
+}
+
+.footer-about, .footer-links, .footer-contact {
+    flex: 1;
+    margin: 10px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 10px;
+    color: #ccc;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin: 5px 0;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+/* Media Queries for responsiveness */
+@media screen and (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .image-container {
+        margin-bottom: 20px;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+}
