@@ -105,7 +105,7 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email</th>
-                                        
+                                        <th>Username</th>
                                         <th>Type</th>
                                         <th class="text-center">Action</th>
                                         
@@ -119,7 +119,7 @@
                                         <td>001</td>
                                         <td>Giuliani Calais</td>
                                         <td>giulianicalais@example.com</td>
-                                        
+                                        <td>giul</td>
                                         <td>Admin</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -206,7 +206,7 @@
                                         <td>002</td>
                                         <td>Meg Angeline Fabian</td>
                                         <td>megfabian@example.com</td>
-                                        
+                                        <td>angel</td>
                                         <td>Admin</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -248,7 +248,7 @@
                                         <td>003</td>
                                         <td>Shanley Galo</td>
                                         <td>shanleygalo@example.com</td>
-                                        
+                                        <td>ley</td>
                                         <td>Staff</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -273,7 +273,7 @@
                                         <td>004</td>
                                         <td>Pamela Murillo</td>
                                         <td>pamelamurillo@example.com</td>
-                                        
+                                        <td>pam</td>
                                         <td>Admin</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -298,7 +298,7 @@
                                         <td>005</td>
                                         <td>Kate Serrano</td>
                                         <td>kateserrano@example.com</td>
-                                        
+                                        <td>ket</td>
                                         <td>Staff</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
