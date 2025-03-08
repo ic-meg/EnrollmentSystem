@@ -69,7 +69,7 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Name</th>
-                                                <th class="text-center">Control Number</th>
+                                                
                                                 <th class="text-center">Application Status</th>
                                                 <th class="text-center">Document Status</th>
                                                 <th class="text-center">Action</th>
@@ -81,7 +81,7 @@
                                     <tr>
                                         <td>001</td>
                                         <td>Giuliani Calais</td>
-                                        <td class="text-center">202412345</td>
+                                        
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">1/4</td>
                                         
@@ -156,7 +156,7 @@
                                     <tr>
                                         <td>002</td>
                                         <td>Meg Angeline Fabian</td>
-                                        <td class="text-center">202412346</td>
+                                        
                                         <td class="text-center" style="color: rgb(7, 255, 0);">Approved</td>
                                         <td class="text-center" style="color: rgb(0, 127, 201);">4/4</td>
                                         
@@ -204,7 +204,7 @@
                                     <tr>
                                         <td>003</td>
                                         <td>Shanley Galo</td>
-                                        <td class="text-center">202412347</td>
+                                        
                                         <td class="text-center" style="color: rgb(241, 0, 0);">Reject</td>
                                         <td class="text-center" style="color: rgb(0, 127, 201);">4/4</td>
                                         
@@ -252,7 +252,7 @@
                                     <tr>
                                         <td>004</td>
                                         <td>Pamela Murillo</td>
-                                        <td class="text-center">202412348</td>
+                                        
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">2/4</td>
                                         
@@ -300,7 +300,7 @@
                                     <tr>
                                         <td>005</td>
                                         <td>Kate Serrano</td>
-                                        <td class="text-center">202412349</td>
+                                       
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">3/4</td>
                                         
