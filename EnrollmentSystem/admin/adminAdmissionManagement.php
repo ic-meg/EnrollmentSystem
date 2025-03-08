@@ -23,7 +23,30 @@
  
 </head>
 <style>
-    
+    .reason-btn {
+        margin-right: 5px;
+        margin-top: 5px;
+        border: 1px solid #dee2e6;
+        color: #000;
+        background-color: #fff;
+    }
+
+    .reason-btn:hover {
+        background-color: #e9ecef;
+        color: #000;
+    }
+
+    .reason-btn.selected {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .reason-btn.selected:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
 </style>
 <body>
     <?php include "admin-sidebar.php"; ?>
@@ -60,7 +83,7 @@
                                         <td>Giuliani Calais</td>
                                         <td class="text-center">202412345</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
+                                        <td class="text-center" style="color: rgb(255, 199, 0);">1/4</td>
                                         
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -99,27 +122,34 @@
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                                 <div class="modal fade" id="deleteModalGiuliani" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered ">
+                                                    <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Reject applicant</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            This action will reject the applicant. Do you want to continue?
-                                                            <form>
-                                                            <div class="mb-3">
-                                                                <label for="message-text" class="col-form-label">Reason:</label>
-                                                                <textarea class="form-control" id="message-text"></textarea>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="button" class="btn btn-danger">Yes</button>
-                                                        </div>
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Reject applicant</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-start">
+                                                                This action will reject the applicant. Do you want to continue?
+                                                                <form>
+                                                                    <div class="mb-3">
+                                                                        <label for="message-text" class="col-form-label">Reason:</label>
+                                                                        <textarea class="form-control" id="message-text"></textarea>
+                                                                        <div class="suggested-reasons mt-2">
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Incomplete application</button>
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Does not meet qualifications</button>
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Failed background check</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+                                                                <button type="button" class="btn btn-danger">Yes</button>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div> 
+                                                </div>
+
                                         </td>
                                     </tr>
                                 <!------- MEG ANGELINE FABIAN ------>
@@ -128,7 +158,7 @@
                                         <td>Meg Angeline Fabian</td>
                                         <td class="text-center">202412346</td>
                                         <td class="text-center" style="color: rgb(7, 255, 0);">Approved</td>
-                                        <td class="text-center" style="color: rgb(0, 127, 201);">Verified</td>
+                                        <td class="text-center" style="color: rgb(0, 127, 201);">4/4</td>
                                         
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -163,30 +193,10 @@
                                                 </div>
                                             </div>
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalMeg">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-times"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalMeg" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered ">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Reject applicant</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            This action will reject the applicant. Do you want to continue?
-                                                            <form>
-                                                            <div class="mb-3">
-                                                                <label for="message-text" class="col-form-label">Reason:</label>
-                                                                <textarea class="form-control" id="message-text"></textarea>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="button" class="btn btn-danger">Yes</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
+                                              
                                                 </div> 
                                         </td>
                                     </tr>
@@ -196,7 +206,7 @@
                                         <td>Shanley Galo</td>
                                         <td class="text-center">202412347</td>
                                         <td class="text-center" style="color: rgb(241, 0, 0);">Reject</td>
-                                        <td class="text-center" style="color: rgb(0, 127, 201);">Verified</td>
+                                        <td class="text-center" style="color: rgb(0, 127, 201);">4/4</td>
                                         
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -231,30 +241,10 @@
                                                 </div>
                                             </div>
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalLey">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-times"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalLey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered ">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Reject applicant</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            This action will reject the applicant. Do you want to continue?
-                                                            <form>
-                                                            <div class="mb-3">
-                                                                <label for="message-text" class="col-form-label">Reason:</label>
-                                                                <textarea class="form-control" id="message-text"></textarea>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="button" class="btn btn-danger">Yes</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
+                                            
                                                 </div> 
                                         </td>
                                     </tr>
@@ -264,7 +254,7 @@
                                         <td>Pamela Murillo</td>
                                         <td class="text-center">202412348</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
+                                        <td class="text-center" style="color: rgb(255, 199, 0);">2/4</td>
                                         
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -299,30 +289,10 @@
                                                 </div>
                                             </div>
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalPam">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-times"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalPam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Reject applicant</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            This action will reject the applicant. Do you want to continue?
-                                                            <form>
-                                                            <div class="mb-3">
-                                                                <label for="message-text" class="col-form-label">Reason:</label>
-                                                                <textarea class="form-control" id="message-text"></textarea>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="button" class="btn btn-danger">Yes</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
+                                             
                                                 </div> 
                                         </td>
                                     </tr>
@@ -332,7 +302,7 @@
                                         <td>Kate Serrano</td>
                                         <td class="text-center">202412349</td>
                                         <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
+                                        <td class="text-center" style="color: rgb(255, 199, 0);">3/4</td>
                                         
                                         <td class="text-center">
                                             <!-- Modal Info -->
@@ -367,48 +337,13 @@
                                                 </div>
                                             </div>
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalKate">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-times"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalKate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                     <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Archive course</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            This action will reject the applicant. Do you want to continue?
-                                                            <form>
-                                                            <div class="mb-3">
-                                                                <label for="message-text" class="col-form-label">Reason:</label>
-                                                                <textarea class="form-control" id="message-text"></textarea>
-                                                            </form>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="button" class="btn btn-danger">Yes</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
+                                                
                                                 </div> 
                                         </td>
                                     </tr>
-
-                            
-
-
-
-
-
-
-
-
-
-
-
-
-
                                 </tbody>
                             </table>
                         </div>
@@ -418,7 +353,48 @@
         </div>
     </div>
 
-   
+   <script>
+document.querySelectorAll('.reason-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const textarea = document.getElementById('message-text');
+        const newReason = this.innerText;
+        let currentTextArray = textarea.value.split(", ").filter(reason => reason.trim() !== ""); // Convert to array and remove any empty values
+        const index = currentTextArray.indexOf(newReason);
+
+        if (index > -1) {
+            // Reason is already included, remove it
+            currentTextArray.splice(index, 1);
+            this.classList.remove('selected');
+        } else {
+            // Reason is not included, add it
+            currentTextArray.push(newReason);
+            this.classList.add('selected');
+        }
+
+        // Update the textarea with the new list of reasons
+        textarea.value = currentTextArray.join(", ");
+    });
+});
+
+function checkAndUpdateReasons() {
+    const textarea = document.getElementById('message-text');
+    const currentTextArray = textarea.value.split(", ").filter(reason => reason.trim() !== "");
+
+    document.querySelectorAll('.reason-btn').forEach(button => {
+        if (currentTextArray.includes(button.innerText)) {
+            button.classList.add('selected');
+        } else {
+            button.classList.remove('selected');
+        }
+    });
+}
+
+// Optionally, call this function on modal show and page load if necessary
+$('#deleteModalGiuliani').on('shown.bs.modal', checkAndUpdateReasons);
+window.addEventListener('load', checkAndUpdateReasons);
+
+
+   </script>
     <script src="assets/vendor/jquery/jquery.min.js"></script>
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/vendor/datatables/datatables.min.js"></script>
