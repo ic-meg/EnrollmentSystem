@@ -76,6 +76,93 @@
                                             </tr>
                                         </thead>
                                     <tbody>
+                                    <?php 
+                                        include 'dbcon.php'; 
+
+                                        $sql = "SELECT admissionID, user_id, name, application_status, document_status FROM admission";
+                                        $result = $conn->query($sql);
+
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                            $modalID = preg_replace('/\s+/', '', $row['name']); // Remove spaces for valid IDs
+        
+                                                // color for application_status
+                                                $statusColor = "";
+                                                if ($row['application_status'] == "Pending") {
+                                                    $statusColor = "color: rgb(255, 199, 0);"; 
+                                                    $documentStatus = "1/4"; // Auto-set document status for Pending
+                                                    $documentStatus = "2/4";
+                                                    $documentStatus = "3/4";
+                                                    $documentColor = "color: rgb(255, 199, 0);"; 
+                                                } elseif ($row['application_status'] == "Approved") {
+                                                    $statusColor = "color: rgb(7, 255, 0);"; 
+                                                    $documentStatus = "4/4"; // Auto-set document status for Approved
+                                                    $documentColor = "color: rgb(0, 127, 201);"; 
+                                                } elseif ($row['application_status'] == "Reject") {
+                                                    $statusColor = "color: rgb(241, 0, 0);"; 
+                                                    $documentStatus = $row['document_status']; 
+                                                    $documentColor = "color: black;"; 
+                                                } else {
+                                                    $documentStatus = $row['document_status']; 
+                                                    $documentColor = "color: black;"; 
+                                                }
+                                                // main
+                                                echo "<tr>";
+                                                echo "<td>" . $row['admissionID'] . "</td>";
+                                                echo "<td>" . $row['name'] . "</td>";
+                                                echo "<td class='text-center' style='$statusColor'>" . $row['application_status'] . "</td>"; 
+                                                echo "<td class='text-center' style='$documentColor'>" . $documentStatus . "</td>"; 
+                                                echo "<td class='text-center'>
+                                                        <button class='btn btn-outline-primary btn-rounded' data-bs-toggle='modal' data-bs-target='#infoModal$modalID'>
+                                                            <i class='fa fa-info-circle'></i>
+                                                        </button>
+                                                        <button class='btn btn-outline-danger btn-rounded' data-bs-toggle='modal' data-bs-target='#deleteModal$modalID'>
+                                                            <i class='fas fa-times'></i>
+                                                        </button>
+                                                        </td>";
+                                                echo "</tr>";
+                                                // Info Modal (dito muna yan)
+                                                echo "<div class='modal fade' id='infoModal$modalID' tabindex='-1' aria-labelledby='infoModalLabel$modalID' aria-hidden='true'>
+                                                <div class='modal-dialog'>
+                                                    <div class='modal-content'>
+                                                        <div class='modal-header'>
+                                                            <h5 class='modal-title' id='infoModalLabel$modalID'>Info for " . $row['name'] . "</h5>
+                                                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                                        </div>
+                                                        <div class='modal-body'>
+                                                            <p><strong>Name:</strong> " . $row['name'] . "</p>
+                                                            <p><strong>Application Status:</strong> " . $row['application_status'] . "</p>
+                                                            <p><strong>Document Status:</strong> " . $row['document_status'] . "</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>";
+
+                                            // Delete Modal (eto din dito muna)
+                                            echo "<div class='modal fade' id='deleteModal$modalID' tabindex='-1' aria-labelledby='deleteModalLabel$modalID' aria-hidden='true'>
+                                                    <div class='modal-dialog'>
+                                                        <div class='modal-content'>
+                                                            <div class='modal-header'>
+                                                                <h5 class='modal-title' id='deleteModalLabel$modalID'>Delete " . $row['name'] . "?</h5>
+                                                                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                                            </div>
+                                                            <div class='modal-body'>
+                                                                Are you sure you want to delete <strong>" . $row['name'] . "</strong>?
+                                                            </div>
+                                                            <div class='modal-footer'>
+                                                                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
+                                                                <a href='delete_admission.php?id=" . $row['admissionID'] . "' class='btn btn-danger'>Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='6' class='text-center'>No records found</td></tr>";
+                                        }
+                                        $conn->close(); 
+                                        ?>
+
 
                                 <!------- GIULIANI CALAIS ------>
                                     <tr>
@@ -248,101 +335,7 @@
                                                 </div> 
                                         </td>
                                     </tr>
-                                <!------- PAMELA MURILLO ------>
-                                    <tr>
-                                        <td>004</td>
-                                        <td>Pamela Murillo</td>
-                                        
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">2/4</td>
-                                        
-                                        <td class="text-center">
-                                            <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalPam">
-                                                <i class="fa fa-info-circle"></i>
-                                            </button>
-                                            <div class="modal fade" id="infoModalPam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="infoModalPam">Application ID: 004</h1>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                        <b>Applicant Name:</b> Pamela Murillo <br><br>
-                                                        <b>Date of Submission:</b> November 13, 2024 <br><br>
-                                                        <b>Status:</b> Pending <br><br>
-                                                        <b>Details Provided by Applicant:</b> <br><br>
-                                                        &nbsp;&nbsp;•Address: 123 Main Street, Cityville <br>
-                                                        &nbsp;&nbsp;•Phone: 09341658632 <br>
-                                                        &nbsp;&nbsp;•Qualifications: Bachelor’s Degree in Information Technology <br><br>
-                                                        <b>Submitted Documents:</b> <br><br>
-                                                        &nbsp;&nbsp;•Application form.pdf <a href="#">[View Document]</a> <br>
-                                                        &nbsp;&nbsp;•Form 137 <a href="#">[View Document]</a> <br>
-                                                        &nbsp;&nbsp;•Birth Certificate <a href="#">[View Document]</a> <br><br>
-                                                        <b>Comments:</b> to be followed na lang po ang report card
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-success">Approved</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                             
-                                                </div> 
-                                        </td>
-                                    </tr>
-                                <!------- KATE SERRANO ------>    
-                                    <tr>
-                                        <td>005</td>
-                                        <td>Kate Serrano</td>
-                                       
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">3/4</td>
-                                        
-                                        <td class="text-center">
-                                            <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalKate">
-                                                <i class="fa fa-info-circle"></i>
-                                            </button>
-                                            <div class="modal fade" id="infoModalKate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="infoModalKate">Application ID: 005</h1>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                        <b>Applicant Name:</b> Kate Serrano <br><br>
-                                                        <b>Date of Submission:</b> November 14, 2024 <br><br>
-                                                        <b>Status:</b> Pending <br><br>
-                                                        <b>Details Provided by Applicant:</b> <br><br>
-                                                        &nbsp;&nbsp;•Address: 123 Main Street, Cityville <br>
-                                                        &nbsp;&nbsp;•Phone: 09341658632 <br>
-                                                        &nbsp;&nbsp;•Qualifications: Bachelor’s Degree in Information Technology <br><br>
-                                                        <b>Submitted Documents:</b> <br><br>
-                                                        &nbsp;&nbsp;•Application form.pdf <a href="#">[View Document]</a> <br>
-                                                        &nbsp;&nbsp;•Form 137 <a href="#">[View Document]</a> <br>
-                                                        &nbsp;&nbsp;•Birth Certificate <a href="#">[View Document]</a> <br><br>
-                                                        <b>Comments:</b> to be followed na lang po ang report card
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-success">Approved</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                                
-                                                </div> 
-                                        </td>
+                                
                                     </tr>
                                 </tbody>
                             </table>
