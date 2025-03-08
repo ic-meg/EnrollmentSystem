@@ -69,19 +69,23 @@
                                                 <div class="mb-3">
                                                     <label for="email" class="col-form-label">Email:</label>
                                                     <input type="text" class="form-control" id="email">
+                                                    <label for="Username" class="col-form-label">Username:</label>
+                                                    <input type="text" class="form-control" id="username">
                                                     <label for="firstname" class="col-form-label">First name:</label>
                                                     <input type="text" class="form-control" id="firstname">
                                                     <label for="lastname" class="col-form-label">Last name:</label>
                                                     <input type="text" class="form-control" id="lastname">
                                                     <div>
-                                                        <div>
-                                                            <label for="lastname" class="col-form-label">Password:</label>
+                                                        <label for="lastname" class="col-form-label">Password:</label>
+                                                        <div class="input-group mb-3">
                                                             <input type="text" id="passwordOutput" class="form-control" placeholder="Generated Password" readonly>
-                                                            <button type="button" class="btn btn-primary input-group mb-3" onclick="generatePassword()">Generate</button>
+                                                            <button type="button" class="btn btn-primary" onclick="generatePassword()">Generate</button>
+                                                            
                                                         </div>
+                                                        <label for="type" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="type">
                                                     </div>   
-                                                    <label for="type" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="type">
+
                                                 </div>
                                             </form>
                                         </div>
@@ -206,60 +210,15 @@
                                         <td>Admin</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalMeg">
+                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
                                                 <i class="fa fa-info-circle"></i>
                                             </button>
-                                            <div class="modal fade" id="infoModalMeg" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered  modal-sm" role="document">
-                                                    <div class="modal-content text-center"> 
-                                                        <div class="modal-header justify-content-center">
-                                                            <h5 class="modal-title" id="infoModalLabel">User Info</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <img src="./adminPic/meginfo.png" alt="Comments" class="img-fluid">
-                                                            <h5 class="mb-1"><b>Meg Angeline Fabian</b></h5>
-                                                            <p class="mt-0">IT Support/Admin</p>
-                                                            <p>You have the ability to make changes, update content, and modify information.</p>
-                                                        </div>
-                                                        <div class="modal-footer justify-content-center">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+             
                                             <!-- Edit Info -->
-                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalMeg">
+                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalGiuliani">
                                                 <i class="fas fa-pen"></i>
                                             </button>
-                                            <div class="modal fade" id="editModalMeg" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered ">
-                                                    <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Edit User Info</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <form>
-                                                        <div class="mb-3">
-                                                            <label for="recipient-name" class="col-form-label">Type the ID:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit First name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Last name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                           
-                                                            <label for="recipient-name" class="col-form-label">Edit Type:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary">Save</button>
-                                                    </div>
-                                                    </div>
-                                                </div>
+                           
                                             </div>
                                                 <!-- Delete Info -->
                                                 <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalMeg">
@@ -293,82 +252,20 @@
                                         <td>Staff</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalLey">
+                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
                                                 <i class="fa fa-info-circle"></i>
                                             </button>
-                                            <div class="modal fade" id="infoModalLey" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered  modal-sm" role="document">
-                                                    <div class="modal-content text-center"> 
-                                                        <div class="modal-header justify-content-center">
-                                                            <h5 class="modal-title" id="infoModalLabel">User Info</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <img src="./adminPic/leyinfo.png" alt="Comments" class="img-fluid">
-                                                            <h5 class="mb-1"><b>Shanley Galo</b></h5>
-                                                            <p class="mt-0">Registrar/Staff</p>
-                                                            <p>You manage student records, handle enrollments, and update information but do not have access to system settings or admin features.</p>
-                                                        </div>
-                                                        <div class="modal-footer justify-content-center">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             <!-- Edit Info -->
-                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalLey">
+                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalGiuliani">
                                                 <i class="fas fa-pen"></i>
                                             </button>
-                                            <div class="modal fade" id="editModalLey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered ">
-                                                    <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Edit User Info</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <form>
-                                                        <div class="mb-3">
-                                                            <label for="recipient-name" class="col-form-label">Type the ID:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit First name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Last name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            
-                                                            <label for="recipient-name" class="col-form-label">Edit Type:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary">Save</button>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                     
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalLey">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalLey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered ">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Delete user</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            Are you sure you want to delete this?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Cancel</button>
-                                                            <button type="button" class="btn btn-danger">Yes, Delete</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                </div> 
+
                                         </td>
                                     </tr>
                                 <!------- PAMELA MURILLO ------>
@@ -380,82 +277,20 @@
                                         <td>Admin</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalPam">
+                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
                                                 <i class="fa fa-info-circle"></i>
                                             </button>
-                                            <div class="modal fade" id="infoModalPam" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-                                                    <div class="modal-content text-center"> 
-                                                        <div class="modal-header justify-content-center">
-                                                            <h5 class="modal-title" id="infoModalLabel">User Info</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <img src="./adminPic/paminfo.png" alt="Comments" class="img-fluid">
-                                                            <h5 class="mb-1"><b>Pamela Murillo</b></h5>
-                                                            <p class="mt-0">Financial Officer/Admin</p>
-                                                            <p>You have the ability to make changes, update content, and modify information.</p>
-                                                        </div>
-                                                        <div class="modal-footer justify-content-center">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                             <!-- Edit Info -->
-                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalPam">
+                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalGiuliani">
                                                 <i class="fas fa-pen"></i>
                                             </button>
-                                            <div class="modal fade" id="editModalPam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Edit User Info</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <form>
-                                                        <div class="mb-3">
-                                                            <label for="recipient-name" class="col-form-label">Type the ID:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit First name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Last name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            
-                                                            <label for="recipient-name" class="col-form-label">Edit Type:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary">Save</button>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalPam">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalPam" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Delete user</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            Are you sure you want to delete this?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Cancel</button>
-                                                            <button type="button" class="btn btn-danger">Yes, Delete</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                </div> 
+                                                
                                         </td>
                                     </tr>
                                 <!------- KATE SERRANO ------>    
@@ -467,99 +302,22 @@
                                         <td>Staff</td>
                                         <td class="text-center">
                                             <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalKate">
+                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
                                                 <i class="fa fa-info-circle"></i>
                                             </button>
-                                            <div class="modal fade" id="infoModalKate" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered  modal-sm" role="document">
-                                                    <div class="modal-content text-center"> 
-                                                        <div class="modal-header justify-content-center">
-                                                            <h5 class="modal-title" id="infoModalLabel">User Info</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <img src="./adminPic/kateinfo.png" alt="Comments" class="img-fluid">
-                                                            <h5 class="mb-1"><b>Kate Serrano</b></h5>
-                                                            <p class="mt-0">Instructor/Staff</p>
-                                                            <p>You manage student records, handle enrollments, and update information but do not have access to system settings or admin features.</p>
-                                                        </div>
-                                                        <div class="modal-footer justify-content-center">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                             <!-- Edit Info -->
-                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalKate">
+                                            <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModalGiuliani">
                                                 <i class="fas fa-pen"></i>
                                             </button>
-                                            <div class="modal fade" id="editModalKate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered ">
-                                                    <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Edit User Info</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        <form>
-                                                        <div class="mb-3">
-                                                            <label for="recipient-name" class="col-form-label">Type the ID:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit First name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            <label for="recipient-name" class="col-form-label">Edit Last name:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                            
-                                                            <label for="recipient-name" class="col-form-label">Edit Type:</label>
-                                                            <input type="text" class="form-control" id="recipient-name">
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary">Save</button>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+    
                                                 <!-- Delete Info -->
-                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalKate">
+                                                <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                                <div class="modal fade" id="deleteModalKate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                     <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="exampleModalLabel">Delete user</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            Are you sure you want to delete this?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Cancel</button>
-                                                            <button type="button" class="btn btn-danger">Yes, Delete</button>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                </div> 
+ 
                                         </td>
                                     </tr>
-
-                            
-
-
-
-
-
-
-
-
-
-
-
-
-
                                 </tbody>
                             </table>
                         </div>
