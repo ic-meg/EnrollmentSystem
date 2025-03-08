@@ -1,17 +1,55 @@
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = $_POST['username'];
-  $password = $_POST['password'];
 
-  if ($username == "admin" && $password == "admin") {
-    header("Location: http://localhost/EnrollmentSystem/admin/adminDashboard.php");
+
+<?php
+session_start();
+include "../dbcon.php"; 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $emailOrUsername = trim($_POST['emailOrUsername']);
+    $password = trim($_POST['password']);
+    $errors = [];
+
+    if (empty($emailOrUsername) || empty($password)) {
+        $errors[] = "All fields are required.";
+    } else {
+        // Check if user is admin or student (Hardcoded Credentials)
+        if ($emailOrUsername === "admin" && $password === "admin") {
+            header("Location: http://localhost/EnrollmentSystem/admin/adminDashboard.php");
+            exit();
+        } elseif ($emailOrUsername === "student" && $password === "student") {
+            header("Location: http://localhost/EnrollmentSystem/student/studDashboard.php");
+            exit();
+        }
+
+        // Prepare SQL query to fetch user details
+        $stmt = $conn->prepare("SELECT * FROM useraccount WHERE email = ? OR username = ?");
+        $stmt->bind_param("ss", $emailOrUsername, $emailOrUsername);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+
+            // Verify password
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['email'] = $user['email'];
+                
+                // Redirect to student dashboard
+                header("Location: http://localhost/EnrollmentSystem/student/studDashboard.php");
+                exit();
+            } else {
+                $errors[] = "Incorrect password.";
+            }
+        } else {
+            $errors[] = "No account found with that email or username.";
+        }
+    }
+
+    $_SESSION['errors'] = $errors;
+    header("Location: signin.php");
     exit();
-  } elseif ($username == "student" && $password == "student") {
-    header("Location: http://localhost/EnrollmentSystem/student/studDashboard.php");
-    exit();
-  } else {
-    $error = "Invalid credentials. Please try again.";
-  }
 }
 ?>
 
@@ -21,10 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forgot Password - Verify your email</title>
+  <title>Oxford Academe | Sign in</title>
   <link rel="stylesheet" href="vars.css">
   <link rel="stylesheet" href="resetPass-style.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
   a, 
   button, 
@@ -49,6 +88,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     margin: 0; 
     padding: 0; 
   }
+  .input-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #888;
+}
+
+.eye-icon:hover {
+    color: #000;
+}
+
   </style>
 </head>
 
@@ -65,33 +121,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <!-- Icon and Text -->
   <div class="icon-text">
-  <img class="bg" src="./adminPic/image 1.png" alt="Background Image"/> 
+  <a href="index.php"><img class="bg" src="./adminPic/image 1.png" alt="Background Image"/> </a>
   <h2>Welcome to  <span style="color: #2DB2FF;">oxfo</span><span style="color: black;">rd</span> Academe</h2>
   </div>
 
   <!-- Email Box -->
   <div class="container">
-  <form method="POST" action="">
-    <div class="input-group"> 
-    <div class="input-field">
-      <input type="text" name="username" placeholder="Email or Control Number" required />
-      <img class="icon" src="./adminPic/people-10.png" alt="People Icon" />
-    </div>
-    <div class="input-field">
-      <input type="password" name="password" placeholder="Password" required />
-      <img class="icon" src="./adminPic/lock.png" alt="Lock Icon" />
-    </div>
-    </div> 
+  <form method="POST" action="signin.php">
+    <div class="input-group">
+        <div class="input-field">
+            <input type="text" name="emailOrUsername" placeholder="Email or Username" required />
+            <img class="icon" src="./adminPic/people-10.png" alt="People Icon" />
+        </div>
 
-    <button type="submit">Sign in</button> <br> <br>
-    <div class="forgot" style="text-align: right;">
-    <p>Don't have an account? <a href="signup.php">Sign up</a></p>
-    <p><a href="forgotPass.php" style="color: white;">Forgot password</a></p>
+        <div class="input-field">
+            <input type="password" id="password" name="password" placeholder="Password" required />
+            <!-- <img class="icon" src="./adminPic/lock.png" alt="Lock Icon" /> -->
+            <div class="eye-icon" id="togglePassword">
+                <i class="fas fa-eye" id="eyeOpen"></i>
+                <i class="fas fa-eye-slash" id="eyeClosed" style="display: none;"></i>
+        </div>
+
+
+
+</div>
+
     </div>
-    <?php if (isset($error)): ?>
-    <p style="color: red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-  </form>
+
+    <button type="submit" name="signin" style="background-color: #00008B; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onmouseover="this.style.backgroundColor='#0000CD'" onmouseout="this.style.backgroundColor='#00008B'">
+        Sign in
+    </button>
+    <br><br>
+
+    <div class="forgot" style="text-align: right;">
+        <p>Don't have an account? <a href="signup.php">Sign up</a></p>
+        <p><a href="forgotPass.php" style="color: white;">Forgot password</a></p>
+    </div>
+<br>
+
+    <?php
+    // Display error messages
+    if (isset($_SESSION['errors'])) {
+        foreach ($_SESSION['errors'] as $error) {
+            echo "<p style='color:red;'>$error</p>";
+        }
+        unset($_SESSION['errors']);
+    }
+    ?>
+</form>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const passwordField = document.getElementById('password');
+    const eyeIcon = document.getElementById('togglePassword');
+    const eyeOpen = document.getElementById('eyeOpen');
+    const eyeClosed = document.getElementById('eyeClosed');
+
+ 
+    passwordField.addEventListener('input', function () {
+        if (passwordField.value.length > 0) {
+            eyeIcon.style.display = 'block';  
+        } else {
+            eyeIcon.style.display = 'none';   
+        }
+    });
+
+ 
+    eyeIcon.addEventListener('click', function () {
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            eyeOpen.style.display = 'none';
+            eyeClosed.style.display = 'inline';
+        } else {
+            passwordField.type = 'password';
+            eyeOpen.style.display = 'inline';
+            eyeClosed.style.display = 'none';
+        }
+    });
+});
+
+</script>
   </div>
 </body>
 </html>
