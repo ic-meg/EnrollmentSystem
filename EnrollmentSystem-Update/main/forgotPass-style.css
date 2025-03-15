@@ -1,0 +1,117 @@
+body { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100vh; 
+  background-color: #2148c0; 
+  font-family: 'Montserrat', sans-serif;
+  color: #ffffff; 
+  position: relative;
+  overflow: hidden;
+} 
+.container { 
+  background: rgba(90, 139, 236, 0.72); 
+  border-radius: 16px; 
+  padding: 40px 20px; 
+  box-shadow: 19px 17px 11.1px -3px rgba(0, 0, 0, 0.25); 
+  width: 90%; 
+  max-width: 400px; 
+  text-align: center; 
+  position: relative;
+} 
+.vector-image-container {
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+}
+.vector-image {
+  width: 1000px; 
+  height: auto; 
+}
+.container h2 { 
+  font-size: 20px; 
+  line-height: 20px; 
+  letter-spacing: 3px; 
+  font-weight: 500; 
+  font-style: italic; 
+  text-transform: uppercase; 
+  margin-bottom: 20px; 
+} 
+.container .input-group { 
+  margin-bottom: 20px; 
+  position: relative;
+  display: flex;
+  align-items: center;
+} 
+.container .input-group input { 
+  width: 100%; 
+  padding: 15px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 16px; 
+  color: #000000; 
+  background: #e6e6e6; 
+  padding-right: 40px;
+  font-family: 'Montserrat', sans-serif;
+} 
+.input-group .icon {
+  position: absolute;
+  right: 10px; 
+  width: 20px; 
+  height: 20px; 
+}
+.container button { 
+  width: 100%; 
+  padding: 15px; 
+  border-radius: 8px; 
+  background-color: rgb(45, 178, 255);
+  color: white; 
+  font-size: 20px; 
+  letter-spacing: 2px; 
+  font-weight: 510; 
+  cursor: pointer; 
+  border: none; 
+  transition: background-color 0.3s ease; 
+  font-family: 'Montserrat', sans-serif;
+} 
+.container button:hover { 
+  background-color: #003f88; 
+} 
+.container img { 
+  width: 100px;
+}
+.ellipses { 
+  position: absolute; 
+  bottom: 10px; 
+  left: 10px; 
+} 
+.ellipse2 { 
+  width: 100px; 
+  height: auto;
+} 
+.ellipse { 
+  width: 300px; 
+  height: auto;
+} 
+
+.icon-text { 
+  position: absolute; 
+  top: 150px; 
+  width: 100%; 
+  text-align: center; 
+  z-index: 20; 
+} 
+.icon-text .bg { 
+  width: 100px;  
+  height: auto; 
+} 
+.icon-text h2 { 
+  font-size: 20px; 
+  line-height: 20px; 
+  letter-spacing: 3px; 
+  font-weight: 500; 
+  font-style: italic; 
+  text-transform: uppercase; 
+  margin-bottom: 20px; 
+}
+

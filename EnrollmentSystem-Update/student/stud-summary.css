@@ -1,0 +1,105 @@
+:root {
+    --color: #000;
+    --background: #2DB2FF;
+    --txt-color: #B6B1B1;
+    --secondary-color: white;
+    --line-color:#777777;
+
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color:var(--background)
+}
+
+.header {
+    color: black;
+    text-align: center;
+    padding: 20px 10px;
+    margin-top: 5%;
+}
+
+.header h1 {
+    font-size: 24px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.info div {
+    width: 48%;
+}
+
+.info div p {
+    margin: 5px 0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f4faff;
+    font-weight: bold;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.fees {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.fees p {
+    margin: 5px 0;
+}
+
+.total-units {
+    text-align: right;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.payment-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.payment-button button {
+    background-color: #35aaff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.payment-button button:hover {
+    background-color: #1a8cd8;
+}
