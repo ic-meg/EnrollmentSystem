@@ -1,5 +1,77 @@
 <?php 
     include "session_check.php";
+    include '../dbcon.php'; 
+                                        
+    $sql = "SELECT * FROM enrollee";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $modalID1 = "deleteModal" . $row['user_id'];
+
+            $modalID = preg_replace('/\s+/', '', $row['name']); // Remove spaces for valid IDs
+            $userID = $row['user_id'];
+            $enrollmentType = $row['enrollment_type'];
+
+            // Determine the correct table
+            $tableMap = [
+                "Freshmen" => "freshmen",
+                "Nonsequential" => "nonsequential",
+                "Returnee" => "returnee",
+                "Transferee" => "transferee"
+            ];
+
+            $table = isset($tableMap[$enrollmentType]) ? $tableMap[$enrollmentType] : null;
+            $extraDetails = [];
+
+            if ($table) {
+                $query = "SELECT * FROM $table WHERE user_id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $userID);
+                $stmt->execute();
+                $resultDetails = $stmt->get_result();
+                if ($resultDetails->num_rows > 0) {
+                    $extraDetails = $resultDetails->fetch_assoc();
+                }
+                $stmt->close();
+            }
+
+            // File paths
+            $form137 = isset($extraDetails['Form137']) ? $extraDetails['Form137'] : null;
+            $form138 = isset($extraDetails['Form138']) ? $extraDetails['Form138'] : null;
+            $pic = isset($extraDetails['Picture']) ? $extraDetails['Picture'] : null;
+            
+            // Default colors
+            $statusColor = "color: black;";
+            $documentColor = "color: black;";
+
+            // Determine status color
+            if ($row['Status'] == "Pending") {
+                $statusColor = "color: rgb(255, 199, 0);"; // Yellow
+                $documentStatus = "3/4"; // Auto-set document status for Pending
+                $documentColor = "color: rgb(255, 199, 0);"; // Yellow
+            } elseif ($row['Status'] == "Approved") {
+                $statusColor = "color: rgb(7, 255, 0);"; // Green
+                $documentStatus = "4/4"; // Auto-set document status for Approved
+                $documentColor = "color: rgb(0, 127, 201);"; // Blue
+            } elseif ($row['Status'] == "Rejected") {
+                $statusColor = "color: rgb(241, 0, 0);"; // Red
+                $documentStatus = $row['documents_uploaded'];
+            } else {
+                $documentStatus = $row['documents_uploaded'];
+            }
+            $requiredDocs = [
+                "Freshmen" => 3,
+                "Transferee" => 2,
+                "Returnee" => 3,
+                "Nonsequential" => 2
+            ];
+            
+            if (isset($requiredDocs[$row['enrollment_type']]) && $row['documents_uploaded'] == $requiredDocs[$row['enrollment_type']]) {
+                $documentColor = "color: rgb(7, 255, 0);"; // Green
+            }
+            
+
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +85,7 @@
     <title>Admission Management | Admin Panel</title>
     <!-- Bootstrap CSS -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
     <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
@@ -27,6 +99,7 @@
  
 </head>
 <style>
+
     .reason-btn {
         margin-right: 5px;
         margin-top: 5px;
@@ -77,77 +150,39 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php 
-                                        include '../dbcon.php'; 
-                                        
-                                        $sql = "SELECT * FROM enrollee";
-                                        $result = $conn->query($sql);
-
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                $modalID = preg_replace('/\s+/', '', $row['name']); // Remove spaces for valid IDs
-                                                $userID = $row['user_id'];
-                                                $enrollmentType = $row['enrollment_type'];
-
-                                                // Determine the correct table
-                                                $tableMap = [
-                                                    "Freshmen" => "freshmen",
-                                                    "Nonsequential" => "nonsequential",
-                                                    "Returnee" => "returnee",
-                                                    "Transferee" => "transferee"
-                                                ];
-
-                                                $table = $tableMap[$enrollmentType] ?? null;
-                                                $extraDetails = [];
-
-                                                if ($table) {
-                                                    $query = "SELECT * FROM $table WHERE user_id = ?";
-                                                    $stmt = $conn->prepare($query);
-                                                    $stmt->bind_param("i", $userID);
-                                                    $stmt->execute();
-                                                    $resultDetails = $stmt->get_result();
-                                                    if ($resultDetails->num_rows > 0) {
-                                                        $extraDetails = $resultDetails->fetch_assoc();
-                                                    }
-                                                    $stmt->close();
-                                                }
-
-                                                // File paths
-                                                $form137 = $extraDetails['Form137'] ?? null;
-                                                $form138 = $extraDetails['Form138'] ?? null;
-                                                $pic = $extraDetails['Picture'] ?? null;
-                                                
-                                                // Color for application_status
-                                                $statusColor = "";
-                                                $documentColor = "color: black;";
-                                                if ($row['Status'] == "Pending") {
-                                                    $statusColor = "color: rgb(255, 199, 0);"; 
-                                                    $documentStatus = "3/4"; // Auto-set document status for Pending
-                                                    $documentColor = "color: rgb(255, 199, 0);"; 
-                                                } elseif ($row['application_status'] == "Approved") {
-                                                    $statusColor = "color: rgb(7, 255, 0);"; 
-                                                    $documentStatus = "4/4"; // Auto-set document status for Approved
-                                                    $documentColor = "color: rgb(0, 127, 201);"; 
-                                                } elseif ($row['application_status'] == "Reject") {
-                                                    $statusColor = "color: rgb(241, 0, 0);"; 
-                                                    $documentStatus = $row['document_status']; 
-                                                } else {
-                                                    $documentStatus = $row['document_status']; 
-                                                }
-                                    ?>
 
                                     <tr>
                                         <td><?php echo $row['EnrolleeID']; ?></td>
                                         <td><?php echo $row['name']; ?></td>
                                         <td class="text-center" style="<?php echo $statusColor; ?>"><?php echo $row['Status']; ?></td>
-                                        <td class="text-center" style="<?php echo $documentColor; ?>"><?php echo $row['documents_uploaded']; ?></td>
+                                        <td class="text-center" style="<?php echo $documentColor; ?>">
+                                            <?php 
+                                                // Display document progress
+                                                if ($row['enrollment_type'] == "Freshmen") {
+                                                    echo $row['documents_uploaded'] . "/3";
+                                                } elseif ($row['enrollment_type'] == "Transferee") {
+                                                    echo $row['documents_uploaded'] . "/2";
+                                                } elseif ($row['enrollment_type'] == "Returnee") {
+                                                    echo $row['documents_uploaded'] . "/3";
+                                                } elseif ($row['enrollment_type'] == "Nonsequential") {
+                                                    echo $row['documents_uploaded'] . "/2";
+                                                } else {
+                                                    echo $row['documents_uploaded']; 
+                                                }
+                                            ?>
+                                        </td>
+
                                         <td class="text-center">
                                             <button class='btn btn-outline-primary btn-rounded' data-bs-toggle='modal' data-bs-target='#infoModal<?php echo $modalID; ?>'>
                                                 <i class='fa fa-info-circle'></i>
                                             </button>
-                                            <button class='btn btn-outline-danger btn-rounded' data-bs-toggle='modal' data-bs-target='#deleteModal<?php echo $modalID; ?>'>
-                                                <i class='fas fa-times'></i>
+                                            <button type="button" class="btn btn-outline-danger btn-rounded reject-btn"
+                                                data-userid="<?php echo $userID; ?>"
+                                                data-username="<?php echo $row['name']; ?>"
+                                                data-status="<?php echo $row['Status']; ?>">  
+                                                <i class="fas fa-times"></i>
                                             </button>
+
                                         </td>
                                     </tr>
 
@@ -175,43 +210,94 @@
                                                             • Zip Code: <?php echo $extraDetails['ZipCode']; ?><br><br>
                                                             <b>Submitted Documents:</b><br>
                                                                 <?php if ($form137): ?>
-                                                                    <a href="uploads/<?php echo htmlspecialchars($form137); ?>" target="_blank">[View Form 137]</a><br>
+                                                                    <a href="../student/uploads/<?php echo htmlspecialchars($form137); ?>" target="_blank">[View Form 137]</a><br>
                                                                     <?php else: ?>
                                                                         No file uploaded
                                                                     <?php endif; ?>
 
                                                                 <?php if ($form138): ?>
-                                                                    <a href="uploads/<?php echo htmlspecialchars($form138); ?>" target="_blank">[View Form 138]</a><br>
+                                                                    <a href="../student/uploads/<?php echo htmlspecialchars($form138); ?>" target="_blank">[View Form 138]</a><br>
                                                                     <?php else: ?>
                                                                         No file uploaded
                                                                     <?php endif; ?>
 
                                                                 <?php if ($pic): ?>
-                                                                    <a href="uploads/<?php echo htmlspecialchars($pic); ?>" target="_blank">[View Picture]</a>
+                                                                    <a href="../student/uploads/<?php echo htmlspecialchars($pic); ?>" target="_blank">[View Picture]</a>
                                                                     <?php else: ?>
                                                                         No file uploaded
                                                                     <?php endif; ?>
-                                                        <?php } elseif ($enrollmentType == "Nonsequential") { ?>
-                                                            <b>Last Attended School:</b> <?php echo $extraDetails['LastAttendedSchool']; ?><br>
-                                                            <b>Year Graduated:</b> <?php echo $extraDetails['YearGraduatedLeft']; ?><br>
-                                                            <b>Intended Course:</b> <?php echo $extraDetails['IntendedCourse']; ?><br>
-                                                        <?php } elseif ($enrollmentType == "Returnee") { ?>
-                                                            <b>Previous Program:</b> <?php echo $extraDetails['PreviousProgram']; ?><br>
-                                                            <b>Expected Graduation Date:</b> <?php echo $extraDetails['ExpectedGraduationDate']; ?><br>
-                                                            <b>Reason for Returning:</b> <?php echo $extraDetails['ReasonForReturning']; ?><br>
-                                                        <?php } elseif ($enrollmentType == "Transferee") { ?>
-                                                            <b>Previous School:</b> <?php echo $extraDetails['PreviousSchool']; ?><br>
-                                                            <b>Previous Program:</b> <?php echo $extraDetails['PreviousProgram']; ?><br>
-                                                            <b>Intended Course:</b> <?php echo $extraDetails['IntendedCourse']; ?><br>
+                                                            <?php } elseif ($enrollmentType == "Nonsequential") { ?>
+                                                                <b>Last Attended School:</b> <?php echo $extraDetails['LastAttendedSchool']; ?><br>
+                                                                <b>Year Graduated:</b> <?php echo $extraDetails['YearGraduatedLeft']; ?><br>
+                                                                <b>Intended Course:</b> <?php echo $extraDetails['IntendedCourse']; ?><br>
+                                                            <?php } elseif ($enrollmentType == "Returnee") { ?>
+                                                                <b>Previous Program:</b> <?php echo $extraDetails['PreviousProgram']; ?><br>
+                                                                <b>Expected Graduation Date:</b> <?php echo $extraDetails['ExpectedGraduationDate']; ?><br>
+                                                                <b>Reason for Returning:</b> <?php echo $extraDetails['ReasonForReturning']; ?><br>
+                                                            <?php } elseif ($enrollmentType == "Transferee") { ?>
+                                                                <b>Previous School:</b> <?php echo $extraDetails['PreviousSchool']; ?><br>
+                                                                <b>Previous Program:</b> <?php echo $extraDetails['PreviousProgram']; ?><br>
+                                                                <b>Intended Course:</b> <?php echo $extraDetails['IntendedCourse']; ?><br>
+                                                            <?php } ?>
                                                         <?php } ?>
-                                                    <?php } ?>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <a href="creditSubject.php"><button type="button" class="btn btn-success">Approved</button></a>
+                                                </button>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                </div>
+                                                </div>
+                                                </div>
+                                               <!-- Rejection Modal -->
+                                               <div class="modal fade" id="deleteModal<?php echo $userID; ?>" tabindex="-1" aria-labelledby="deleteLabel<?php echo $userID; ?>" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteLabel<?php echo $userID; ?>">Reject Applicant <?php echo $userID; ?></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                This action will reject <?php echo $row['name']; ?>'s application. Do you want to continue?
+                                                                <form>
+                                                                    <div class="mb-3">
+                                                                        <label for="message-text<?php echo $userID; ?>" class="col-form-label">Reason:</label>
+                                                                        <textarea class="form-control" id="message-text<?php echo $userID; ?>"></textarea>
+                                                                        <div class="suggested-reasons mt-2">
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Incomplete application</button>
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Does not meet qualifications</button>
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Failed background check</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+                                                                <button type="button" class="btn btn-danger confirm-reject-btn" data-userid="<?php echo $userID; ?>">Yes</button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                           
+                                            <!-- Already Rejected Modal -->
+                                                <div class="modal fade" id="alreadyRejectedModal" tabindex="-1" aria-labelledby="alreadyRejectedLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="alreadyRejectedLabel">Applicant Already Rejected</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p id="alreadyRejectedText"></p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                         
                                     <?php 
                                             }
                                         } else {
@@ -220,51 +306,8 @@
                                         $conn->close(); 
                                     ?>
 
-                                    <!------- GIULIANI CALAIS ------>
-                                    <tr>
-                                        <td>001</td>
-                                        <td>Giuliani Calais</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">Pending</td>
-                                        <td class="text-center" style="color: rgb(255, 199, 0);">1/4</td>
-                                        <td class="text-center">
-                                            <!-- Modal Info -->
-                                            <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModalGiuliani">
-                                                <i class="fa fa-info-circle"></i>
-                                            </button>
+                                
 
-                                            <div class="modal fade" id="infoModalGiuliani" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="infoModalGiuliani">Application ID: 001</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-start">
-                                                            <b>Applicant Name:</b> Giuliani Calais <br><br>
-                                                            <b>Applicant Type:</b> Freshmen<br><br>
-                                                            <b>Date of Submission:</b> November 10, 2024 <br><br>
-                                                            <b>Status:</b> Pending <br><br>
-                                                            <b>Details Provided by Applicant:</b> <br><br>
-                                                            &nbsp;&nbsp;• Address: 123 Main Street, Cityville <br>
-                                                            &nbsp;&nbsp;• Phone: 09341658632 <br>
-                                                            &nbsp;&nbsp;• Qualifications: Bachelor’s Degree in Information Technology <br><br>
-                                                            <b>Submitted Documents:</b> <br><br>
-                                                            &nbsp;&nbsp;• Application form.pdf <a href="#">[View Document]</a> <br>
-                                                            &nbsp;&nbsp;• Form 137 <a href="#">[View Document]</a> <br>
-                                                            &nbsp;&nbsp;• Birth Certificate <a href="#">[View Document]</a> <br><br>
-                                                            <b>Comments:</b> to be followed na lang po ang report card
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <a href="creditSubject.php"><button type="button" class="btn btn-success">Approved</button></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Delete Info -->
-                                            <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModalGiuliani">
-                                                <i class="fas fa-times"></i>
-                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -275,52 +318,14 @@
             </div>
         </div>
     </main>
+    <script src="admission.js"></script>
 
-    <script>
-        document.querySelectorAll('.reason-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const textarea = document.getElementById('message-text');
-                const newReason = this.innerText;
-                let currentTextArray = textarea.value.split(", ").filter(reason => reason.trim() !== ""); // Convert to array and remove any empty values
-                const index = currentTextArray.indexOf(newReason);
-
-                if (index > -1) {
-                    // Reason is already included, remove it
-                    currentTextArray.splice(index, 1);
-                    this.classList.remove('selected');
-                } else {
-                    // Reason is not included, add it
-                    currentTextArray.push(newReason);
-                    this.classList.add('selected');
-                }
-
-                // Update the textarea with the new list of reasons
-                textarea.value = currentTextArray.join(", ");
-            });
-        });
-
-        function checkAndUpdateReasons() {
-            const textarea = document.getElementById('message-text');
-            const currentTextArray = textarea.value.split(", ").filter(reason => reason.trim() !== "");
-
-            document.querySelectorAll('.reason-btn').forEach(button => {
-                if (currentTextArray.includes(button.innerText)) {
-                    button.classList.add('selected');
-                } else {
-                    button.classList.remove('selected');
-                }
-            });
-        }
-
-        // Optionally, call this function on modal show and page load if necessary
-        $('#deleteModalGiuliani').on('shown.bs.modal', checkAndUpdateReasons);
-        window.addEventListener('load', checkAndUpdateReasons);
-    </script>
     <script src="assets/vendor/jquery/jquery.min.js"></script>
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/vendor/datatables/datatables.min.js"></script>
     <script src="assets/js/initiate-datatables.js"></script>
     <script src="assets/js/script.js"></script>
+    
 </body>
 
 </html>
