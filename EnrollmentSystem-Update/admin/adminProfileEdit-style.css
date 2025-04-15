@@ -39,27 +39,11 @@ html, body {
   margin-bottom: 10px; 
 }
 
-.linear-header .upload-btn {
-  margin-top: 5px; 
-  background-color: #ffffff;
-  color: #2148c0;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  padding: 6px 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.linear-header .upload-btn:hover {
-  background-color: #6fa5ff;
-  color: white;
-}
 
 .edit-btn {
   padding: 8px 16px;
   background-color: rgb(85, 138, 243);
-  color: #ffffff;
+  
   border: none;
   cursor: pointer;
   font-size: 1rem;
