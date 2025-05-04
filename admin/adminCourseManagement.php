@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $totalUnits = $_POST['total_units'];
         $description = $_POST['description'];
         
-        $stmt = $conn->prepare("INSERT INTO course (CourseName, LinkSubject, TotalUnits, Description) VALUES (?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO course (CourseName, LinkSubject, TotalUnits, Description, is_archived) VALUES (?, ?, ?, ?, FALSE)");
         $stmt->bind_param("ssis", $courseName, $linkSubject, $totalUnits, $description);
         $stmt->execute();
         $stmt->close();
@@ -29,33 +29,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $courseName = $_POST['course_name'];
         $linkSubject = $_POST['link_subject'];
         $totalUnits = $_POST['total_units'];
+        $description = $_POST['description'];
         
-        $stmt = $conn->prepare("UPDATE course SET CourseName = ?, LinkSubject = ?, TotalUnits = ? WHERE CourseID = ?");
-        $stmt->bind_param("ssii", $courseName, $linkSubject, $totalUnits, $courseID);
+        $stmt = $conn->prepare("UPDATE course SET CourseName = ?, LinkSubject = ?, TotalUnits = ?, Description = ? WHERE CourseID = ?");
+        $stmt->bind_param("ssisi", $courseName, $linkSubject, $totalUnits, $description, $courseID);
         $stmt->execute();
         $stmt->close();
         
         header("Location: adminCourseManagement.php?success=Course+updated+successfully");
         exit();
-    } elseif (isset($_POST['delete_course'])) {
-        // Delete course
+    } elseif (isset($_POST['archive_course'])) {
+        // Archive course
         $courseID = $_POST['course_id'];
         
-        $stmt = $conn->prepare("DELETE FROM course WHERE CourseID = ?");
+        $stmt = $conn->prepare("UPDATE course SET is_archived = TRUE WHERE CourseID = ?");
         $stmt->bind_param("i", $courseID);
         $stmt->execute();
         $stmt->close();
         
-        header("Location: adminCourseManagement.php?success=Course+deleted+successfully");
+        header("Location: adminCourseManagement.php?success=Course+archived+successfully");
+        exit();
+    } elseif (isset($_POST['restore_course'])) {
+        // Restore course
+        $courseID = $_POST['course_id'];
+        
+        $stmt = $conn->prepare("UPDATE course SET is_archived = FALSE WHERE CourseID = ?");
+        $stmt->bind_param("i", $courseID);
+        $stmt->execute();
+        $stmt->close();
+        
+        header("Location: adminCourseManagement.php?success=Course+restored+successfully");
         exit();
     }
 }
 
-$courses = [];
-$result = $conn->query("SELECT * FROM course");
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $courses[] = $row;
+// Determine whether to show active or archived courses
+$viewArchived = isset($_GET['view']) && $_GET['view'] === 'archived';
+
+if ($viewArchived) {
+    // Get archived courses
+    $courses = [];
+    $result = $conn->query("SELECT * FROM course WHERE is_archived = TRUE");
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $courses[] = $row;
+        }
+    }
+} else {
+    // Get active courses
+    $courses = [];
+    $result = $conn->query("SELECT * FROM course WHERE is_archived = FALSE");
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $courses[] = $row;
+        }
     }
 }
 $conn->close();
@@ -78,13 +105,24 @@ $conn->close();
     <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
     <!-- Custom Master Styles -->
     <link href="assets/css/master.css" rel="stylesheet">
+    <style>
+        .archive-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .archived-course {
+            background-color: #f8f9fa;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
     <?php include "admin-sidebar.php"; ?>
-    
+	</div>
+	</div>
     <main>
-    </div>
-    </div>
         <div class="wrapper">
             <div class="container">
                 <div class="content">
@@ -144,93 +182,107 @@ $conn->close();
                                     </thead>
                                     <tbody>
                                         <?php foreach ($courses as $course): ?>
-                                        <tr>
+                                        <tr class="<?php echo $viewArchived ? 'archived-course' : ''; ?>">
                                             <td><?php echo htmlspecialchars($course['CourseName']); ?></td>
                                             <td><?php echo htmlspecialchars($course['LinkSubject']); ?></td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['TotalUnits']); ?></td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['NumOfStudents']); ?></td>
                                             <td class="text-center">
-                                                <!-- Info Modal -->
-                                                <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModal<?php echo $course['CourseID']; ?>">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </button>
-                                                
-                                                <!-- Edit Modal -->
-                                                <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $course['CourseID']; ?>">
-                                                    <i class="fas fa-pen"></i>
-                                                </button>
-                                                
-                                                <!-- Delete Modal -->
-                                                <button type="button" class="btn btn-outline-warning btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $course['CourseID']; ?>">
-                                                    <i class="fas fa-archive"></i>
-                                                </button>
+                                                <?php if (!$viewArchived): ?>
+                                                    <!-- Info Button -->
+                                                    <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModal<?php echo $course['CourseID']; ?>">
+                                                        <i class="fa fa-info-circle"></i>
+                                                    </button>
+
+                                                    <!-- Edit Button -->
+                                                    <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $course['CourseID']; ?>">
+                                                        <i class="fas fa-pen"></i>
+                                                    </button>
+
+                                                    <!-- Archive Button -->
+                                                    <button type="button" class="btn btn-outline-warning btn-rounded" data-bs-toggle="modal" data-bs-target="#archiveModal<?php echo $course['CourseID']; ?>">
+                                                        <i class="fas fa-archive"></i>
+                                                    </button>
+                                                <?php else: ?>
+                                                    <!-- Restore Button -->
+                                                    <form method="POST" action="adminCourseManagement.php" style="display:inline;">
+                                                        <input type="hidden" name="course_id" value="<?php echo $course['CourseID']; ?>">
+                                                        <button type="submit" class="btn btn-outline-success btn-rounded" name="restore_course">
+                                                            <i class="fas fa-undo"></i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
-                                        
-                                        <!-- Info Modal for each course -->
-                                        <div class="modal fade" id="infoModal<?php echo $course['CourseID']; ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-                                                <div class="modal-content text-start"> 
-                                                    <div class="modal-header justify-content-center">
-                                                        <h5 class="modal-title" id="infoModalLabel">Course Info</h5>
+
+                                        <!-- Info Modal -->
+                                        <div class="modal fade" id="infoModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="infoModalLabel">Course Information</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <h5 class="mb-1"><b><?php echo htmlspecialchars($course['CourseName']); ?></b></h5>
-                                                        <p><?php echo htmlspecialchars($course['description']); ?></p>
+                                                        <p><strong>Course Name:</strong> <?php echo htmlspecialchars($course['CourseName']); ?></p>
+                                                        <p><strong>Link Subject:</strong> <?php echo htmlspecialchars($course['LinkSubject']); ?></p>
+                                                        <p><strong>Total Units:</strong> <?php echo htmlspecialchars($course['TotalUnits']); ?></p>
+                                                        <p><strong>Description:</strong> <?php echo htmlspecialchars($course['description']); ?></p>
                                                     </div>
-                                                    <div class="modal-footer justify-content-center">
+                                                    <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <!-- Edit Modal for each course -->
+
+                                        <!-- Edit Modal -->
                                         <div class="modal fade" id="editModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="editModalLabel">Edit Course Info</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <form method="POST" action="adminCourseManagement.php">
-                                                        <div class="modal-body text-start">
-                                                            <input type="hidden" name="course_id" value="<?php echo $course['CourseID']; ?>">
-                                                            <div class="mb-3">
-                                                                <label class="col-form-label">Course name:</label>
-                                                                <input type="text" class="form-control" name="course_name" value="<?php echo htmlspecialchars($course['CourseName']); ?>" required>
-                                                                <label class="col-form-label">Link Subject:</label>
-                                                                <input type="text" class="form-control" name="link_subject" value="<?php echo htmlspecialchars($course['LinkSubject']); ?>" required>
-                                                                <label class="col-form-label">Units:</label>
-                                                                <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-primary" name="edit_course">Save</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Delete Modal for each course -->
-                                        <div class="modal fade" id="deleteModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteModalLabel">Archive course</h5>
+                                                        <h5 class="modal-title" id="editModalLabel">Edit Course</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <form method="POST" action="adminCourseManagement.php">
                                                         <input type="hidden" name="course_id" value="<?php echo $course['CourseID']; ?>">
                                                         <div class="modal-body text-start">
-                                                            This action will move to the archive. Do you want to continue?
+                                                            <div class="mb-3">
+                                                                <label class="col-form-label">Course Name:</label>
+                                                                <input type="text" class="form-control" name="course_name" value="<?php echo htmlspecialchars($course['CourseName']); ?>" required>
+                                                                <label class="col-form-label">Link Subject:</label>
+                                                                <input type="text" class="form-control" name="link_subject" value="<?php echo htmlspecialchars($course['LinkSubject']); ?>" required>
+                                                                <label class="col-form-label">Total Units:</label>
+                                                                <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
+                                                                <label class="col-form-label">Description:</label>
+                                                                <textarea class="form-control" name="description"><?php echo htmlspecialchars($course['description']); ?></textarea>
+                                                            </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                            <button type="submit" class="btn btn-dark" name="delete_course">Yes</button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary" name="edit_course">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Archive Modal -->
+                                        <div class="modal fade" id="archiveModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="archiveModalLabel">Archive Course</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="POST" action="adminCourseManagement.php">
+                                                        <input type="hidden" name="course_id" value="<?php echo $course['CourseID']; ?>">
+                                                        <div class="modal-body text-start">
+                                                            Are you sure you want to archive this course? This action can be undone.
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-warning" name="archive_course">Archive</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -241,6 +293,17 @@ $conn->close();
                                 </table>
                             </div>
                         </div>
+                        
+                        <!-- Floating button to toggle between active and archived courses -->
+                        <?php if ($viewArchived): ?>
+                            <a href="adminCourseManagement.php" class="btn btn-outline-secondary archive-btn">
+                                <i class="fas fa-arrow-left"></i> Back to Active Courses
+                            </a>
+                        <?php else: ?>
+                            <a href="?view=archived" class="btn btn-outline-secondary archive-btn">
+                                <i class="fas fa-archive"></i> View Archived Courses
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
