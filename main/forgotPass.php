@@ -43,36 +43,45 @@ function sendemail_verify($EmailAddress, $verification_code){
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendCode'])) {
-    $EmailAddress = $_POST['EmailAddress'];
+  $EmailAddress = $_POST['EmailAddress'];
 
-    
-    $check_query = "SELECT * FROM useraccount WHERE email = '$EmailAddress'";
-    $check_result = mysqli_query($conn, $check_query);
-
-    if (mysqli_num_rows($check_result) > 0) {
-        // Generate a random OTP
-        $verification_code = rand(100000, 999999); 
-
-        
-        $update_query = "UPDATE useraccount SET OTP='$verification_code' WHERE email='$EmailAddress'";
-        $update_run = mysqli_query($conn, $update_query);
-
-        if ($update_run) {
-            session_start();
-            $_SESSION['verification_email'] = $EmailAddress;
-
-            sendemail_verify($EmailAddress, $verification_code);
-            
-            $message = "<p class='success-message'>A verification code has been sent to your email.</p>";
-            header("Refresh: 2; URL=otp.php"); 
-        } else {
-            $message = "<p class='error-message'>Failed to generate OTP. Please try again.</p>";
-        }
-    } else {
-     
-        $message = "<p class='error-message'>No account is associated with this email.</p>";
-    }
-}
+  // First, check useraccount
+  $check_user_query = "SELECT * FROM useraccount WHERE email = '$EmailAddress'";
+  $check_user_result = mysqli_query($conn, $check_user_query);
+  
+  if (mysqli_num_rows($check_user_result) > 0) {
+      $table = 'useraccount';
+  } else {
+      // Then check adminaccount
+      $check_admin_query = "SELECT * FROM adminaccount WHERE email = '$EmailAddress'";
+      $check_admin_result = mysqli_query($conn, $check_admin_query);
+  
+      if (mysqli_num_rows($check_admin_result) > 0) {
+          $table = 'adminaccount';
+      } else {
+          $message = "<p class='error-message'>No account is associated with this email.</p>";
+      }
+  }
+  
+  if (isset($table)) {
+      $verification_code = rand(100000, 999999);
+      $update_query = "UPDATE $table SET OTP='$verification_code' WHERE email='$EmailAddress'";
+      $update_run = mysqli_query($conn, $update_query);
+  
+      if ($update_run) {
+          session_start();
+          $_SESSION['verification_email'] = $EmailAddress;
+          $_SESSION['account_type'] = $table;
+  
+          sendemail_verify($EmailAddress, $verification_code);
+  
+          $message = "<p class='success-message'>A verification code has been sent to your email.</p>";
+          header("Refresh: 2; URL=otp.php");
+      } else {
+          $message = "<p class='error-message'>Failed to generate OTP. Please try again.</p>";
+      }
+  }
+}  
 ?>
 
 <!DOCTYPE html>

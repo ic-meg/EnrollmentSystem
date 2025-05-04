@@ -2,20 +2,20 @@
 session_start();
 include "../dbcon.php";
 
-
-if (!isset($_SESSION['verification_email'])) {
+if (!isset($_SESSION['verification_email']) || !isset($_SESSION['account_type'])) {
     header("Location: forgotpass.php");
     exit();
 }
 
 $email = $_SESSION['verification_email'];
+$table = $_SESSION['account_type']; // either 'useraccount' or 'adminaccount'
 $message = ""; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['verifyOTP'])) {
     $entered_otp = $_POST['otp'];
 
-   
-    $query = "SELECT OTP FROM useraccount WHERE email = '$email'";
+    // Use dynamic table
+    $query = "SELECT OTP FROM $table WHERE email = '$email'";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -23,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['verifyOTP'])) {
         $stored_otp = $row['OTP'];
 
         if ($entered_otp == $stored_otp) {
-            
             $_SESSION['otp_verified'] = true;
             header("Location: resetPass.php");
             exit();
@@ -35,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['verifyOTP'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

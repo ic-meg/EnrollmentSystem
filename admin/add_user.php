@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->addAddress($email, $firstname . ' ' . $lastname);
 
             //Login URL
-            $loginUrl = "http://" . $_SERVER['HTTP_HOST'] . "/main/signin.php";
+            $loginUrl = "http://" . $_SERVER['HTTP_HOST'] . "/main/index.php";
 
             // Email content
             $mail->isHTML(true);
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <strong>Password:</strong> $password<br>
                 <strong>Role:</strong> $role</p>
                 <p><a href='$loginUrl'>Click here to login</a></p>
-                <p><em>Please change your password after first login.</em></p>
+                <p><em>Please change your password in Forgot Password page after first login.</em></p>
             ";
             $mail->AltBody = "Hi $firstname $lastname,\n\nYour admin account is ready.\n\nUsername: $username\nPassword: $password\nRole: $role\n\nLogin at: $loginUrl\n\nChange your password after login.";
             $mail->send();

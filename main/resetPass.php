@@ -10,6 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $email = $_SESSION['verification_email'];
+    $table = $_SESSION['account_type']; 
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     $errors = [];
@@ -28,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($errors)) {
         $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
-        $update_query = "UPDATE useraccount SET password = ? WHERE email = ?";
+        $update_query = "UPDATE $table SET password = ? WHERE email = ?";
         $stmt = $conn->prepare($update_query);
         $stmt->bind_param("ss", $hashed_password, $email);
 
