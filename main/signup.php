@@ -59,7 +59,7 @@
     <title>Oxford Academe | Sign Up</title>
     <link rel="stylesheet" href="sign-up.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="signup.js"></script>
+   
 </head>
 <style>
     body {
@@ -172,7 +172,7 @@
             <input type="text" name="username" id="username" required>
 
             <div id="password-criteria">    
-            <label for="password">*Password</label>
+            <label for="password">*Password <span id="password-icon" class="valid-icon"></span></label>
             <div class="input-field">
                 <input type="password" name="password" id="password" required>
                 <span class="eye-icon" id="togglePassword">
@@ -180,11 +180,16 @@
                     <i class="fas fa-eye-slash" id="eyeClosed" style="display: none;"></i>
                 </span>
             </div>
-            <p>Criteria</p>
-            <p class="criteria-item" id="length-criteria">🔴 at least 8 characters</p>
-            <p class="criteria-item" id="letter-criteria">🔴 at least one letter</p>
-            <p class="criteria-item" id="number-criteria">🔴 at least one number or special character</p>
-        </div> 
+            <div id="password-criteria-container" style="display: none;">
+                <p>Criteria</p>
+                <p class="criteria-item" id="length-criteria">🔴 at least 8 characters</p>
+                <p class="criteria-item" id="letter-criteria">🔴 at least one letter</p>
+                <p class="criteria-item" id="number-criteria">🔴 at least one number or special character</p>
+                <p class="criteria-item" id="uppercase-criteria">🔴 at least one uppercase letter</p>
+            </div>
+
+
+
 
         <div id="confirm-password-container">    
             <label for="re-password">*Confirm Password <span id="confirm-password-icon" class="valid-icon"></span></label>
@@ -197,7 +202,7 @@
                 </span>
             </div>
 
-        </div>
+
 
                 <!-- <small style="text-align: justify;">
                     Note: Please use a strong password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.
@@ -225,6 +230,171 @@
             </form>
         </div>
     </div>
+
+<script>       
+    document.addEventListener("DOMContentLoaded", () => {
+            const passwordInput = document.getElementById("password");
+            const criteriaContainer = document.getElementById("password-criteria-container");
+
+            passwordInput.addEventListener("focus", () => {
+                criteriaContainer.style.display = "block";
+            });
+
+            passwordInput.addEventListener("blur", () => {
+                setTimeout(() => {
+                    criteriaContainer.style.display = "none";
+                }, 200); 
+            });
+        });
+</script> 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const emailInput = document.getElementById("email");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("re-password");
+        const signupBtn = document.getElementById("signup-btn");
+
+        const lengthCriteria = document.getElementById("length-criteria");
+        const letterCriteria = document.getElementById("letter-criteria");
+        const numberCriteria = document.getElementById("number-criteria");
+        const uppercaseCriteria = document.getElementById("uppercase-criteria");
+
+        const passwordIcon = document.getElementById("password-icon");
+        const confirmPasswordIcon = document.getElementById("confirm-password-icon");
+
+        const eyeIcon = document.getElementById("togglePassword");
+        const eyeOpen = document.getElementById("eyeOpen");
+        const eyeClosed = document.getElementById("eyeClosed");
+
+        const eyeConfirmIcon = document.getElementById("toggleConfirmPassword");
+        const eyeOpenConfirm = document.getElementById("eyeOpenConfirm");
+        const eyeClosedConfirm = document.getElementById("eyeClosedConfirm");
+
+        // Show/Hide Password Eye Icon
+        passwordInput.addEventListener("input", () => {
+            eyeIcon.style.display = passwordInput.value.length > 0 ? "inline" : "none";
+        });
+
+        eyeIcon.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            eyeOpen.style.display = isHidden ? "none" : "inline";
+            eyeClosed.style.display = isHidden ? "inline" : "none";
+        });
+
+        // Show/Hide Confirm Password Eye Icon
+        confirmPasswordInput.addEventListener("input", () => {
+            eyeConfirmIcon.style.display = confirmPasswordInput.value.length > 0 ? "inline" : "none";
+        });
+
+        eyeConfirmIcon.addEventListener("click", () => {
+            const isHidden = confirmPasswordInput.type === "password";
+            confirmPasswordInput.type = isHidden ? "text" : "password";
+            eyeOpenConfirm.style.display = isHidden ? "none" : "inline";
+            eyeClosedConfirm.style.display = isHidden ? "inline" : "none";
+        });
+
+        // Password Criteria Visibility
+        const criteriaContainer = document.getElementById("password-criteria-container");
+        passwordInput.addEventListener("focus", () => {
+            criteriaContainer.style.display = "block";
+        });
+        passwordInput.addEventListener("blur", () => {
+            setTimeout(() => {
+                criteriaContainer.style.display = "none";
+            }, 200);
+        });
+
+        // Criteria Validator
+        function updateCriteria(condition, element, text) {
+            element.innerHTML = `${condition ? '🟢' : '🔴'} ${text}`;
+            element.classList.toggle("valid-criteria", condition);
+            element.classList.toggle("invalid-criteria", !condition);
+        }
+
+        function checkPasswordCriteria(password) {
+            updateCriteria(password.length >= 8, lengthCriteria, "at least 8 characters");
+            updateCriteria(/[A-Za-z]/.test(password), letterCriteria, "at least one letter");
+            updateCriteria(/\d|[@$!%*?&]/.test(password), numberCriteria, "at least one number or special character");
+            updateCriteria(/[A-Z]/.test(password), uppercaseCriteria, "at least one uppercase letter");
+        }
+
+        function validateInput(input, iconId, validationFn) {
+            const icon = document.getElementById(iconId);
+            if (!icon) return;
+            if (validationFn(input.value)) {
+                icon.innerHTML = "✔"; 
+                icon.classList.add("valid");
+                icon.classList.remove("invalid");
+                return true;
+            } else {
+                icon.innerHTML = "❌"; 
+                icon.classList.add("invalid");
+                icon.classList.remove("valid");
+                return false;
+            }
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validateUsername(username) {
+            return username.length >= 3;
+        }
+
+        function validatePassword(password) {
+            return /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(password);
+        }
+
+        function validateConfirmPassword() {
+            return confirmPasswordInput.value === passwordInput.value && passwordInput.value !== "";
+        }
+
+        function checkFormValidity() {
+            const isEmailValid = validateInput(emailInput, "email-icon", validateEmail);
+            const isUsernameValid = validateInput(usernameInput, "username-icon", validateUsername);
+            const isPasswordValid = validateInput(passwordInput, "password-icon", validatePassword);
+            const isConfirmPasswordValid = validateInput(confirmPasswordInput, "confirm-password-icon", validateConfirmPassword);
+            
+            checkPasswordCriteria(passwordInput.value);
+
+            if (isEmailValid && isUsernameValid && isPasswordValid && isConfirmPasswordValid) {
+                signupBtn.removeAttribute("disabled");
+                signupBtn.classList.remove("disabled-btn");
+            } else {
+                signupBtn.setAttribute("disabled", "true");
+                signupBtn.classList.add("disabled-btn");
+            }
+        }
+
+        // Live Events
+        emailInput.addEventListener("input", () => {
+            validateInput(emailInput, "email-icon", validateEmail);
+            checkFormValidity();
+        });
+
+        usernameInput.addEventListener("input", () => {
+            validateInput(usernameInput, "username-icon", validateUsername);
+            checkFormValidity();
+        });
+
+        passwordInput.addEventListener("input", () => {
+            checkPasswordCriteria(passwordInput.value);
+            validateInput(passwordInput, "password-icon", validatePassword);
+            checkFormValidity();
+        });
+
+        confirmPasswordInput.addEventListener("input", () => {
+            validateInput(confirmPasswordInput, "confirm-password-icon", validateConfirmPassword);
+            checkFormValidity();
+        });
+
+    });
+</script>
+
+
 </body>
 </html>
 

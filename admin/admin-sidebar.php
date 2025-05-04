@@ -3,13 +3,12 @@
   include "session_check.php";
 
   $admin_id = $_SESSION['admin_id'];
+  
   $stmt = $conn->prepare("SELECT * FROM adminaccount WHERE admin_id = ?");
   $stmt->bind_param("i", $admin_id);
   $stmt->execute();
   $result = $stmt->get_result();
   $admin = $result->fetch_assoc();
-
-
 ?>
 
 <!DOCTYPE html>
@@ -171,18 +170,19 @@
   <?php 
       include "header.php";
   ?>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const currentPage = window.location.pathname.split('/').pop(); 
-    const sidebarLinks = document.querySelectorAll("#sidebar a"); 
-    
-    sidebarLinks.forEach(link => {
-      if (link.getAttribute("href").includes(currentPage)) {
-        link.parentElement.classList.add("active"); 
-      }
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentPage = window.location.pathname.split('/').pop(); 
+      const sidebarLinks = document.querySelectorAll("#sidebar a"); 
+      
+      sidebarLinks.forEach(link => {
+        if (link.getAttribute("href").includes(currentPage)) {
+          link.parentElement.classList.add("active"); 
+        }
+      });
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>

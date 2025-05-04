@@ -117,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Update your password!</h2> 
   </div>
   <!-- Email & Pass Box -->
-  <div class="container"><br><br><br><br><br><br>
+  <div class="container">
     <form action="resetPass.php" method="POST">
         <div class="input-group"> 
             <div class="input-field">
@@ -127,7 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Password Field with Criteria -->
             <div id="password-criteria">
-              
                 <div class="input-field">
                     <input type="password" name="new_password" id="new_password" placeholder="New Password" required />
                     <span class="eye-icon" id="toggleNewPassword">
@@ -135,12 +134,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <i class="fas fa-eye-slash" id="eyeClosedNew" style="display: none;"></i>
                     </span>
                 </div>
-                <p>Criteria</p>
-                <p class="criteria-item" id="length-criteria">🔴 At least 8 characters</p>
-                <p class="criteria-item" id="uppercase-criteria">🔴 At least one uppercase letter</p>
-                <p class="criteria-item" id="lowercase-criteria">🔴 At least one lowercase letter</p>
-                <p class="criteria-item" id="number-criteria">🔴 At least one number</p>
-                <p class="criteria-item" id="special-criteria">🔴 At least one special character (@$!%*?&)</p>
+                <div id="password-criteria-container" style="display: none;">
+                    <p>Criteria</p>
+                    <p class="criteria-item" id="length-criteria">🔴 At least 8 characters</p>
+                    <p class="criteria-item" id="uppercase-criteria">🔴 At least one uppercase letter</p>
+                    <p class="criteria-item" id="lowercase-criteria">🔴 At least one lowercase letter</p>
+                    <p class="criteria-item" id="number-criteria">🔴 At least one number</p>
+                    <p class="criteria-item" id="special-criteria">🔴 At least one special character (@$!%*?&)</p>
+                </div>
+
             </div>
 
             <!-- Confirm Password -->
@@ -249,6 +251,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             element.classList.remove("valid-criteria");
         }
     }
+});
+document.addEventListener("DOMContentLoaded", function () {
+  const passwordField = document.getElementById("new_password");
+  const criteriaContainer = document.getElementById("password-criteria-container");
+
+  // Show criteria when focused
+  passwordField.addEventListener("focus", () => {
+    criteriaContainer.style.display = "block";
+  });
+
+  // Hide criteria when unfocused
+  passwordField.addEventListener("blur", () => {
+    setTimeout(() => {
+      criteriaContainer.style.display = "none";
+    }, 200); // Delay to allow clicking inside container if needed
+  });
 });
 
 </script>
