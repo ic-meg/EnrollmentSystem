@@ -1,0 +1,135 @@
+:root {
+    --color: #000;
+    --background: #2DB2FF;
+    --txt-color: #B6B1B1;
+    --secondary-color: white;
+    --line-color:#777777;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+  
+  .main--container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .payment-section,
+  .summary-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-section {
+    flex: 2;
+    margin-right: 20px;
+  }
+  
+  .summary-section {
+    flex: 1;
+    background: #007bff;
+    color: white;
+  }
+  
+  .payment-section h1 {
+    margin-bottom: 20px;
+  }
+  
+  .payment-method h2,
+  .card-payment h2 {
+    color: #0056b3;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .methods {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .methods img {
+    height: 40px;
+  }
+  
+  .methods span {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .card-icons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .card-icons img {
+    height: 30px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 15px;
+  }
+  
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .summary-section h2 {
+    margin-bottom: 20px;
+  }
+  
+  .transaction-type {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .transaction-type img {
+    height: 25px;
+  }
+  
+  hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid white;
+  }
+  
+  button.confirm-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #007bff;
+    background: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button.confirm-btn:hover {
+    background: #f1f1f1;
+  }
+  

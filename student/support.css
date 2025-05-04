@@ -1,0 +1,99 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4ff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container Layout */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* FAQ Section */
+.faq {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.faq h2 {
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+}
+
+.faq-item h3 {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.faq-item p {
+    margin: 5px 0 0;
+    display: none; /* Hidden by default */
+}
+
+/* Contact Form Section */
+.contact-form {
+    background: linear-gradient(to left, #28678B, #45B2F1);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form h2 {
+    margin-bottom: 20px;
+}
+
+.contact-form form {
+    display: grid;
+    grid-gap: 10px;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.contact-form button {
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* FAQ Expand/Collapse */
+.faq-item h3:after {
+    content: '▼';
+    float: right;
+    font-size: 12px;
+}
+
+.faq-item.open h3:after {
+    content: '▲';
+}
+
+.faq-item.open p {
+    display: block;
+}
+
+.faq-answer {
+    display: none;
+    transition: all 0.3s ease-in-out;
+}
