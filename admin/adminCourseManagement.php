@@ -224,10 +224,8 @@ $conn->close();
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <p><strong>Course Name:</strong> <?php echo htmlspecialchars($course['CourseName']); ?></p>
-                                                        <p><strong>Link Subject:</strong> <?php echo htmlspecialchars($course['LinkSubject']); ?></p>
-                                                        <p><strong>Total Units:</strong> <?php echo htmlspecialchars($course['TotalUnits']); ?></p>
-                                                        <p><strong>Description:</strong> <?php echo htmlspecialchars($course['description']); ?></p>
+                                                        <h5 class="mb-1"><b><?php echo htmlspecialchars($course['CourseName']); ?></b></h5>
+                                                        <p><?php echo htmlspecialchars($course['description']); ?></p>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -254,8 +252,6 @@ $conn->close();
                                                                 <input type="text" class="form-control" name="link_subject" value="<?php echo htmlspecialchars($course['LinkSubject']); ?>" required>
                                                                 <label class="col-form-label">Total Units:</label>
                                                                 <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
-                                                                <label class="col-form-label">Description:</label>
-                                                                <textarea class="form-control" name="description"><?php echo htmlspecialchars($course['description']); ?></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
