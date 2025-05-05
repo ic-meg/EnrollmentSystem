@@ -118,6 +118,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendCode'])) {
       margin: 0; 
       padding: 0; 
     }
+    .continue-button {
+      background-color: #00008B;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: background-color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .continue-button:hover {
+      background-color: #0000CD;
+    }
+
+
+    .continue-button:enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    .continue-button:disabled:hover {
+      background-color: #00008B;
+      cursor: not-allowed;
+    }
+
   </style>
 </head>
 
@@ -140,13 +165,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sendCode'])) {
   <div class="container">
     <form method="POST" action="">
       <div class="input-group"> 
-        <input type="email" name="EmailAddress" placeholder="Email" required />
+        <input type="email" name="EmailAddress" id="email" placeholder="Email" required />
         <img class="icon" src="./adminPic/people-10.png" alt="People Icon" />
       </div> 
-    <button type="submit" name="sendCode" style="background-color: #00008B; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;" onmouseover="this.style.backgroundColor='#0000CD'" onmouseout="this.style.backgroundColor='#00008B'">
+    <button  type="submit" name="sendCode" id="continueBtn"   class="continue-button"  disabled>
         Continue 
     </button> <br><br>
     <?php echo $message; ?> 
   </div>
+
+
+<script>
+    const emailInput = document.getElementById('email');
+    const continueBtn = document.getElementById('continueBtn');
+
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value;
+
+      
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!isValidEmail) {
+        continueBtn.disabled = true;
+        return;
+      }
+
+     
+      fetch('check_email.php?email=' + encodeURIComponent(email))
+        .then(response => response.json())
+        .then(data => {
+          continueBtn.disabled = !data.exists;
+        })
+        .catch(() => {
+          continueBtn.disabled = true;
+        });
+    });
+</script>
+
 </body>
+
 </html>

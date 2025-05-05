@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 15, 2025 at 05:21 AM
+-- Generation Time: May 05, 2025 at 03:06 PM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 5.6.30
 
@@ -35,15 +35,18 @@ CREATE TABLE `adminaccount` (
   `PhoneNumber` varchar(15) NOT NULL,
   `Role` varchar(255) NOT NULL,
   `TempPassword` text NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `profile_pic` varchar(255) NOT NULL,
+  `otp` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `adminaccount`
 --
 
-INSERT INTO `adminaccount` (`admin_id`, `FirstName`, `LastName`, `email`, `username`, `PhoneNumber`, `Role`, `TempPassword`, `password`) VALUES
-(10001, 'Shanley', 'Galo', 'shanleygalo0000@gmail.com', 'ley', '099999999', 'Admin', '', '$2y$10$qpr8C6jv4uX7xm4e6r3c/.CW/a3/dIcbA3nv/GTHp1oJ3gd6fVEgm');
+INSERT INTO `adminaccount` (`admin_id`, `FirstName`, `LastName`, `email`, `username`, `PhoneNumber`, `Role`, `TempPassword`, `password`, `profile_pic`, `otp`) VALUES
+(10001, 'Shanley', 'Galo', 'shanleygalo0000@gmail.com', 'ley', '099999999', 'Admin', '', '$2y$10$qpr8C6jv4uX7xm4e6r3c/.CW/a3/dIcbA3nv/GTHp1oJ3gd6fVEgm', '', 0),
+(10002, 'Meg Angeline', 'Fabian', 'megangeline08@gmail.com', 'meggy', '09478645105', 'Admin', '', '$2y$10$xhWC9xteTY5/FC34RMcGkOMGVAE/TKq/OVJIQFB5Y3wiirkTEdtty', 'adminPic/admin_10002_1746356848.jpg', 412945);
 
 -- --------------------------------------------------------
 
@@ -56,8 +59,18 @@ CREATE TABLE `course` (
   `CourseName` varchar(255) NOT NULL,
   `LinkSubject` varchar(100) NOT NULL,
   `TotalUnits` int(11) NOT NULL,
-  `NumOfStudents` int(11) NOT NULL
+  `NumOfStudents` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `is_archived` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `course`
+--
+
+INSERT INTO `course` (`CourseID`, `CourseName`, `LinkSubject`, `TotalUnits`, `NumOfStudents`, `description`, `is_archived`) VALUES
+(1, 'Bachelor of Science in Information Technology', 'Intro to Programming', 2, 0, 'A Bachelor of Science in Information Technology is a bachelor\'s degree awarded for an undergraduate program in information technology. ', 1),
+(2, 'Bachelor of Science in Nursing', 'Nursing', 2, 0, 'Hello', 1);
 
 -- --------------------------------------------------------
 
@@ -72,15 +85,10 @@ CREATE TABLE `enrollee` (
   `enrollment_type` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `program` varchar(255) NOT NULL,
-  `documents_uploaded` int(11) NOT NULL
+  `documents_uploaded` int(11) NOT NULL,
+  `dateSubmitted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `rejectReason` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
-
---
--- Dumping data for table `enrollee`
---
-
-INSERT INTO `enrollee` (`EnrolleeID`, `user_id`, `Status`, `enrollment_type`, `name`, `program`, `documents_uploaded`) VALUES
-(1, 1, 'Pending', 'Freshmen', 'Meg Angeline Fabian', 'bsit', 3);
 
 -- --------------------------------------------------------
 
@@ -108,13 +116,6 @@ CREATE TABLE `freshmen` (
   `Form138` text NOT NULL,
   `Picture` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
-
---
--- Dumping data for table `freshmen`
---
-
-INSERT INTO `freshmen` (`FreshID`, `user_id`, `FirstName`, `MiddleInitial`, `LastName`, `Suffix`, `DateOfBirth`, `Sex`, `Phone`, `Email`, `StreetAddress`, `City`, `Province`, `ZipCode`, `Program`, `Form137`, `Form138`, `Picture`) VALUES
-(1, 1, 'Meg Angeline', '', 'Fabian', '', '2003-12-09', 'female', '09478645105', 'megangeline08@gmail.com', 'Blk 2', 'Imus', 'Cavite', '4103', 'bsit', '67cd73ebcf91c-jen.jpg', '67cd73ebcfae4-HCI -Lab 1 Format.pdf', '67cd73ebcfd22-jen.jpg');
 
 -- --------------------------------------------------------
 
@@ -226,7 +227,7 @@ CREATE TABLE `subject` (
 CREATE TABLE `supportpage` (
   `SupportID` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `admin_id` int(11) NOT NULL,
+  `admin_id` int(11) DEFAULT NULL,
   `Name` varchar(255) NOT NULL,
   `Email` varchar(255) NOT NULL,
   `Topic` varchar(255) NOT NULL,
@@ -281,8 +282,8 @@ CREATE TABLE `useraccount` (
 --
 
 INSERT INTO `useraccount` (`user_id`, `email`, `username`, `password`, `OTP`) VALUES
-(1, 'megangeline08@gmail.com', 'meg', '$2y$10$QCzQ3GYcryz3E3FFVMTTLecNMUsH96TmZCy9SMBCnKMH7CvVAwowy', 476364),
-(2, 'gil@gmail.com', 'gil', '$2y$10$SdIBe.mxLpERmA6CQSA2i.aveNaTvece4LeItVxBCmKzIPxQIQhgy', 0);
+(2, 'gil@gmail.com', 'gil', '$2y$10$SdIBe.mxLpERmA6CQSA2i.aveNaTvece4LeItVxBCmKzIPxQIQhgy', 0),
+(3, 'fabian.megangeline2003@gmail.com', 'meg', '$2y$10$Pb.BNaYCxA70dEDyvz7rDeegNodVUESOXKB5yqPREgmzO5nsk1UdW', 592874);
 
 --
 -- Indexes for dumped tables
@@ -353,7 +354,9 @@ ALTER TABLE `subject`
 -- Indexes for table `supportpage`
 --
 ALTER TABLE `supportpage`
-  ADD PRIMARY KEY (`SupportID`);
+  ADD PRIMARY KEY (`SupportID`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `admin_id` (`admin_id`);
 
 --
 -- Indexes for table `transferee`
@@ -376,22 +379,22 @@ ALTER TABLE `useraccount`
 -- AUTO_INCREMENT for table `adminaccount`
 --
 ALTER TABLE `adminaccount`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10002;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10003;
 --
 -- AUTO_INCREMENT for table `course`
 --
 ALTER TABLE `course`
-  MODIFY `CourseID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `CourseID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `enrollee`
 --
 ALTER TABLE `enrollee`
-  MODIFY `EnrolleeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `EnrolleeID` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `freshmen`
 --
 ALTER TABLE `freshmen`
-  MODIFY `FreshID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `FreshID` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `nonsequential`
 --
@@ -431,7 +434,7 @@ ALTER TABLE `transferee`
 -- AUTO_INCREMENT for table `useraccount`
 --
 ALTER TABLE `useraccount`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- Constraints for dumped tables
 --
@@ -465,6 +468,13 @@ ALTER TABLE `paymentinfo`
 --
 ALTER TABLE `returnee`
   ADD CONSTRAINT `returnee_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `useraccount` (`user_id`);
+
+--
+-- Constraints for table `supportpage`
+--
+ALTER TABLE `supportpage`
+  ADD CONSTRAINT `supportpage_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `useraccount` (`user_id`),
+  ADD CONSTRAINT `supportpage_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `adminaccount` (`admin_id`);
 
 --
 -- Constraints for table `transferee`
