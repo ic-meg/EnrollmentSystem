@@ -174,9 +174,12 @@ if (isset($_POST["submitReg"])) {
                         <div class="Form-regular" style="background-color: #f9f9f9;">
                         <p class="description">Regular Application</p>
                         <p class="description--1">
-                            Please complete the application form below to apply as a regular student at our institution. Thank you!
+                            Please complete the application form below to apply as a regular student at our institution. Thank you! <br>
+                           
                         </p>
-                        
+                        <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
+                            <strong style="color: red;">*</strong> indicates required fields.
+                        </p>
                         <form method="POST" enctype="multipart/form-data">
                             <div class="form-section">
                             <!-- Name Section -->
@@ -276,20 +279,24 @@ if (isset($_POST["submitReg"])) {
                                 <div class="form-group">
                                     <label for="form-137">*Form 137</label>
                                     <input type="file" id="form-137" name="form-137">
+                                    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label for="form-138">*Form 138</label>
                                     <input type="file" id="form-138" name="form-138">
+                                    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                                 </div>
                                 <div class="form-group">
                                     <label for="picture">*1x1 Picture</label>
                                     <input type="file" id="picture" name="picture">
+                                    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG | Max size: 5MB</p>
                                 </div>
+
                             </div>
 
                             <!-- Submit Section -->
                             <!-- <div class="form-actions"> -->
-                           <button type="submit" name="submitReg">Submit</a></button>
+                           <button type="submit" name="submitReg" class="button-submit">Submit</a></button>
                             </div>
                         </form>
                     </div>

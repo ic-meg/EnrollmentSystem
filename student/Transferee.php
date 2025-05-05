@@ -166,7 +166,9 @@ if (isset($_POST["submitReg"])) {
           <p class="description--1">
             Please complete the application form below to apply as a transferee at our institution. Ensure that you attach all required documents.
           </p>
-
+          <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
+            <strong style="color: red;">*</strong> indicates required fields.
+          </p>
           <form method="POST" action="Transferee.php" enctype="multipart/form-data">
 
             <div class="form-section">
@@ -279,18 +281,20 @@ if (isset($_POST["submitReg"])) {
 
                 </div>
               </div>
+<!-- Required Documents -->
+<div class="form-row">
+  <div class="form-group">
+    <label for="tor">*Transcript of Records (TOR)</label>
+    <input type="file" id="tor" name="tor" required>
+    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+  </div>
+  <div class="form-group">
+    <label for="good-moral">*Certificate of Good Moral</label>
+    <input type="file" id="good-moral" name="good-moral" required>
+    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+  </div>
+</div>
 
-              <!-- Required Documents -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="tor">*Transcript of Records (TOR)</label>
-                  <input type="file" id="tor" name="tor" required>
-                </div>
-                <div class="form-group">
-                  <label for="good-moral">*Certificate of Good Moral</label>
-                  <input type="file" id="good-moral" name="good-moral" required>
-                </div>
-              </div>
 
               <!-- Submit Section -->
               <div class="form-actions">

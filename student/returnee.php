@@ -40,7 +40,9 @@
           <p class="description--1">
             Please complete the application form below to apply as a returnee student. Ensure that you attach all required documents.
           </p>
-
+          <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
+            <strong style="color: red;">*</strong> indicates required fields.
+          </p>
           <form>
             <div class="form-section">
               <!-- Name Section -->
@@ -98,22 +100,26 @@
                   <input type="date" id="expected-graduation" name="expected-graduation">
                 </div>
               </div>
-
+              
               <!-- Required Documents -->
               <div class="form-row">
                 <div class="form-group">
                   <label for="transcript">Transcript of Records</label>
                   <input type="file" id="transcript" name="transcript">
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                 </div>
                 <div class="form-group">
                   <label for="clearance">Updated Medical Certificate</label>
                   <input type="file" id="clearance" name="clearance">
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                 </div>
                 <div class="form-group">
                   <label for="id-photo">ID Photo</label>
                   <input type="file" id="id-photo" name="id-photo">
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                 </div>
               </div>
+
 
               <!-- Submit Section -->
               <div class="form-actions">

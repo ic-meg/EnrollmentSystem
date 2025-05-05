@@ -40,7 +40,9 @@ include "sessioncheck.php";
           <p class="description--1">
             Please complete the application form below to apply as a non-sequential student at our institution. Ensure that you attach all required documents.
           </p>
-
+          <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
+              <strong style="color: red;">*</strong> indicates required fields.
+           </p>
           <form>
             <div class="form-section">
               <!-- Name Section -->
@@ -134,14 +136,17 @@ include "sessioncheck.php";
               <!-- Required Documents -->
               <div class="form-row">
                 <div class="form-group">
-                  <label for="cert-moral">Certificate of Good Moral</label>
-                  <input type="file" id="cert-moral" name="cert-moral">
+                  <label for="cert-moral">*Certificate of Good Moral</label>
+                  <input type="file" id="cert-moral" name="cert-moral" required>
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                 </div>
                 <div class="form-group">
-                  <label for="other-docs">Transcript of Records (TOR)</label>
-                  <input type="file" id="other-docs" name="other-docs">
+                  <label for="other-docs">*Transcript of Records (TOR)</label>
+                  <input type="file" id="other-docs" name="other-docs" required>
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                 </div>
               </div>
+
 
               <div class="form-actions">
                 <button type="submit">Submit</button>

@@ -191,7 +191,7 @@
     color: #999;
   }
   
-  button {
+  .button-submit {
     margin-top: 20px;
     padding: 12px 24px;
     background: var(--primary);
@@ -203,11 +203,10 @@
     transition: background 0.3s ease;
   }
   
-  button:hover {
+  .button-submit:hover {
     background: #2298e0;
   }
-  
-  /* Responsive */
+    /* Responsive */
   @media (max-width: 768px) {
     .content-wrapper {
       flex-direction: column;
