@@ -136,115 +136,10 @@ if (isset($_POST["submitReg"])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="enrollment-regular.css">
   <title>Oxford Academe | Enrollment Form - Transferee</title>
 </head>
-<style>
-  :root {
-    --color: #000;
-    --background: #2DB2FF;
-    --txt-color: #B6B1B1;
-    --secondary-color: white;
-    --line-color:#777777;
-  }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box; 
-    font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-  .content-wrapper {
-    display: flex; /* Align sidebar and form horizontally */
-    justify-content: space-between; /* Distribute space evenly */
-  }
-
-  .header {
-    text-align: center;
-    padding: 20px;
-  }
-
-  .side--container {
-    background: #DADADA;
-    display: flex;
-    flex-direction: column;
-    width: 20%;
-    margin-top: 50px;
-    padding-left: 20px;
-  }
-
-  .side--container .regular p {
-    margin: 10px 10px;
-    padding: 10px;
-    background: var(--secondary-color);
-    color: var(--color);
-    text-align: center;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-
-  .side--container .regular p:hover {
-    background: var(--line-color);
-    color: var(--secondary-color);
-  }
-
-  .Form-regular {
-    margin-top: 50px;
-    flex: 2;
-    padding: 20px;
-    background-color: var(--secondary-color);
-    border-radius: 8px;
-    overflow-y: auto;
-  }
-
-  .form-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-
-  .form-group {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--line-color);
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-
-  button {    
-    padding: 10px 20px;
-    background: var(--background);
-    color: var(--secondary-color);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-
-  button:hover {
-    background: #005a9e;
-  }
-
-  @media (max-width: 768px) {
-    .content-wrapper {
-        flex-direction: column;
-    }
-
-    .side--container {
-        width: 100%;
-    }
-
-    .Form-regular {
-        width: 100%;
-    }
-  }
-</style>
 <body>
   <?php include "stud-sidebar.php"; ?>
 
@@ -259,9 +154,9 @@ if (isset($_POST["submitReg"])) {
         <div class="side--container">
           <div class="regular">
             <a href="enrollment-regular.php"><p>Freshmen</p></a>
-            <a href="transferee.php"><p>Transferee</p></a>
+            <p class="<?= basename($_SERVER['PHP_SELF']) == 'transferee.php' ? 'active' : '' ?>">Transferee</p>
             <a href="returnee.php"><p>Returnee</p></a>
-            <a href="non-sequential.php"><p>Non-sequential Students</p></a>
+            <a href="non-sequential.php"><p>Non-sequential </p></a>
           </div>
         </div>
 
