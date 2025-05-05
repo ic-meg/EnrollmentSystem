@@ -1,3 +1,17 @@
+<?php 
+  include '../dbcon.php';
+  include 'sessioncheck.php';
+
+  $user_id = $_SESSION['user_id'];
+  
+  $stmt = $conn->prepare("SELECT * FROM studentprofile WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  
+  $user = $result->fetch_assoc();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,7 +90,7 @@
 
             <!-- User Details -->
             <div class="user-details">
-              <p class="name" style="margin: 0;">Giuliani Calais</p>
+              <p class="name" style="margin: 0;"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></p>
             </div>
           </a>
       </li>

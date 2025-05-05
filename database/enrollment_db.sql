@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 05, 2025 at 03:06 PM
+-- Generation Time: May 05, 2025 at 05:33 PM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 5.6.30
 
@@ -45,7 +45,7 @@ CREATE TABLE `adminaccount` (
 --
 
 INSERT INTO `adminaccount` (`admin_id`, `FirstName`, `LastName`, `email`, `username`, `PhoneNumber`, `Role`, `TempPassword`, `password`, `profile_pic`, `otp`) VALUES
-(10001, 'Shanley', 'Galo', 'shanleygalo0000@gmail.com', 'ley', '099999999', 'Admin', '', '$2y$10$qpr8C6jv4uX7xm4e6r3c/.CW/a3/dIcbA3nv/GTHp1oJ3gd6fVEgm', '', 0),
+(10001, 'Shanley', 'Galo', 'shanleygalo0000@gmail.com', 'ley', '09123456789', 'Admin', '', '$2y$10$qpr8C6jv4uX7xm4e6r3c/.CW/a3/dIcbA3nv/GTHp1oJ3gd6fVEgm', 'adminPic/admin_10001_1746455822.jpg', 0),
 (10002, 'Meg Angeline', 'Fabian', 'megangeline08@gmail.com', 'meggy', '09478645105', 'Admin', '', '$2y$10$xhWC9xteTY5/FC34RMcGkOMGVAE/TKq/OVJIQFB5Y3wiirkTEdtty', 'adminPic/admin_10002_1746356848.jpg', 412945);
 
 -- --------------------------------------------------------
@@ -205,6 +205,35 @@ CREATE TABLE `schedule` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `studentprofile`
+--
+
+CREATE TABLE `studentprofile` (
+  `profile_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `birthdate` date NOT NULL,
+  `birthplace` varchar(100) NOT NULL,
+  `age` int(11) NOT NULL,
+  `phone` varchar(11) NOT NULL,
+  `guardian_name` varchar(100) NOT NULL,
+  `guardian_contact` varchar(11) NOT NULL,
+  `relationship` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `studentprofile`
+--
+
+INSERT INTO `studentprofile` (`profile_id`, `user_id`, `first_name`, `middle_name`, `last_name`, `birthdate`, `birthplace`, `age`, `phone`, `guardian_name`, `guardian_contact`, `relationship`, `created_at`) VALUES
+(2, 2, 'Meg Angeline', '', 'Fabian', '2003-12-08', 'Manila', 21, '09610387175', 'Julieta', '09610387174', 'Grandma ', '2025-05-05 15:32:40');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `subject`
 --
 
@@ -345,6 +374,13 @@ ALTER TABLE `schedule`
   ADD KEY `SubID` (`SubID`);
 
 --
+-- Indexes for table `studentprofile`
+--
+ALTER TABLE `studentprofile`
+  ADD PRIMARY KEY (`profile_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `subject`
 --
 ALTER TABLE `subject`
@@ -416,6 +452,11 @@ ALTER TABLE `returnee`
 ALTER TABLE `schedule`
   MODIFY `SchedID` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `studentprofile`
+--
+ALTER TABLE `studentprofile`
+  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
 -- AUTO_INCREMENT for table `subject`
 --
 ALTER TABLE `subject`
@@ -468,6 +509,12 @@ ALTER TABLE `paymentinfo`
 --
 ALTER TABLE `returnee`
   ADD CONSTRAINT `returnee_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `useraccount` (`user_id`);
+
+--
+-- Constraints for table `studentprofile`
+--
+ALTER TABLE `studentprofile`
+  ADD CONSTRAINT `studentprofile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `useraccount` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `supportpage`

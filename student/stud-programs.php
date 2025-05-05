@@ -105,7 +105,6 @@ body {
 
 /* Description Panel */
 
-}
 
 aside h2 {
   font-size: 20px;
@@ -294,10 +293,11 @@ aside {
             <p id="description-text">
                 Click on a program to see details here.
             </p>
-            <div class="apply-container">
-                <button class="apply-button">
-                    <a href="enrollment-regular.php" style="color: white;">Apply Now</a>
-                </button>
+            <div class="apply-container" >
+                <a href="enrollment-regular.php" id="applyLink">
+                  <button class="apply-button" id="applyButton" disabled>Apply Now</button>
+                </a>
+
             </div>
         </aside>
     </div>
@@ -338,23 +338,29 @@ aside {
     document.querySelectorAll('.program-item').forEach(el => el.classList.remove('active'));
     event.currentTarget.classList.add('active');
     }
+
     document.addEventListener("DOMContentLoaded", function () {
     const programCells = document.querySelectorAll(".program-table td");
-    const descriptionText = document.getElementById("description-text");
     const descriptionTitle = document.getElementById("description-title");
+    const descriptionText = document.getElementById("description-text");
+    const applyButton = document.getElementById("applyButton");
+    const applyLink = document.getElementById("applyLink");
 
-    programCells.forEach(cell => {
-        cell.addEventListener("click", function () {
-            const description = cell.getAttribute("data-description");
-            const title = cell.querySelector(".program-name")?.textContent || "Description";
+        programCells.forEach(cell => {
+            cell.addEventListener("click", function () {
+                const description = cell.getAttribute("data-description");
+                const programName = cell.querySelector(".program-name")?.textContent || "Description";
 
-            // Update title and description
-            descriptionTitle.textContent = title;
-            descriptionText.textContent = description;
+      
+                descriptionTitle.textContent = programName;
+                descriptionText.textContent = description;
+
+           
+                applyButton.disabled = false;
+                applyLink.href = `enrollment-regular.php?program=${encodeURIComponent(programName)}`;
             });
         });
     });
-
 </script>
       
     </div>   

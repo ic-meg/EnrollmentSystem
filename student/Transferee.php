@@ -1,134 +1,159 @@
 <?php
-include "../dbcon.php";
-include "sessioncheck.php";
+    include "../dbcon.php";
+    include "sessioncheck.php";
 
-if (isset($_POST["submitReg"])) {
-    $user_id = $_SESSION['user_id']; 
-    $firstName = $_POST["first-name"];
-    $middleInitial = isset($_POST["middle-initial"]) ? $_POST["middle-initial"] : null;
-    $lastName = $_POST["last-name"];
-    $dob = $_POST["dob"];
-    $sex = $_POST["sex"];
-    $phone = $_POST["contact-number"];
-    $email = $_POST["email"];
-    $prevSchool = $_POST["prev-school"];
-    $prevProgram = $_POST["prev-program"];
-    $intendedCourse = $_POST["intended-course"];
-    $guardianName = $_POST["guardian-name"];
-    $guardianContact = $_POST["guardian-contact"];
+    $user_id = $_SESSION['user_id'];
 
-    $fullName = $firstName . " " . $lastName;
-    $status = "Pending";  
-    $enrollmentType = "Transferee";  
+    $profile = null;
 
-    // File Upload Directory
-    $uploadDir = "uploads/";
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    $stmt1 = $conn->prepare("SELECT * FROM studentprofile WHERE user_id = ?");
+    $stmt1->bind_param("i", $user_id);
+    $stmt1->execute();
+    $result1 = $stmt1->get_result();
+    
+    if ($result1 && $result1->num_rows > 0) {
+        $profile = $result1->fetch_assoc();
     }
+    $stmt1->close(); 
+    
+    $email = null;
+    $stmt2 = $conn->prepare("SELECT email FROM useraccount WHERE user_id = ?");
+    $stmt2->bind_param("i", $user_id);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
 
-    // Function to handle file uploads
-    function uploadFile($fileInput, $uploadDir) {
-        if (!isset($_FILES[$fileInput]) || $_FILES[$fileInput]["error"] == UPLOAD_ERR_NO_FILE) {
-            return null; 
-        }
-
-        $fileName = $_FILES[$fileInput]["name"];
-        $fileTmp = $_FILES[$fileInput]["tmp_name"];
-        $fileSize = $_FILES[$fileInput]["size"];
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-        $allowedTypes = ["jpg", "jpeg", "png", "pdf"];
-        if (!in_array($fileExt, $allowedTypes) || $fileSize > 5 * 1024 * 1024) {
-            return null; 
-        }
-
-        $newFileName = uniqid() . "-" . basename($fileName);
-        $targetFilePath = $uploadDir . $newFileName;
-
-        if (move_uploaded_file($fileTmp, $targetFilePath)) {
-            return $newFileName;
-        }
-        return null;
+    if ($result2 && $result2->num_rows > 0) {
+        $email = $result2->fetch_assoc()['email'];
     }
+    $stmt2->close();
 
-    // Upload required documents
-    $tor = uploadFile("tor", $uploadDir);
-    $goodMoral = uploadFile("good-moral", $uploadDir);
+    if (isset($_POST["submitReg"])) {
+        $user_id = $_SESSION['user_id']; 
+        $firstName = $_POST["first-name"];
+        $middleInitial = isset($_POST["middle-initial"]) ? $_POST["middle-initial"] : null;
+        $lastName = $_POST["last-name"];
+        $dob = $_POST["dob"];
+        $sex = $_POST["sex"];
+        $phone = $_POST["contact-number"];
+        $email = $_POST["email"];
+        $prevSchool = $_POST["prev-school"];
+        $prevProgram = $_POST["prev-program"];
+        $intendedCourse = $_POST["intended-course"];
+        $guardianName = $_POST["guardian-name"];
+        $guardianContact = $_POST["guardian-contact"];
 
-    if (!$tor || !$goodMoral) {
-        echo "<script>alert('File upload failed. Please upload valid files (JPG, PNG, PDF, Max 5MB).');</script>";
-    } else {
-        $conn->begin_transaction();
+        $fullName = $firstName . " " . $lastName;
+        $status = "Pending";  
+        $enrollmentType = "Transferee";  
 
-        try {
-            // Insert into transferee table
-            $stmt1 = $conn->prepare("INSERT INTO transferee (user_id, FirstName, MiddleInitial, LastName, DateOfBirth, Sex, ContactNum, Email, PreviousSchool, PreviousProgram, IntendedCourse, GuardiansName, GuardiansContact, TOR, GoodMoral) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            
-            if (!$stmt1) {
-                die("SQL Error (transferee): " . $conn->error); // Print MySQL error
+        // File Upload Directory
+        $uploadDir = "uploads/";
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // Function to handle file uploads
+        function uploadFile($fileInput, $uploadDir) {
+            if (!isset($_FILES[$fileInput]) || $_FILES[$fileInput]["error"] == UPLOAD_ERR_NO_FILE) {
+                return null; 
             }
-            
 
-            $stmt1->bind_param("issssssssssssss", 
-                $user_id, 
-                $firstName, 
-                $middleInitial, 
-                $lastName, 
-                $dob, 
-                $sex, 
-                $phone, 
-                $email, 
-                $prevSchool, 
-                $prevProgram, 
-                $intendedCourse, 
-                $guardianName, 
-                $guardianContact, 
-                $tor, 
-                $goodMoral
-            );
+            $fileName = $_FILES[$fileInput]["name"];
+            $fileTmp = $_FILES[$fileInput]["tmp_name"];
+            $fileSize = $_FILES[$fileInput]["size"];
+            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-            $documents_uploaded = 0;
-            if ($tor) $documents_uploaded++;
-            if ($goodMoral) $documents_uploaded++;
+            $allowedTypes = ["jpg", "jpeg", "png", "pdf"];
+            if (!in_array($fileExt, $allowedTypes) || $fileSize > 5 * 1024 * 1024) {
+                return null; 
+            }
 
-            if ($stmt1->execute()) {
-                // Insert into enrollee table
-                $stmt2 = $conn->prepare("INSERT INTO enrollee (user_id, name, Status, enrollment_type, program, documents_uploaded) 
-                VALUES (?, ?, ?, ?, ?, ?)");
+            $newFileName = uniqid() . "-" . basename($fileName);
+            $targetFilePath = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($fileTmp, $targetFilePath)) {
+                return $newFileName;
+            }
+            return null;
+        }
+
+        // Upload required documents
+        $tor = uploadFile("tor", $uploadDir);
+        $goodMoral = uploadFile("good-moral", $uploadDir);
+
+        if (!$tor || !$goodMoral) {
+            echo "<script>alert('File upload failed. Please upload valid files (JPG, PNG, PDF, Max 5MB).');</script>";
+        } else {
+            $conn->begin_transaction();
+
+            try {
+                // Insert into transferee table
+                $stmt1 = $conn->prepare("INSERT INTO transferee (user_id, FirstName, MiddleInitial, LastName, DateOfBirth, Sex, ContactNum, Email, PreviousSchool, PreviousProgram, IntendedCourse, GuardiansName, GuardiansContact, TOR, GoodMoral) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 
-                if (!$stmt2) {
-                    die("SQL Error (enrollee): " . $conn->error); // Print MySQL error
+                if (!$stmt1) {
+                    die("SQL Error (transferee): " . $conn->error); // Print MySQL error
                 }
                 
-                $stmt2->bind_param("issssi", 
+
+                $stmt1->bind_param("issssssssssssss", 
                     $user_id, 
-                    $fullName, 
-                    $status, 
-                    $enrollmentType, 
+                    $firstName, 
+                    $middleInitial, 
+                    $lastName, 
+                    $dob, 
+                    $sex, 
+                    $phone, 
+                    $email, 
+                    $prevSchool, 
+                    $prevProgram, 
                     $intendedCourse, 
-                    $documents_uploaded
+                    $guardianName, 
+                    $guardianContact, 
+                    $tor, 
+                    $goodMoral
                 );
 
-                if ($stmt2->execute()) {
-                    $conn->commit();
-                    echo "<script>alert('Your application has been successfully submitted. Please wait for further updates.'); window.location.href='studConfirmApplication.php';</script>";
-                } else {
-                    throw new Exception("Failed to insert into enrollee table.");
-                }
-                $stmt2->close();
-            } else {
-                throw new Exception("Failed to insert into transferee table.");
-            }
+                $documents_uploaded = 0;
+                if ($tor) $documents_uploaded++;
+                if ($goodMoral) $documents_uploaded++;
 
-            $stmt1->close();
-        } catch (Exception $e) {
-            $conn->rollback(); 
-            echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
+                if ($stmt1->execute()) {
+                    // Insert into enrollee table
+                    $stmt2 = $conn->prepare("INSERT INTO enrollee (user_id, name, Status, enrollment_type, program, documents_uploaded) 
+                    VALUES (?, ?, ?, ?, ?, ?)");
+                    
+                    if (!$stmt2) {
+                        die("SQL Error (enrollee): " . $conn->error); // Print MySQL error
+                    }
+                    
+                    $stmt2->bind_param("issssi", 
+                        $user_id, 
+                        $fullName, 
+                        $status, 
+                        $enrollmentType, 
+                        $intendedCourse, 
+                        $documents_uploaded
+                    );
+
+                    if ($stmt2->execute()) {
+                        $conn->commit();
+                        echo "<script>alert('Your application has been successfully submitted. Please wait for further updates.'); window.location.href='studConfirmApplication.php';</script>";
+                    } else {
+                        throw new Exception("Failed to insert into enrollee table.");
+                    }
+                    $stmt2->close();
+                } else {
+                    throw new Exception("Failed to insert into transferee table.");
+                }
+
+                $stmt1->close();
+            } catch (Exception $e) {
+                $conn->rollback(); 
+                echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
+            }
         }
     }
-}
 ?>
 
 <!DOCTYPE html>
@@ -176,7 +201,7 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="first-name">*First Name</label>
-                  <input type="text" id="first-name" name="first-name" placeholder="Enter your first name" required>
+                  <input type="text" id="first-name" name="first-name" placeholder="<?php echo htmlspecialchars($profile['first_name']); ?>" disabled required>
                 </div>
                 <div class="form-group">
                   <label for="middle-initial">Middle Initial</label> 
@@ -184,7 +209,7 @@ if (isset($_POST["submitReg"])) {
                 </div>
                 <div class="form-group">
                   <label for="last-name">*Last Name</label>
-                  <input type="text" id="last-name" name="last-name" placeholder="Enter your last name" required>
+                  <input type="text" id="last-name" name="last-name" placeholder="<?php echo htmlspecialchars($profile['last_name']); ?>" disabled require>
                 </div>
               </div>
 
@@ -192,7 +217,7 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                 <label for="contact-number">*Contact Number</label>
-                <input type="text" id="contact-number" name="contact-number" placeholder="Enter your contact number" maxlength="11" required />
+                <input type="text" id="contact-number" name="contact-number" placeholder="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11"  disabled required />
 
                 <script>
                   document.getElementById("contact-number").addEventListener("input", function (e) {
@@ -206,7 +231,7 @@ if (isset($_POST["submitReg"])) {
                 </div>
                 <div class="form-group">
                   <label for="email">*Email Address</label>
-                  <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                  <input type="email" id="email" name="email" placeholder="<?php echo htmlspecialchars($email); ?>" disabled required>
                 </div>
               </div>
 
@@ -214,7 +239,7 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="dob">*Date of Birth</label>
-                  <input type="date" id="dob" name="dob" required>
+                  <input type="date" id="dob" name="dob" value="<?= isset($profile['birthdate']) ? htmlspecialchars($profile['birthdate']) : '' ?>"  disabled require>
                 </div>
                 <div class="form-group">
                   <label for="sex">*Sex</label>
@@ -253,9 +278,9 @@ if (isset($_POST["submitReg"])) {
                                       <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
                                       <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
                                       <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
-                                    <option option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
-                                    <option value="Bachelor of Science in Management">Bachelor of Science in Management</option>
-                                    <option value="Bachelor of Science in Psychology">Bachelor of Science in Psychology</option>
+                                      <option option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
+                                      <option value="Bachelor of Science in Management">Bachelor of Science in Management</option>
+                                      <option value="Bachelor of Science in Psychology">Bachelor of Science in Psychology</option>
                   </select>
                 </div>
               </div>
@@ -264,11 +289,11 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="guardian-name">*Guardian's Name</label>
-                  <input type="text" id="guardian-name" name="guardian-name" placeholder="Enter guardian's name" required>
+                  <input type="text" id="guardian-name" name="guardian-name" placeholder="<?php echo htmlspecialchars($profile['guardian_name']); ?>" disabled required>
                 </div>
                 <div class="form-group">
                 <label for="guardian-contact">*Guardian's Contact</label>
-                <input type="tel" id="guardian-contact" name="guardian-contact" placeholder="Enter guardian's contact number" maxlength="11" required />
+                <input type="tel" id="guardian-contact" name="guardian-contact" placeholder="<?php echo htmlspecialchars($profile['guardian_contact']); ?>" maxlength="11" disabled required />
 
                 <script>
                   document.getElementById("guardian-contact").addEventListener("input", function (e) {
@@ -281,24 +306,23 @@ if (isset($_POST["submitReg"])) {
 
                 </div>
               </div>
-<!-- Required Documents -->
-<div class="form-row">
-  <div class="form-group">
-    <label for="tor">*Transcript of Records (TOR)</label>
-    <input type="file" id="tor" name="tor" required>
-    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
-  </div>
-  <div class="form-group">
-    <label for="good-moral">*Certificate of Good Moral</label>
-    <input type="file" id="good-moral" name="good-moral" required>
-    <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
-  </div>
-</div>
-
+              <!-- Required Documents -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="tor">*Transcript of Records (TOR)</label>
+                  <input type="file" id="tor" name="tor" required>
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+                </div>
+                <div class="form-group">
+                  <label for="good-moral">*Certificate of Good Moral</label>
+                  <input type="file" id="good-moral" name="good-moral" required>
+                  <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+                </div>
+              </div>
 
               <!-- Submit Section -->
               <div class="form-actions">
-                <button type="submit" name="submitReg">Submit</button>
+                <button type="submit" name="submitReg" class="button-submit">Submit</button>
 
               </div>
             </div>

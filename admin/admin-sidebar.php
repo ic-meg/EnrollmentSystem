@@ -8,6 +8,7 @@
   $stmt->bind_param("i", $admin_id);
   $stmt->execute();
   $result = $stmt->get_result();
+  
   $admin = $result->fetch_assoc();
 ?>
 

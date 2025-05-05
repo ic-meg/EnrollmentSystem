@@ -149,7 +149,7 @@ include "sessioncheck.php";
 
 
               <div class="form-actions">
-                <button type="submit">Submit</button>
+                <button type="submit" class="button-submit">Submit</button>
               </div>
             </div>
           </form>
