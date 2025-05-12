@@ -215,7 +215,65 @@ aside {
 
 
 }
+#onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: none;
+}
 
+.onboarding-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.onboarding-tooltip {
+  position: absolute;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  max-width: 300px;
+  z-index: 10000;
+}
+
+.onboarding-tooltip::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 10px 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+#onboarding-next, #onboarding-skip {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#onboarding-next {
+  background-color: #2db2ff;
+  color: white;
+  margin-right: 8px;
+}
+
+#onboarding-skip {
+  background-color: #ccc;
+  color: #333;
+}
 </style>
 <body>
 <?php include "stud-sidebar.php"; ?>
@@ -267,24 +325,7 @@ aside {
                             <p class="program-name">Tourism</p>
                         </td>
                     </tr>
-                    <tr>
-                        <td data-description="The Nursing program combines theory and hands-on clinical practice to prepare students for careers in healthcare. It emphasizes patient care, health assessment, pharmacology, and ethical responsibilities essential to becoming a licensed nurse.">
-                            <img src="studPic/program5.png" alt="Program 5">
-                            <p class="program-name">Nursing</p>
-                        </td>
-                        <td data-description="Law is a rigorous program designed for students interested in the legal profession. It provides a solid foundation in constitutional law, civil and criminal procedures, and legal ethics to prepare for law school or careers in legal services.">
-                            <img src="studPic/program6.png" alt="Program 6">
-                            <p class="program-name">Law</p>
-                        </td>
-                        <td data-description="Criminology delves into the causes and consequences of criminal behavior. Students gain insight into law enforcement, forensic science, corrections, and criminal justice policies, preparing them for careers in policing or investigation.">
-                            <img src="studPic/program7.png" alt="Program 7">
-                            <p class="program-name">Criminology</p>
-                        </td>
-                        <td data-description="Tourism Management develops skills in travel planning, destination marketing, and hospitality operations. The program prepares students to work in global tourism industries with strong customer service and business management foundations.">
-                            <img src="studPic/program8.png" alt="Program 8">
-                            <p class="program-name">Tourism</p>
-                        </td>
-                    </tr>
+
                 </table>
 
                 </div>
@@ -361,10 +402,72 @@ aside {
             });
         });
     });
+ //Guided Overlauuyy
+    document.addEventListener('DOMContentLoaded', () => {
+    const steps = [
+      {
+        selector: '.main--header h3',
+        message: 'Start here by checking all the available programs you can apply for.',
+      },
+      {
+        selector: '.program-table td:first-child',
+        message: 'Click any program icon to view its description.',
+      },
+      {
+        selector: 'aside',
+        message: 'This panel will show you more details about the selected program.',
+      },
+      {
+        selector: '#applyButton',
+        message: 'You need to click a program icon first to enable this button. Then click "Apply Now" to start enrollment.',
+      }
+    ];
+   
+    let currentStep = 0;
+    const tooltip = document.getElementById('onboarding-tooltip');
+    const text = document.getElementById('onboarding-text');
+    const overlay = document.getElementById('onboarding-overlay');
+
+    function showStep(index) {
+      const step = steps[index];
+      const target = document.querySelector(step.selector);
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      tooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
+      tooltip.style.left = `${rect.left + rect.width / 2 + window.scrollX}px`;
+      tooltip.style.transform = 'translateX(-50%)';
+      text.textContent = step.message;
+    }
+
+    document.getElementById('onboarding-next').addEventListener('click', () => {
+      currentStep++;
+      if (currentStep >= steps.length) {
+        overlay.style.display = 'none';
+      } else {
+        showStep(currentStep);
+      }
+    });
+
+    document.getElementById('onboarding-skip').addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+
+    overlay.style.display = 'block';
+    showStep(currentStep);
+  });
 </script>
       
     </div>   
   </main>
 
 </body>
+<div id="onboarding-overlay">
+  <div class="onboarding-backdrop"></div>
+  <div id="onboarding-tooltip" class="onboarding-tooltip">
+    <p id="onboarding-text">Welcome! Let's explore how to apply.</p>
+    <button id="onboarding-skip">Skip</button>
+    <button id="onboarding-next">Next</button>
+  </div>
+</div>
 </html> 

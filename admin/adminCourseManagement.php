@@ -2,6 +2,12 @@
 include "session_check.php";
 include '../dbcon.php';
 
+$subjects = [];
+$subject_query = "SELECT SubjID, SubCode, SubName FROM subject";
+$subject_result = mysqli_query($conn, $subject_query);
+while ($row = mysqli_fetch_assoc($subject_result)) {
+    $subjects[] = $row;
+}
 // Clear success message from URL if present
 if (isset($_GET['success'])) {
     echo '<script>history.replaceState({}, document.title, window.location.pathname);</script>';
@@ -12,12 +18,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_course'])) {
         // Add new course
         $courseName = $_POST['course_name'];
-        $linkSubject = $_POST['link_subject'];
+        $linkSubject = !empty($_POST['link_subject']) ? $_POST['link_subject'] : NULL;
         $totalUnits = $_POST['total_units'];
         $description = $_POST['description'];
         
-        $stmt = $conn->prepare("INSERT INTO course (CourseName, LinkSubject, TotalUnits, Description, is_archived) VALUES (?, ?, ?, ?, FALSE)");
-        $stmt->bind_param("ssis", $courseName, $linkSubject, $totalUnits, $description);
+        $stmt = $conn->prepare("INSERT INTO course (CourseName, TotalUnits, description, is_archived) VALUES ( ?, ?, ?, FALSE)");
+        if ($stmt === false) {
+            die("Error in prepare statement: " . $conn->error);
+        }
+        $stmt->bind_param("sis", $courseName , $totalUnits, $description);
+
         $stmt->execute();
         $stmt->close();
         
@@ -31,7 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $totalUnits = $_POST['total_units'];
         $description = $_POST['description'];
         
-        $stmt = $conn->prepare("UPDATE course SET CourseName = ?, LinkSubject = ?, TotalUnits = ?, Description = ? WHERE CourseID = ?");
+        $stmt = $conn->prepare("UPDATE course SET CourseName = ?, SubjectID = ?, TotalUnits = ?, description = ? WHERE CourseID = ?");
+        if ($stmt === false) {
+            die("Error in prepare statement: " . $conn->error);
+        }
         $stmt->bind_param("ssisi", $courseName, $linkSubject, $totalUnits, $description, $courseID);
         $stmt->execute();
         $stmt->close();
@@ -85,7 +98,7 @@ if ($viewArchived) {
         }
     }
 }
-$conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -129,9 +142,18 @@ $conn->close();
                     <div class="container">
                         <div class="page-title">
                             <h3>Course Management
-                                <button type="button" class="btn btn-sm btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#addModal">
-                                    <i class="fas fa-user-shield"></i> Add New Course
-                                </button>
+                            <div class="btn-group float-end">
+                            <form method="POST" action="import_course.php" enctype="multipart/form-data" class="me-2">
+                                <label class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-file-import"></i> Import
+                                <input type="file" name="import_file" accept=".xlsx,.csv" onchange="this.form.submit()" hidden>
+                                </label>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                                <i class="fas fa-user-shield"></i> Add New Course
+                            </button>
+                            </div>
+
                             </h3>
                             <?php if (isset($_GET['success'])): ?>
                                 <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
@@ -151,8 +173,16 @@ $conn->close();
                                             <div class="mb-3">
                                                 <label class="col-form-label">Course name:</label>
                                                 <input type="text" class="form-control" name="course_name" required>
-                                                <label class="col-form-label">Link Subject:</label>
-                                                <input type="text" class="form-control" name="link_subject" required>
+                                                <!-- <label class="col-form-label">Link Subject:</label>
+                                                <select class="form-control" name="link_subject">
+                                                    <option value="">-- Select Subject --</option>
+                                                    <?php foreach ($subjects as $subject): ?>
+                                                        <option value="<?php echo $subject['SubjID']; ?>">
+                                                            <?php echo htmlspecialchars($subject['SubCode'] . " - " . $subject['SubName']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select> -->
+
                                                 <label class="col-form-label">Units:</label>
                                                 <input type="number" class="form-control" name="total_units" required>
                                                 <label class="col-form-label">Description:</label>
@@ -184,7 +214,20 @@ $conn->close();
                                         <?php foreach ($courses as $course): ?>
                                         <tr class="<?php echo $viewArchived ? 'archived-course' : ''; ?>">
                                             <td><?php echo htmlspecialchars($course['CourseName']); ?></td>
-                                            <td><?php echo htmlspecialchars($course['LinkSubject']); ?></td>
+                                            <td>
+                                            <?php 
+                                                $courseID = $course['CourseID'];
+                                                $subQuery = mysqli_query($conn, "SELECT SubCode FROM subject WHERE CourseID = $courseID");
+                                                
+                                                $subCodes = [];
+                                                while ($sub = mysqli_fetch_assoc($subQuery)) {
+                                                    $subCodes[] = $sub['SubCode'];
+                                                }
+                                                echo implode(", ", $subCodes); 
+                                                
+
+                                            ?>
+                                            </td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['TotalUnits']); ?></td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['NumOfStudents']); ?></td>
                                             <td class="text-center">
@@ -248,9 +291,19 @@ $conn->close();
                                                             <div class="mb-3">
                                                                 <label class="col-form-label">Course Name:</label>
                                                                 <input type="text" class="form-control" name="course_name" value="<?php echo htmlspecialchars($course['CourseName']); ?>" required>
-                                                                <label class="col-form-label">Link Subject:</label>
-                                                                <input type="text" class="form-control" name="link_subject" value="<?php echo htmlspecialchars($course['LinkSubject']); ?>" required>
-                                                                <label class="col-form-label">Total Units:</label>
+                                                                <!-- <label class="col-form-label">Link Subject:</label>
+                                                                <select class="form-control" name="link_subject" >
+                                                                <option value="">-- Select Subject --</option>
+                                                                <?php foreach ($subjects as $subject): ?>
+                                                                    <option value="<?php echo $subject['SubjID']; ?>" 
+                                                                        <?php echo ($course['SubjectID'] == $subject['SubjID']) ? 'selected' : ''; ?>>
+                                                                        <?php echo htmlspecialchars($subject['SubCode'] . " - " . $subject['SubName']); ?>
+                                                                    </option>
+
+                                                                <?php endforeach; ?>
+                                                            </select> -->
+
+                                                            <label class="col-form-label">Total Units:</label>
                                                                 <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
                                                             </div>
                                                         </div>

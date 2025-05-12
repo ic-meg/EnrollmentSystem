@@ -201,7 +201,7 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="first-name">*First Name</label>
-                  <input type="text" id="first-name" name="first-name" placeholder="<?php echo htmlspecialchars($profile['first_name']); ?>" disabled required>
+                  <input type="text" id="first-name" name="first-name" placeholder="<?php echo htmlspecialchars($profile['first_name']); ?>" readonly  required>
                 </div>
                 <div class="form-group">
                   <label for="middle-initial">Middle Initial</label> 
@@ -209,7 +209,7 @@
                 </div>
                 <div class="form-group">
                   <label for="last-name">*Last Name</label>
-                  <input type="text" id="last-name" name="last-name" placeholder="<?php echo htmlspecialchars($profile['last_name']); ?>" disabled require>
+                  <input type="text" id="last-name" name="last-name" placeholder="<?php echo htmlspecialchars($profile['last_name']); ?>" readonly  require>
                 </div>
               </div>
 
@@ -217,7 +217,7 @@
               <div class="form-row">
                 <div class="form-group">
                 <label for="contact-number">*Contact Number</label>
-                <input type="text" id="contact-number" name="contact-number" placeholder="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11"  disabled required />
+                <input type="text" id="contact-number" name="contact-number" placeholder="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11"  readonly  required />
 
                 <script>
                   document.getElementById("contact-number").addEventListener("input", function (e) {
@@ -231,7 +231,7 @@
                 </div>
                 <div class="form-group">
                   <label for="email">*Email Address</label>
-                  <input type="email" id="email" name="email" placeholder="<?php echo htmlspecialchars($email); ?>" disabled required>
+                  <input type="email" id="email" name="email" placeholder="<?php echo htmlspecialchars($email); ?>" readonly  required>
                 </div>
               </div>
 
@@ -239,7 +239,7 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="dob">*Date of Birth</label>
-                  <input type="date" id="dob" name="dob" value="<?= isset($profile['birthdate']) ? htmlspecialchars($profile['birthdate']) : '' ?>"  disabled require>
+                  <input type="date" id="dob" name="dob" value="<?= isset($profile['birthdate']) ? htmlspecialchars($profile['birthdate']) : '' ?>"  readonly  require>
                 </div>
                 <div class="form-group">
                   <label for="sex">*Sex</label>
@@ -289,11 +289,11 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="guardian-name">*Guardian's Name</label>
-                  <input type="text" id="guardian-name" name="guardian-name" placeholder="<?php echo htmlspecialchars($profile['guardian_name']); ?>" disabled required>
+                  <input type="text" id="guardian-name" name="guardian-name" placeholder="<?php echo htmlspecialchars($profile['guardian_name']); ?>" readonly  required>
                 </div>
                 <div class="form-group">
                 <label for="guardian-contact">*Guardian's Contact</label>
-                <input type="tel" id="guardian-contact" name="guardian-contact" placeholder="<?php echo htmlspecialchars($profile['guardian_contact']); ?>" maxlength="11" disabled required />
+                <input type="tel" id="guardian-contact" name="guardian-contact" placeholder="<?php echo htmlspecialchars($profile['guardian_contact']); ?>" maxlength="11" readonly  required />
 
                 <script>
                   document.getElementById("guardian-contact").addEventListener("input", function (e) {
@@ -310,13 +310,15 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="tor">*Transcript of Records (TOR)</label>
-                  <input type="file" id="tor" name="tor" required>
+                  <input type="file" id="tor" name="tor" accept=".jpg,.jpeg,.png,.pdf" required>
                   <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+                  <div id="preview-tor"></div>
                 </div>
                 <div class="form-group">
                   <label for="good-moral">*Certificate of Good Moral</label>
-                  <input type="file" id="good-moral" name="good-moral" required>
+                  <input type="file" id="good-moral" name="good-moral" accept=".jpg,.jpeg,.png,.pdf" required>
                   <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
+                  <div id="preview-good-moral"></div>
                 </div>
               </div>
 
@@ -331,5 +333,80 @@
       </div>
     </div>
   </main>
+
+<div id="file-preview-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:10000;">
+  <div style="max-width:90%; max-height:90%; position:relative;">
+    <span onclick="closePreview()" style="position:absolute; top:-30px; right:0; color:white; font-size:24px; cursor:pointer;">&times;</span>
+    <div id="file-preview-content"></div>
+  </div>
+</div>
+
 </body>
+
+<script>
+  function setupFilePreview(inputId) {
+    const input = document.getElementById(inputId);
+    const previewContainer = document.getElementById("preview-" + inputId);
+
+    input.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const fileType = file.type;
+      const fileSizeMB = file.size / (1024 * 1024);
+
+      previewContainer.innerHTML = "";
+
+      if (fileSizeMB > 5) {
+        previewContainer.innerHTML = "<p style='color:red;'>File exceeds 5MB limit.</p>";
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = file.name;
+      link.style.color = "#007bff";
+      link.style.textDecoration = "underline";
+      link.onclick = function (e) {
+        e.preventDefault();
+        showFilePreview(file);
+      };
+
+      previewContainer.appendChild(link);
+    });
+  }
+
+  function showFilePreview(file) {
+    const modal = document.getElementById("file-preview-modal");
+    const content = document.getElementById("file-preview-content");
+    content.innerHTML = "";
+
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      img.style.maxWidth = "100%";
+      img.style.maxHeight = "80vh";
+      content.appendChild(img);
+    } else if (file.type === "application/pdf") {
+      const iframe = document.createElement("iframe");
+      iframe.src = URL.createObjectURL(file);
+      iframe.style.width = "80vw";
+      iframe.style.height = "80vh";
+      iframe.style.border = "none";
+      content.appendChild(iframe);
+    } else {
+      content.innerHTML = "<p style='color:white;'>Unsupported file type.</p>";
+    }
+
+    modal.style.display = "flex";
+  }
+
+  function closePreview() {
+    document.getElementById("file-preview-modal").style.display = "none";
+  }
+
+  setupFilePreview("tor");
+  setupFilePreview("good-moral");
+</script>
+
 </html>

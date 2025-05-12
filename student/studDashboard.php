@@ -31,6 +31,12 @@
   <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-straight/css/uicons-regular-straight.css'>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
 </head>
 <style>
     .modal-overlay {
@@ -120,6 +126,21 @@
     }
     .submit-btn:hover {
         background: #2298e0;
+    }
+    select#relationship {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 16px;
+        border: 2px solid #ccc;
+        border-radius: 6px;
+        background-color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        transition: border-color 0.3s ease;
+    }
+
+    select#relationship:focus {
+        border-color: #3F83E6;
+        outline: none;
     }
 
 </style>
@@ -213,7 +234,15 @@
                     </div>
                     <div class="form-group full">
                         <label>* Relationship</label>
-                        <input type="text" name="relationship" required />
+                       
+                        <select name="relationship" id="relationship" required>
+                            <option value="" disabled selected>Select relationship</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Guardian">Guardian</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Relative">Relative</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                 </div>
 
@@ -271,12 +300,14 @@
                     <p></p>
                 </div>
             </div>
-
+   
+		
         
         </div>    
     </div>
     </div>
   </main>
+
 
   <script>
     function validateFormFields() {

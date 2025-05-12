@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div> 
 
-        <button type="submit" id="update-btn" class="disabled-btn" disabled>UPDATE PASSWORD</button>
+        <button type="submit" id="update-btn" class="disabled-btn" >UPDATE PASSWORD</button>
 
        
         <?php

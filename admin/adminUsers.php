@@ -198,14 +198,19 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
     <?php foreach ($users as $user): ?>
     <!-- Info Modal -->
     <div class="modal fade" id="infoModal<?php echo $user['admin_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content text-center"> 
                 <div class="modal-header justify-content-center">
                     <h5 class="modal-title" id="infoModalLabel">User Info</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <img src="./adminPic/default.png" alt="User Image" class="img-fluid mb-3">
+                <?php
+                    $profilePicPath = !empty($user['profile_pic']) ? htmlspecialchars($user['profile_pic']) : 'adminPic/default.png';
+                ?>
+                <img src="<?php echo $profilePicPath; ?>" alt="User Image" class="img-fluid mb-3" style="max-width: 120px; border-radius: 50%;">
+
+
                     <h5 class="mb-1"><b><?php echo htmlspecialchars($user['FirstName'] . ' ' . $user['LastName']); ?></b></h5>
                     <p class="text-muted mb-1"><?php echo htmlspecialchars($user['email']); ?></p>
                     <p class="mt-2"><span class="badge bg-<?php echo $user['Role'] === 'Admin' ? 'primary' : 'secondary'; ?>">
@@ -216,10 +221,17 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                             'Full access to all administrative features and settings.' : 
                             'Limited access to specific administrative functions.'; ?>
                     </p>
-                    <div class="text-start mt-3">
-                        <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['PhoneNumber']); ?></p>
-                        <p><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                    <div style="border-top: 1px solid #e0e0e0; margin-top: 20px; padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+                            <span class="text-muted">Phone</span>
+                            <span><strong><?php echo htmlspecialchars($user['PhoneNumber']); ?></strong></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                            <span class="text-muted">Username</span>
+                            <span><strong><?php echo htmlspecialchars($user['username']); ?></strong></span>
+                        </div>
                     </div>
+
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -1,7 +1,17 @@
 <?php 
+include "../dbcon.php";
+include "session_check.php";
 
-  include "session_check.php";
+// Set up pagination
+$perPage = 10;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$start = ($page - 1) * $perPage;
 
+// Get the total number of support inquiries
+$total_result = mysqli_query($conn, "SELECT COUNT(*) as total FROM supportpage");
+$total_row = mysqli_fetch_assoc($total_result);
+$total_entries = $total_row['total'];
+$total_pages = ceil($total_entries / $perPage);
 ?>
 
 <!DOCTYPE html>
@@ -15,24 +25,26 @@
     .hidden {
       display: none;
     }
-
- 
+    /* Optional: Styling for pagination links */
+    .pagination-container a {
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin: 0 2px;
+    }
   </style>
 </head>
 <body>
   <?php include "admin-sidebar.php"; ?>
 
   <main>
-  </div>
-  </div>
-
-
+    </div>
+    </div>
     <br><br><br><br>
     <div class="support-header">
       <h1>Support Inbox</h1>
     </div>
     <div class="table-container">
-      
       <table>
         <thead>
           <tr>
@@ -46,10 +58,9 @@
         </thead>
         <tbody>
           <?php
-          include "../dbcon.php";
-        
+          include "../dbcon.php";  // Ensure connection is available
 
-          $query = "SELECT * FROM supportpage";
+          $query = "SELECT * FROM supportpage LIMIT $start, $perPage";
           $result = $conn->query($query);
 
           if ($result->num_rows > 0) {
@@ -69,6 +80,33 @@
           ?>
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination Block: Right-aligned -->
+    <?php
+      $startItem = ($page - 1) * $perPage + 1;
+      $endItem = min($startItem + $perPage - 1, $total_entries);
+      $prevPage = $page > 1 ? $page - 1 : 1;
+      $nextPage = $page < $total_pages ? $page + 1 : $total_pages;
+    ?>
+    <div class="pagination-container" style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px; font-family: sans-serif; font-size: 14px; color: #444;">
+      <span><?= "$startItem - $endItem of $total_entries" ?></span>
+      <a href="Support_admin.php?page=<?= $prevPage ?>" style="font-size: 18px; text-decoration: none;">❮</a>
+      <div style="display: flex; gap: 5px;">
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+          <a href="Support_admin.php?page=<?= $i ?>" style="
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            background: <?= $i == $page ? '#0d6efd' : '#eee' ?>;
+            color: <?= $i == $page ? '#fff' : '#000' ?>;
+            font-weight: <?= $i == $page ? 'bold' : 'normal' ?>;
+          ">
+            <?= $i ?>
+          </a>
+        <?php endfor; ?>
+      </div>
+      <a href="Support_admin.php?page=<?= $nextPage ?>" style="font-size: 18px; text-decoration: none;">❯</a>
     </div>
 
     <!-- Modal -->
@@ -91,7 +129,7 @@
             <textarea id="adminResponse" name="adminResponse" placeholder="Type your response here..." required></textarea>
             <div class="modal-footer">
               <button type="button" class="cancel-btn">Cancel</button>
-              <button type="submit" class="send-btn" >Send Response</button>
+              <button type="submit" class="send-btn">Send Response</button>
             </div>
           </form>
         </div>
@@ -128,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
           }
 
-          // Fill modal fields
           inquiryDate.textContent = data.DateSubmitted || 'N/A';
           inquiryName.textContent = data.Name || 'N/A';
           inquiryEmail.textContent = data.Email || 'N/A';
@@ -136,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
           inquiryMessage.textContent = data.userMessage || 'No message provided';
           supportIdInput.value = supportId;
 
-          // Render the form or the admin response
           if (data.status === "Resolved") {
             responseForm.innerHTML = `
               <input type="hidden" id="supportId" name="supportId" value="${supportId}">
@@ -155,8 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             `;
           }
-
-          // Rebind cancel button after innerHTML is reset
           responseForm.querySelector('.cancel-btn')?.addEventListener('click', () => {
             modal.classList.add('hidden');
           });
@@ -170,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Handle submit
   responseForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -203,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
-  // Close modal with ✕
   closeModalButton.addEventListener('click', () => modal.classList.add('hidden'));
 });
 </script>
