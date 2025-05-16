@@ -1,13 +1,24 @@
 <?php
 include "session_check.php";
 include '../dbcon.php';
+require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
+require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+$mailConfig = require __DIR__ . '/../mail_config.php';
+
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
 
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'C:/xampp/htdocs/EnrollmentSystem/PHPMailer/src/PHPMailer.php';
-require 'C:/xampp/htdocs/EnrollmentSystem/PHPMailer/src/Exception.php';
-require 'C:/xampp/htdocs/EnrollmentSystem/PHPMailer/src/SMTP.php';
+$emailUsername = $_ENV['MAIL_USERNAME'];
+$emailPassword = $_ENV['MAIL_PASSWORD'];
+$emailFrom = $_ENV['MAIL_FROM'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstname = mysqli_real_escape_string($conn, $_POST['firstname']);
@@ -28,15 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'shanleygalo0000@gmail.com'; 
-            $mail->Password   = 'kuzc puuo ufyk rwxt'; 
+            $mail->Username = $emailUsername;
+            $mail->Password = $emailPassword;
             $mail->SMTPSecure = 'ssl'; 
-            $mail->Port       = 465; 
-            $mail->setFrom('shanleygalo0000@gmail.com', 'Oxford Academe - Online Enrollment System');
+            $mail->Port       = 465;
+
+            $mail->setFrom($emailFrom, 'Oxford Academe - Online Enrollment System');
             $mail->addAddress($email, $firstname . ' ' . $lastname);
 
             //Login URL
-            $loginUrl = "http://" . $_SERVER['HTTP_HOST'] . "/main/index.php";
+            $loginUrl = "http://" . $_SERVER['HTTP_HOST'] . "http://localhost/EnrollmentSystem/main/index.php#";
 
             // Email content
             $mail->isHTML(true);
