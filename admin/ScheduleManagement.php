@@ -1,315 +1,469 @@
-<?php 
-    include "session_check.php";
+<?php
+include "session_check.php";
+include "../dbcon.php";
 
+$perPage = 10;
+$page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+$start = ($page - 1) * $perPage;
+
+$subjectsResult = mysqli_query($conn, "SELECT SubjID, SubCode FROM subject");
+if (!$subjectsResult) {
+  die("Query failed: " . mysqli_error($conn));
+}
+
+$totalQuery = mysqli_query($conn, "SELECT COUNT(*) as total FROM schedule");
+$totalRow = mysqli_fetch_assoc($totalQuery);
+$totalItems = $totalRow['total'];
+$totalPages = ceil($totalItems / $perPage);
+
+$query = "
+  SELECT schedule.*, subject.SubCode 
+  FROM schedule 
+  JOIN subject ON schedule.SubID = subject.SubjID 
+  LIMIT $start, $perPage
+";
+
+$schedules = mysqli_query($conn, $query);
+
+if (!$schedules) {
+  die("Schedule query failed: " . mysqli_error($conn));
+}
+
+if (isset($_POST['addSchedule'])) {
+  $SubCode = $_POST['SubCode'];
+  $Section = $_POST['Section'];
+  $Day = $_POST['Day'];
+  $Start = $_POST['start'];
+  $End = $_POST['end'];
+  $Room = $_POST['room'];
+
+  $insertQuery = "INSERT INTO schedule (SubID, Section, Day, TimeStart, TimeEnd, Room) VALUES (?,?,?,?,?,?)";
+
+  $stmt = mysqli_prepare($conn, $insertQuery);
+  mysqli_stmt_bind_param($stmt, "ssssss", $SubCode, $Section, $Day, $Start, $End, $Room);
+  mysqli_stmt_execute($stmt);
+
+  header("Location: ScheduleManagement.php?success=1");
+  exit();
+}
+
+if (isset($_POST['updateSched'])) {
+  $editSubCode = $_POST['editSubCode'];
+  $editSection = $_POST['editSection'];
+  $editDay = $_POST['editDay'];
+  $editStart = $_POST['editStart'];
+  $editEnd = $_POST['editEnd'];
+  $editRoom = $_POST['editRoom'];
+
+  $editSchedID = $_POST['editSchedID'];
+
+  $updateQuery = "UPDATE schedule SET SubID = ?, Section = ?, Day = ?, TimeStart = ?, TimeEnd = ?, Room = ? WHERE SchedID = ?";
+
+  $stmt = mysqli_prepare($conn, $updateQuery);
+  mysqli_stmt_bind_param($stmt, "ssssssi", $editSubCode, $editSection, $editDay, $editStart, $editEnd, $editRoom, $editSchedID);
+  mysqli_stmt_execute($stmt);
+
+  header("Location: ScheduleManagement.php?success=1");
+  exit();
+}
+
+if (isset($_POST['deleteSched'])) {
+  $deleteID = $_POST['deleteSchedID'];
+  $deleteQuery = "DELETE FROM schedule WHERE SchedID = ?";
+  $stmt = mysqli_prepare($conn, $deleteQuery);
+  mysqli_stmt_bind_param($stmt, "i", $deleteID);
+  mysqli_stmt_execute($stmt);
+
+  header("Location: ScheduleManagement.php?success=1");
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Subject Management</title>
   <link rel="stylesheet" href="Subject_management.css">
-  <!-- Add your font/icon library here if needed -->
 </head>
+<style>
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    /* default hidden */
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* semi-transparent backdrop */
+    z-index: 1000;
+  }
+
+  .modal-box {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+</style>
+
 <body>
   <?php include "admin-sidebar.php"; ?>
-  <main> 
-  </div>
-  </div>
-  <br>
-  <br>
-  <main class="main-content">
-    <div class="top-bar">
-      <h1 class="title">Subject Schedule Management</h1>
-      <button class="add-subject-btn">+ Add New Subject</button>
+  <main>
     </div>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Schedule ID</th>
-            <th>Subject ID</th>
-            <th>Section</th>
-            <th>Day</th>
-            <th>Time Start</th>
-            <th>Time End</th>
-            <th>Room</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>IT101</td>
-            <td>D</td>
-            <td>WTH</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>Room 100</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>HM201</td>
-            <td>A</td>
-            <td>TTH	</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>CL 5</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>BM102</td>
-            <td>A</td>
-            <td>MW</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>Room 101</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>ENT203</td>
-            <td>A</td>
-            <td>T</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>Room 57</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>OA101</td>
-            <td>B</td>
-            <td>TTH	</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>Room 5</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>  
-            <td>PSY101</td>
-            <td>C</td>
-            <td>TTH	</td>
-            <td>8:00</td>
-            <td>10:00</td>
-            <td>Room 5</td>
-            <td>
-            <button class="action-btn">
-                <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
-              </button>
-              <button class="action-btn">
-                <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
-              </button>
-            </td>
-          </tr>
-          <!-- Add more rows as needed -->
-        </tbody>
-      </table>
     </div>
-  </main>
-
-  <!-- Modal -->
-  <div id="addSubjectModal">
-  <div class="modal-box">
-    <button class="close-btn">&times;</button>
-    <h2>Add New Subject Schedule</h2>
-    <form>
-      <label for="subjectCode">Subject ID</label>
-      <input type="text" id="subjectCode" placeholder="Enter Subject ID" />
-
-      <label for="subjectTitle">Section</label>
-      <input type="text" id="subjectTitle" placeholder="Enter Section" />
-
-      <label for="editDay">Day</label>
-        <select id="editDay" name="Day">
-        <option value="M">Monday</option>
-        <option value="T">Tuesday</option>
-        <option value="W">Wednesday</option>
-        <option value="TH">Thursday</option>
-        <option value="F">Friday</option>
-        <!-- Add more options as needed -->
-        </select>
-
-    <label for="timestart">Time Start</label>
-        <select id="start" name="prerequisites">
-        <option value="None">8:00</option>
-        <option value="Basic Math">9:00</option>
-        <option value="10:00">10:00</option>
-        <!-- Add more options as needed -->
-        </select>
-
-    <label for="end">Time End</label>
-        <select id="end" name="end">
-        <option value="None">11:00</option>
-        <option value="Basic Math">12:00</option>
-        <option value="10:00">13:00</option>
-        <!-- Add more options as needed -->
-        </select>
-
-        <label for="room">Room</label>
-        <input type="text" id="room" placeholder="Enter Room No." />
-
-
-      <div class="button-group">
-        <button type="button" class="cancel-btn">Cancel</button>
-        <button type="submit" class="add-btn">Add Subject</button>
+    <br>
+    <br>
+    <main class="main-content">
+      <div class="top-bar">
+        <h1 class="title">Subject Schedule Management</h1>
+        <div>
+          <form action="import_schedule.php" method="POST" enctype="multipart/form-data" style="display: inline-block;">
+            <label class="btn btn-sm btn-outline-secondary me-2" style="  cursor: pointer;">
+              📁 Import
+              <input type="file" name="import_file" accept=".xlsx" hidden onchange="this.form.submit()">
+            </label>
+          </form>
+          <button class="add-subject-btn btn btn-sm btn-outline-primary">+ Add New Schedule</button>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
+      <div class="table-container">
+        <table>
+          <thead>
 
-<div id="editSubjectModal">
-  <div class="modal-box">
-    <button class="close-btn">&times;</button>
-    <h2>Edit Subject</h2>
-    <form>
-      <label for="editSubjectID">Subject ID</label>
-      <input type="text" id="editSubjectID" value="IT101" />
+            <tr>
+              <th>Schedule ID</th>
+              <th>Subject ID</th>
+              <th>Section</th>
+              <th>Day</th>
+              <th>Time Start</th>
+              <th>Time End</th>
+              <th>Room</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (mysqli_num_rows($schedules) > 0): ?>
+              <?php while ($row = mysqli_fetch_assoc($schedules)): ?>
+                <tr>
+                  <td><?= $row['SchedID'] ?></td>
+                  <td><?= $row['SubCode'] ?></td>
+                  <td><?= $row['Section'] ?></td>
+                  <td><?= $row['Day'] ?></td>
+                  <td><?= $row['TimeStart'] ?></td>
+                  <td><?= $row['TimeEnd'] ?></td>
+                  <td><?= $row['Room'] ?></td>
+                  <td>
+                    <button class="action-btn edit-btn"
+                      data-schedid="<?= $row['SchedID'] ?>"
+                      data-subid="<?= $row['SubID'] ?>"
+                      data-section="<?= $row['Section'] ?>"
+                      data-day="<?= $row['Day'] ?>"
+                      data-start="<?= $row['TimeStart'] ?>"
+                      data-end="<?= $row['TimeEnd'] ?>"
+                      data-room="<?= $row['Room'] ?>">
+                      <img src="adminPic/EditPen.svg" alt="Edit" class="icon-btn">
+                    </button>
+                    <button class="action-btn delete-btn" data-schedid="<?= $row['SchedID'] ?>">
+                      <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
+                    </button>
+                  </td>
+                </tr>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <tr>
+                <td colspan="8">No schedules found.</td>
+              </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
 
-      <label for="editSection">Section</label>
-      <input type="text" id="editSection" value="A" />
 
-      <label for="editDay">Day</label>
-        <select id="editDay" name="Day">
-            <option value="M">Monday</option>
-            <option value="T">Tuesday</option>
-            <option value="W">Wednesday</option>
-            <option value="TH">Thursday</option>
-            <option value="F">Friday</option>
-  <!-- Add more options as needed -->
-</select>
-
-    <label for="timestart">Time Start</label>
-        <select id="start" name="prerequisites">
-            <option value="None">8:00</option>
-            <option value="Basic Math">9:00</option>
-            <option value="10:00">10:00</option>
-         
-        </select>
-
-        <label for="end">Time End</label>
-            <select id="end" name="end">
-            <option value="None">11:00</option>
-            <option value="Basic Math">12:00</option>
-            <option value="10:00">13:00</option>
-       
-            </select>
-
-        <label for="room">Room</label>
-        <input type="text" id="room" placeholder="Enter Room No." />
-
-
-      <div class="button-group">
-        <button type="button" class="cancel-btn">Cancel</button>
-        <button type="submit" class="save-btn">Save Changes</button>
       </div>
-    </form>
-  </div>
-</div>
+      <?php
+      $startItem = ($page - 1) * $perPage + 1;
+      $endItem = min($startItem + $perPage - 1, $totalItems);
+      $prevPage = $page > 1 ? $page - 1 : 1;
+      $nextPage = $page < $totalPages ? $page + 1 : $totalPages;
+
+      ?>
+      <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px; font-family: sans-serif; font-size: 14px;">
+        <span><?= "$startItem - $endItem of $totalItems" ?></span>
 
 
+        <a href="ScheduleManagement.php?page=<?= $prevPage ?>" style="text-decoration: none; font-size: 18px;">❮</a>
+
+        <div style="display: flex; gap: 5px;">
+          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="ScheduleManagement.php?page=<?= $i ?>" style="
+              padding: 4px 10px;
+              border-radius: 4px;
+              text-decoration: none;
+              background: <?= $i == $page ? '#0d6efd' : '#eee' ?>;
+              color: <?= $i == $page ? '#fff' : '#000' ?>;
+              font-weight: <?= $i == $page ? 'bold' : 'normal' ?>;
+            ">
+              <?= $i ?>
+            </a>
+          <?php endfor; ?>
+        </div>
+        <a href="ScheduleManagement.php?page=<?= $nextPage ?>" style="text-decoration: none; font-size: 18px;">❯</a>
+      </div>
+
+    </main>
+
+    <!-- Add Schedule Modal -->
+    <div id="addSubjectModal">
+      <div class="modal-box">
+        <button class="close-btn">&times;</button>
+        <h2>Add New Subject Schedule</h2>
+        <form method="POST" action="ScheduleManagement.php">
+          <label for="subjectCode">Subject ID</label>
+          <select id="subjectCode" name="SubCode" required>
+            <option value="" disabled selected hidden>Select a Subject</option>
+            <?php while ($subject = mysqli_fetch_assoc($subjectsResult)): ?>
+              <option value="<?= $subject['SubjID'] ?>">
+                <?= htmlspecialchars($subject['SubCode']) ?>
+              </option>
+            <?php endwhile; ?>
+          </select>
 
 
+          <label for="section">Section</label>
+          <select name="Section">
+            <option value="" disabled selected hidden>Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+          </select>
+
+          <label for="day">Day</label>
+          <select name="Day" require>
+            <option value="" disabled selected hidden>Select a Day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+          </select>
+
+          <label for="timestart">Time Start</label>
+          <select name="start">
+            <option value="" disabled selected hidden>Select a Time</option>
+            <option value="8:00:00">8:00:00</option>
+            <option value="9:00:00">9:00:00</option>
+            <option value="10:00:00">10:00:00</option>
+            <option value="11:00:00">11:00:00</option>
+            <option value="12:00:00">12:00:00</option>
+          </select>
+
+          <label for="end">Time End</label>
+          <select name="end">
+            <option value="" disabled selected hidden>Select a Time End</option>
+            <option value="11:00:00">11:00:00</option>
+            <option value="12:00:00">12:00:00</option>
+            <option value="13:00:00">13:00:00</option>
+            <option value="14:00:00">14:00:00</option>
+            <option value="15:00:00">15:00:00</option>
+          </select>
+
+          <label for="room">Room</label>
+          <select id="room" name="room">
+            <option value="" disabled selected hidden>Select a Room</option>
+            <option value="101">101</option>
+            <option value="102">102</option>
+            <option value="103">103</option>
+            <option value="104">104</option>
+            <option value="105">105</option>
+          </select>
 
 
+          <div class="button-group">
+            <button type="button" class="cancel-btn">Cancel</button>
+            <button type="submit" class="add-btn" name="addSchedule">Add Subject</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Edit Modal -->
+    <div id="editSubjectModal">
+      <div class="modal-box">
+        <button class="close-btn">&times;</button>
+        <h2>Edit Subject</h2>
+        <form method="POST" action="ScheduleManagement.php">
+          <input type="hidden" id="editSchedID" name="editSchedID">
+
+          <label for="editSubjectID">Subject ID</label>
+          <select id="editSubjectID" name="editSubCode" required>
+            <option value="" disabled selected hidden>Select a Subject</option>
+            <?php
+            $subjectsResult2 = mysqli_query($conn, "SELECT SubjID, SubCode FROM subject");
+            while ($subject = mysqli_fetch_assoc($subjectsResult2)):
+            ?>
+              <option value="<?= $subject['SubjID'] ?>">
+                <?= htmlspecialchars($subject['SubCode']) ?>
+              </option>
+            <?php endwhile; ?>
+
+          </select>
+
+          <label for="editSection">Section</label>
+          <select name="editSection" id="editSection">
+            <option value="" disabled selected hidden>Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+          </select>
+
+          <label for="editDay">Day</label>
+          <select id="editDay" name="editDay">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+          </select>
+
+          <label for="timestart">Time Start</label>
+          <select id="editStart" name="editStart">
+            <option value="8:00:00">8:00:00</option>
+            <option value="9:00:00">9:00:00</option>
+            <option value="10:00:00">10:00:00</option>
+            <option value="11:00:00">11:00:00</option>
+            <option value="12:00:00">12:00:00</option>
+          </select>
+
+          <label for="end">Time End</label>
+          <select id="editEnd" name="editEnd">
+            <option value="11:00:00">11:00:00</option>
+            <option value="12:00:00">12:00:00</option>
+            <option value="13:00:00">13:00:00</option>
+            <option value="14:00:00">14:00:00</option>
+            <option value="15:00:00">15:00:00</option>
+          </select>
+
+          <label for="room">Room</label>
+          <select id="editRoom" name="editRoom">
+            <option value="" disabled selected hidden>Select a Room</option>
+            <option value="101">101</option>
+            <option value="102">102</option>
+            <option value="103">103</option>
+            <option value="104">104</option>
+            <option value="105">105</option>
+          </select>
 
 
+          <div class="button-group">
+            <button type="button" class="cancel-btn">Cancel</button>
+            <button type="submit" class="save-btn" name="updateSched">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModalOverlay" class="modal-overlay">
+      <div class="modal-box">
+        <form method="POST" action="ScheduleManagement.php">
+          <input type="hidden" name="deleteSchedID" id="deleteSchedID">
+          <h2>Confirm Deletion</h2>
+          <p>Are you sure you want to delete this schedule?</p>
+          <div class="button-group">
+            <button type="button" class="cancel-btn" onclick="document.getElementById('deleteModalOverlay').style.display='none'">Cancel</button>
+            <button type="submit" name="deleteSched" class="save-btn" style="background-color: red;">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
 
-<script>
-  const addSubjectModal = document.getElementById("addSubjectModal");
-const addSubjectBtn = document.querySelector(".add-subject-btn");
-const closeModalBtn = document.querySelector(".close-btn");
-const cancelBtn = document.querySelector(".cancel-btn");
+    <script>
+      const addSubjectModal = document.getElementById("addSubjectModal");
+      const addSubjectBtn = document.querySelector(".add-subject-btn");
+      const closeModalBtn = document.querySelector(".close-btn");
+      const cancelBtn = document.querySelector(".cancel-btn");
 
-addSubjectBtn.addEventListener("click", () => {
-  addSubjectModal.style.display = "flex";
-});
+      addSubjectBtn.addEventListener("click", () => {
+        addSubjectModal.style.display = "flex";
+      });
 
-closeModalBtn.addEventListener("click", () => {
-  addSubjectModal.style.display = "none";
-});
+      closeModalBtn.addEventListener("click", () => {
+        addSubjectModal.style.display = "none";
+      });
 
-cancelBtn.addEventListener("click", () => {
-  addSubjectModal.style.display = "none";
-});
+      cancelBtn.addEventListener("click", () => {
+        addSubjectModal.style.display = "none";
+      });
 
-window.addEventListener("click", (e) => {
-  if (e.target === addSubjectModal) {
-    addSubjectModal.style.display = "none";
-  }
-});
+      window.addEventListener("click", (e) => {
+        if (e.target === addSubjectModal) {
+          addSubjectModal.style.display = "none";
+        }
+      });
 
-const editSubjectModal = document.getElementById("editSubjectModal");
-const editButtons = document.querySelectorAll(".action-btn img[alt='Edit']"); // Edit buttons
-const closeEditModalBtn = editSubjectModal.querySelector(".close-btn");
-const cancelEditBtn = editSubjectModal.querySelector(".cancel-btn");
+      const editSubjectModal = document.getElementById("editSubjectModal");
+      const editButtons = document.querySelectorAll(".action-btn img[alt='Edit']"); 
+      const closeEditModalBtn = editSubjectModal.querySelector(".close-btn");
+      const cancelEditBtn = editSubjectModal.querySelector(".cancel-btn");
 
-// Open the modal
-editButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    editSubjectModal.style.display = "flex";
-  });
-});
+      // Open the modal
+      editButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          editSubjectModal.style.display = "flex";
+        });
+      });
 
-// Close the modal
-closeEditModalBtn.addEventListener("click", () => {
-  editSubjectModal.style.display = "none";
-});
+      // Close the modal
+      closeEditModalBtn.addEventListener("click", () => {
+        editSubjectModal.style.display = "none";
+      });
 
-cancelEditBtn.addEventListener("click", () => {
-  editSubjectModal.style.display = "none";
-});
+      cancelEditBtn.addEventListener("click", () => {
+        editSubjectModal.style.display = "none";
+      });
 
-window.addEventListener("click", (e) => {
-  if (e.target === editSubjectModal) {
-    editSubjectModal.style.display = "none";
-  }
-});
+      window.addEventListener("click", (e) => {
+        if (e.target === editSubjectModal) {
+          editSubjectModal.style.display = "none";
+        }
+      });
+
+      document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          document.getElementById('editSubjectID').value = button.dataset.subid;
+          document.getElementById('editSection').value = button.dataset.section;
+          document.getElementById('editDay').value = button.dataset.day; // "Tuesday"
+          document.getElementById('editStart').value = button.dataset.start; // "10:00:00"
+          document.getElementById('editEnd').value = button.dataset.end; // "13:00:00"
+          document.getElementById('editRoom').value = button.dataset.room;
+          document.getElementById('editSchedID').value = button.dataset.schedid;
 
 
-
-</script>
+          document.getElementById('editSubjectModal').style.display = 'flex';
+        });
+      });
+      //delete modal
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const schedID = button.dataset.schedid;
+          document.getElementById('deleteSchedID').value = schedID;
+          document.getElementById('deleteModalOverlay').style.display = 'flex';
+        });
+      });
+    </script>
 
 
 </body>
+
 </html>

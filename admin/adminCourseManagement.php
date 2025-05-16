@@ -142,18 +142,17 @@ if ($viewArchived) {
                     <div class="container">
                         <div class="page-title">
                             <h3>Course Management
-                            <div class="btn-group float-end">
-                            <form method="POST" action="import_course.php" enctype="multipart/form-data" class="me-2">
-                                <label class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-file-import"></i> Import
-                                <input type="file" name="import_file" accept=".xlsx,.csv" onchange="this.form.submit()" hidden>
-                                </label>
-                            </form>
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-                                <i class="fas fa-user-shield"></i> Add New Course
-                            </button>
-                            </div>
-
+                                <div class="btn-group float-end">
+                                    <form action="import_course.php" method="POST" enctype="multipart/form-data" style="display: inline-block;">
+                                        <label class="btn btn-md  me-2">
+                                        📁 Import
+                                        <input type="file" name="import_file" accept=".xlsx, .csv" hidden onchange="this.form.submit()">
+                                        </label>
+                                    </form> 
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                                        <i class="fas fa-user-shield"></i> Add New Course
+                                    </button>
+                                </div>
                             </h3>
                             <?php if (isset($_GET['success'])): ?>
                                 <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>

@@ -1,0 +1,15 @@
+# Ignore sensitive config
+mail_config.php
+.env
+
+# Ignore Composer vendor folder (optional if you deploy separately)
+/vendor
+
+# Ignore log files
+*.log
+
+# Ignore IDE/editor files
+.vscode/
+*.code-workspace
+.DS_Store
+Thumbs.db
