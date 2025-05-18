@@ -84,8 +84,9 @@ foreach ($subjects as $subject) {
 }
 
 // Update enrollee status
-$update = $conn->prepare("UPDATE enrollee SET Status = 'Approved' WHERE EnrolleeID = ?");
-$update->bind_param("i", $enrolleeId);
+$update = $conn->prepare("UPDATE enrollee SET Status = 'Approved', section = ? WHERE EnrolleeID = ?");
+$update->bind_param("si", $section, $enrolleeId);
+
 $update->execute();
 $update->close();
 

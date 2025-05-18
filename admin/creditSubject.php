@@ -41,14 +41,18 @@ if ($userID) {
                     $stmt = $conn->prepare("SELECT Form137, Form138, Picture FROM freshmen WHERE user_id = ?");
                     break;
                 case 'transferee':
-                    $stmt = $conn->prepare("SELECT TOR, GoodMoral FROM transferee WHERE user_id = ?");
+                    $stmt = $conn->prepare("SELECT TOR, GoodMoral, yearLevel FROM transferee WHERE user_id = ?");
                     break;
                 case 'returnee':
-                    $stmt = $conn->prepare("SELECT TOR, MedCert, IDPhoto FROM returnee WHERE user_id = ?");
+                    $stmt = $conn->prepare("SELECT TOR, MedCert, IDPhoto, yearLevel FROM returnee WHERE user_id = ?");
+                    break;
+                case 'nonsequential':
+                    $stmt = $conn->prepare("SELECT TOR, GoodMoral, yearLevel, PreferredStartDate, ModeOfStudy FROM nonsequential WHERE user_id = ?");
                     break;
                 default:
                     $stmt = null;
             }
+
 
             if ($stmt) {
                 $stmt->bind_param("i", $userID);
@@ -56,6 +60,10 @@ if ($userID) {
                 $result = $stmt->get_result();
                 if ($result && $result->num_rows > 0) {
                     $filePreviewLinks = $result->fetch_assoc();
+
+                    $studentYear = !empty($filePreviewLinks['yearLevel']) ? htmlspecialchars($filePreviewLinks['yearLevel']) : '1st Year';
+                    $preferredStart = !empty($filePreviewLinks['PreferredStartDate']) ? htmlspecialchars($filePreviewLinks['PreferredStartDate']) : 'Not specified';
+                    $modeOfStudy = !empty($filePreviewLinks['ModeOfStudy']) ? ucfirst(htmlspecialchars($filePreviewLinks['ModeOfStudy'])) : 'Not specified';
                 }
             }
         }
@@ -64,6 +72,7 @@ if ($userID) {
         echo "Error: " . $conn->error;
     }
 }
+
 
 $freshmanSubjects = [];
 
@@ -134,13 +143,15 @@ $conn->close();
                         <h1 class="text-3xl font-bold text-blue-700">Subject Enrollment</h1>
                         <p class="text-sm text-gray-500">Manage and finalize your enrollment subjects.</p>
                     </div>
-
+                    <?php
+                    $documentFields = ['TOR', 'GoodMoral', 'Form137', 'Form138', 'Picture', 'IDPhoto', 'MedCert'];
+                    ?>
                     <?php if (!empty($filePreviewLinks)): ?>
                         <div class="flex flex-wrap gap-3">
-                            <?php foreach ($filePreviewLinks as $label => $filename): ?>
-                                <?php if (!empty($filename)): ?>
-                                    <a href="../student/uploads/<?= htmlspecialchars($filename) ?>" target="_blank" title="<?= htmlspecialchars($label) ?>" class="inline-block">
-                                        <img src="../admin/assets/img/file-icon.ico" class="w-6 h-6 hover:scale-110 transition-transform" alt="<?= htmlspecialchars($label) ?>">
+                            <?php foreach ($documentFields as $doc): ?>
+                                <?php if (!empty($filePreviewLinks[$doc])): ?>
+                                    <a href="../student/uploads/<?= htmlspecialchars($filePreviewLinks[$doc]) ?>" target="_blank" title="<?= htmlspecialchars($doc) ?>" class="inline-block">
+                                        <img src="../admin/assets/img/file-icon.ico" class="w-6 h-6 hover:scale-110 transition-transform" alt="<?= htmlspecialchars($doc) ?>">
                                     </a>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -167,21 +178,36 @@ $conn->close();
                         <input type="text" value="<?= htmlspecialchars($enrollmentType) ?>" disabled class="mt-1 w-full rounded-md bg-gray-100 border border-gray-300 px-3 py-2">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Select Section</label>
-
-                        <!-- Section Selector -->
-                        <select id="sectionDropdown" class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2" required>
-                            <option value="">Select a section</option>
-                            <option value="A">Section A</option>
-                            <option value="B">Section B</option>
-                            <option value="C">Section C</option>
-                            <option value="D">Section D</option>
-                            <option value="E">Section E</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700">Year Level</label>
+                        <input type="text" value="<?= $studentYear ?>" disabled class="mt-1 w-full rounded-md bg-gray-100 border border-gray-300 px-3 py-2">
                     </div>
+                    <?php if (strtolower($enrollmentType) === "nonsequential"): ?>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Preferred Start Date</label>
+                            <input type="text" value="<?= $preferredStart ?>" disabled class="mt-1 w-full rounded-md bg-gray-100 border border-gray-300 px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Mode of Study</label>
+                            <input type="text" value="<?= $modeOfStudy ?>" disabled class="mt-1 w-full rounded-md bg-gray-100 border border-gray-300 px-3 py-2">
+                        </div>
+                    <?php endif; ?>
+
+
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Select Section</label>
 
+                    <!-- Section Selector -->
+                    <select id="sectionDropdown" class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2" required>
+                        <option value="" disabled selected hidden>Select a section</option>
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                        <option value="D">Section D</option>
+                        <option value="E">Section E</option>
+                    </select>
+                </div>
 
                 <!-- Subject Selector -->
                 <div class="mb-6">

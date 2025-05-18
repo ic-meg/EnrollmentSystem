@@ -139,7 +139,31 @@ if (isset($_POST["submitReg"])) {
 
                 if ($stmt2->execute()) {
                     $conn->commit();
-                    echo "<script>alert('Your application has been successfully submitted. Please wait for further updates.'); window.location.href='studConfirmApplication.php';</script>";
+                    echo "
+                    <div class='toast-container position-fixed top-0 end-0 p-3' style='z-index: 9999;'>
+                        <div id='successToast' class='toast align-items-center text-white bg-success border-0 show' role='alert' aria-live='assertive' aria-atomic='true'>
+                        <div class='d-flex'>
+                            <div class='toast-body'>
+                            Your application has been successfully submitted. Please wait for further updates.
+                            </div>
+                            <button type='button' class='btn-close btn-close-white me-2 m-auto' data-bs-dismiss='toast' aria-label='Close'></button>
+                        </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        setTimeout(() => {
+                        const toast = document.getElementById('successToast');
+                        if (toast) {
+                            var toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+                            toastBootstrap.show();
+                        }
+                        setTimeout(() => {
+                            window.location.href = 'studConfirmApplication.php';
+                        }, 3000);
+                        }, 300);
+                    </script>
+                    ";
                 } else {
                     throw new Exception("Failed to insert into enrollee table.");
                 }
@@ -166,6 +190,11 @@ if (isset($_POST["submitReg"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="enrollment-regular.css">
     <title>Oxford Academe | Enrollment Form - Freshmen </title>
+    <!-- Bootstrap CSS (in <head>) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS (before </body>) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <style>
     #onboarding-overlay {
@@ -291,7 +320,7 @@ if (isset($_POST["submitReg"])) {
                                 <div class="form-group">
                                     <label for="sex">*Sex</label>
                                     <select id="sex" name="sex" required>
-                                        <option value="">Select</option>
+                                        <option value="" disabled selected hidden>Select</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                     </select>
@@ -321,13 +350,13 @@ if (isset($_POST["submitReg"])) {
                                 <div class="form-group">
                                     <label for="province">*Province</label>
                                     <select id="province" name="province" required>
-                                        <option value="">Select a province</option>
+                                        <option value="" disabled selected hidden>Select a province</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="city">*City</label>
                                     <select id="city" name="city" required>
-                                        <option value="">Select a city</option>
+                                        <option value="" disabled selected hidden>Select a city</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -345,19 +374,18 @@ if (isset($_POST["submitReg"])) {
                                     <div class="form-group">
                                         <label for="program">*Program</label>
                                         <select id="program" name="program">
-                                            <option value="">Select a program</option>
+                                            <option value="" disabled selected hidden>Select a program</option>
                                             <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                                            <option value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</option>
-                                            <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
-                                            <option value="Bachelor of Science in Business Administration">Bachelor of Science in Business Administration</option>
-                                            <option value="Bachelor of Science in Accountancy">Bachelor of Science in Accountancy</option>
-                                            <option value="Bachelor of Secondary Education">Bachelor of Secondary Education</option>
-                                            <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
-                                            <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
-                                            <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
-                                            <option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
-                                            <option value="Bachelor of Science in Management">Bachelor of Science in Management</option>
                                             <option value="Bachelor of Science in Psychology">Bachelor of Science in Psychology</option>
+                                            <option value="Bachelor of Science in Education">Bachelor of Science in Education</option>
+                                            <option value="Bachelor of Science in Human Resource">Bachelor of Science in Human Resource</option>
+                                            <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
+                                            <option value="Bachelor of Science in Law">Bachelor of Science in Law</option>
+                                            <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
+                                            <option value="Bachelor of Science in Nursing">Bachelor of Science in Tourism</option>
+
+
+
                                         </select>
                                     </div>
                                     <div class="form-group">

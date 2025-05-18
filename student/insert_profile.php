@@ -23,7 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     if ($stmt->execute()) {
-        echo "Student profile saved successfully.";
+        $_SESSION['success'] = "Student profile saved successfully.";
+        echo "success"; 
+
     } else {
         echo "Error: " . $stmt->error;
     }

@@ -41,6 +41,8 @@ if (isset($_POST["submitReg"])) {
   $intendedCourse = $_POST["intended-course"];
   $guardianName = $_POST["guardian-name"];
   $guardianContact = $_POST["guardian-contact"];
+  $yearLevel = $_POST["year-level"];
+
 
   $fullName = $firstName . " " . $lastName;
   $status = "Pending";
@@ -88,16 +90,16 @@ if (isset($_POST["submitReg"])) {
     $conn->begin_transaction();
 
     try {
-      $stmt1 = $conn->prepare("INSERT INTO transferee (user_id, FirstName, MiddleInitial, LastName, DateOfBirth, Sex, ContactNum, Email, PreviousSchool, PreviousProgram, IntendedCourse, GuardiansName, GuardiansContact, TOR, GoodMoral) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      $stmt1 = $conn->prepare("INSERT INTO transferee (user_id, FirstName, MiddleInitial, LastName, DateOfBirth, Sex, ContactNum, Email, PreviousSchool, PreviousProgram, IntendedCourse, GuardiansName, GuardiansContact, TOR, GoodMoral, yearLevel) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 
       if (!$stmt1) {
-        die("SQL Error (transferee): " . $conn->error); // Print MySQL error
+        die("SQL Error (transferee): " . $conn->error);
       }
 
 
       $stmt1->bind_param(
-        "issssssssssssss",
+        "isssssssssssssss",
         $user_id,
         $firstName,
         $middleInitial,
@@ -112,7 +114,8 @@ if (isset($_POST["submitReg"])) {
         $guardianName,
         $guardianContact,
         $tor,
-        $goodMoral
+        $goodMoral,
+        $yearLevel
       );
 
       $documents_uploaded = 0;
@@ -125,7 +128,7 @@ if (isset($_POST["submitReg"])) {
                     VALUES (?, ?, ?, ?, ?, ?)");
 
         if (!$stmt2) {
-          die("SQL Error (enrollee): " . $conn->error); 
+          die("SQL Error (enrollee): " . $conn->error);
         }
 
         $stmt2->bind_param(
@@ -140,7 +143,31 @@ if (isset($_POST["submitReg"])) {
 
         if ($stmt2->execute()) {
           $conn->commit();
-          echo "<script>alert('Your application has been successfully submitted. Please wait for further updates.'); window.location.href='studConfirmApplication.php';</script>";
+          echo "
+          <div class='toast-container position-fixed top-0 end-0 p-3' style='z-index: 9999;'>
+            <div id='successToast' class='toast align-items-center text-white bg-success border-0 show' role='alert' aria-live='assertive' aria-atomic='true'>
+              <div class='d-flex'>
+                <div class='toast-body'>
+                  Your application has been successfully submitted. Please wait for further updates.
+                </div>
+                <button type='button' class='btn-close btn-close-white me-2 m-auto' data-bs-dismiss='toast' aria-label='Close'></button>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            setTimeout(() => {
+              const toast = document.getElementById('successToast');
+              if (toast) {
+                var toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+                toastBootstrap.show();
+              }
+              setTimeout(() => {
+                window.location.href = 'studConfirmApplication.php';
+              }, 3000);
+            }, 300);
+          </script>
+          ";
         } else {
           throw new Exception("Failed to insert into enrollee table.");
         }
@@ -166,6 +193,10 @@ if (isset($_POST["submitReg"])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="enrollment-regular.css">
   <title>Oxford Academe | Enrollment Form - Transferee</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -253,7 +284,7 @@ if (isset($_POST["submitReg"])) {
                 <div class="form-group">
                   <label for="sex">*Sex</label>
                   <select id="sex" name="sex" required>
-                    <option value="">Select</option>
+                    <option value="" disabled selected hidden>Select</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
@@ -268,7 +299,17 @@ if (isset($_POST["submitReg"])) {
                 </div>
                 <div class="form-group">
                   <label for="prev-program">*Previous Program</label>
-                  <input type="text" id="prev-program" name="prev-program" placeholder="Enter your previous program" required>
+                  <select id="prev-program" name="prev-program" required>
+                    <option value="" disabled selected hidden>Select your previous program</option>
+                    <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                    <option value="Bachelor of Science in Psychology">Bachelor of Science in Psychology</option>
+                    <option value="Bachelor of Science in Education">Bachelor of Science in Education</option>
+                    <option value="Bachelor of Science in Human Resource">Bachelor of Science in Human Resource</option>
+                    <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
+                    <option value="Bachelor of Science in Law">Bachelor of Science in Law</option>
+                    <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
+                    <option value="Bachelor of Science in Nursing">Bachelor of Science in Tourism</option>
+                  </select>
                 </div>
               </div>
 
@@ -276,20 +317,28 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="intended-course">*Intended Course</label>
-                  <select id="intended-course" name="intended-course" required>
-                    <option value="">Select your Intended Course</option>
+                  <select id="intended-course" name="intended-course">
+                    <option value="" disabled selected hidden>Select a program</option>
                     <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
-                    <option value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</option>
-                    <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
-                    <option value="Bachelor of Science in Business Administration">Bachelor of Science in Business Administration</option>
-                    <option value="Bachelor of Science in Accountancy">Bachelor of Science in Accountancy</option>
-                    <option value="Bachelor of Secondary Education">Bachelor of Secondary Education</option>
-                    <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
-                    <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
-                    <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
-                    <option option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
-                    <option value="Bachelor of Science in Management">Bachelor of Science in Management</option>
                     <option value="Bachelor of Science in Psychology">Bachelor of Science in Psychology</option>
+                    <option value="Bachelor of Science in Education">Bachelor of Science in Education</option>
+                    <option value="Bachelor of Science in Human Resource">Bachelor of Science in Human Resource</option>
+                    <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
+                    <option value="Bachelor of Science in Law">Bachelor of Science in Law</option>
+                    <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
+                    <option value="Bachelor of Science in Nursing">Bachelor of Science in Tourism</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Year Level -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="year-level">*What year level are you applying for?</label>
+                  <select id="year-level" name="year-level" required>
+                    <option value="" disabled selected hidden>Select year level</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
                   </select>
                 </div>
               </div>
