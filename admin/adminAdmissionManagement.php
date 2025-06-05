@@ -1,7 +1,11 @@
+<?php 
+include "session_check.php";
+include '../dbcon.php';
+include "permissions.php"; // Assuming you have this file for role checking
+?>
+
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -46,14 +50,19 @@
         background-color: #0056b3;
         color: white;
     }
+    
+    /* Style for view-only mode */
+    .view-only-btn {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    .view-only-btn:hover {
+        background-color: transparent !important;
+    }
 </style>
 
 <body>
-    <?php include "admin-sidebar.php";
-
-    include "session_check.php";
-    include '../dbcon.php';
-    ?>
+    <?php include "admin-sidebar.php"; ?>
 
     <main>
         </div>
@@ -89,7 +98,9 @@
                                                 <th>Name</th>
                                                 <th class="text-center">Application Status</th>
                                                 <th class="text-center">Documents Uploaded</th>
+                                                <?php if (canEdit()): ?>
                                                 <th class="text-center">Action</th>
+                                                <?php endif; ?>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -198,6 +209,7 @@
                                                             ?>
                                                         </td>
 
+                                                        <?php if (canEdit()): ?>
                                                         <td class="text-center">
                                                             <button class='btn btn-outline-primary btn-rounded' data-bs-toggle='modal' data-bs-target='#infoModal<?php echo $modalID; ?>'>
                                                                 <i class='fa fa-info-circle'></i>
@@ -212,7 +224,7 @@
                                                                 </button>
                                                             <?php endif; ?>
                                                         </td>
-
+                                                        <?php endif; ?>
                                                     </tr>
 
                                                     <!-- Info Modal -->
@@ -353,7 +365,7 @@
                                                                     <?php endif; ?>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <?php if (strtolower($row['Status']) !== 'approved'): ?>
+                                                                    <?php if (canEdit() && strtolower($row['Status']) !== 'approved'): ?>
                                                                         <a href="creditSubject.php?user_id=<?= $row['user_id'] ?>" class="btn btn-success">Approve</a>
                                                                     <?php endif; ?>
                                                                 </div>
@@ -361,7 +373,8 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Rejection Modal -->
+                                                    <!-- Rejection Modal (only shown for admins) -->
+                                                    <?php if (canEdit()): ?>
                                                     <div class="modal fade" id="deleteModal<?php echo $userID; ?>" tabindex="-1" aria-labelledby="deleteLabel<?php echo $userID; ?>" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content">
@@ -386,11 +399,11 @@
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
                                                                     <button type="button" class="btn btn-danger confirm-reject-btn" data-userid="<?php echo $userID; ?>">Yes</button>
-
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <?php endif; ?>
 
                                                     <!-- Already Rejected Modal -->
                                                     <div class="modal fade" id="alreadyRejectedModal" tabindex="-1" aria-labelledby="alreadyRejectedLabel" aria-hidden="true">

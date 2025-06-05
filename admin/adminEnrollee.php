@@ -1,37 +1,39 @@
 <?php
 include "session_check.php";
 include "../dbcon.php";
+include "permissions.php"; // Include the permissions file for isAdmin()
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_enrollee'])) {
-    $enrolleeID = intval($_POST['enrollee_id']);
+// --- Server-side restriction for Admin actions ---
+if (isAdmin()) { // Only allow these actions if the user is an Admin
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_enrollee'])) {
+        $enrolleeID = intval($_POST['enrollee_id']);
 
-    $stmt = $conn->prepare("UPDATE enrollee SET Status = 'Archived' WHERE EnrolleeID = ?");
-    $stmt->bind_param("i", $enrolleeID);
+        $stmt = $conn->prepare("UPDATE enrollee SET Status = 'Archived' WHERE EnrolleeID = ?");
+        $stmt->bind_param("i", $enrolleeID);
 
-    if ($stmt->execute()) {
-        echo "<script>window.location.href = 'adminEnrollee.php?success=Enrollee+archived+successfully';</script>";
-        exit();
-    } else {
-        echo "<script>alert('Failed to archive enrollee.');</script>";
+        if ($stmt->execute()) {
+            echo "<script>window.location.href = 'adminEnrollee.php?success=Enrollee+archived+successfully';</script>";
+            exit();
+        } else {
+            echo "<script>alert('Failed to archive enrollee.');</script>";
+        }
+        $stmt->close();
     }
 
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
+        $enrolleeID = intval($_POST['enrollee_id']);
 
-    $stmt->close();
-}
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
-    $enrolleeID = intval($_POST['enrollee_id']);
+        $stmt = $conn->prepare("UPDATE enrollee SET Status = 'Approved' WHERE EnrolleeID = ?");
+        $stmt->bind_param("i", $enrolleeID);
 
-    $stmt = $conn->prepare("UPDATE enrollee SET Status = 'Approved' WHERE EnrolleeID = ?");
-    $stmt->bind_param("i", $enrolleeID);
-
-    if ($stmt->execute()) {
-        echo "<script>window.location.href = 'adminEnrollee.php?view=archived&success=Enrollee+restored+successfully';</script>";
-        exit();
-    } else {
-        echo "<script>alert('Failed to restore enrollee.');</script>";
+        if ($stmt->execute()) {
+            echo "<script>window.location.href = 'adminEnrollee.php?view=archived&success=Enrollee+restored+successfully';</script>";
+            exit();
+        } else {
+            echo "<script>alert('Failed to restore enrollee.');</script>";
+        }
+        $stmt->close();
     }
-
-    $stmt->close();
 }
 ?>
 
@@ -45,18 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Admin Enrollee | Admin Panel</title>
-    <!-- Bootstrap CSS -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
     <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
     <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
     <link href="assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
 
-    <!-- DataTables CSS -->
     <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
 
-    <!-- Custom Master Styles -->
     <link href="assets/css/master.css" rel="stylesheet">
 
 </head>
@@ -111,22 +109,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
                                             <th>Name</th>
                                             <th>Program</th>
                                             <th>Enrollment Type</th>
-                                            <th class="text-center">Action</th>
-
-
+                                            <?php if (isAdmin()): // Only show Action column for Admins ?>
+                                                <th class="text-center">Action</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody id="enrollee-tbody">
 
                                         <?php
-                                        include "../dbcon.php";
-
-
+                                        // dbcon.php is already included at the top
                                         $statusFilter = $isArchivedView ? "Archived" : "Approved";
 
-                                        $query = "SELECT EnrolleeID, name, program, enrollment_type, section 
-                                                FROM enrollee 
-                                                WHERE Status = '$statusFilter' 
+                                        $query = "SELECT EnrolleeID, name, program, enrollment_type, section
+                                                FROM enrollee
+                                                WHERE Status = '$statusFilter'
                                                 ORDER BY EnrolleeID DESC";
 
 
@@ -145,86 +141,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
                                                         <td>$section</td>
                                                         <td>$name</td>
                                                         <td>$program</td>
-                                                        <td>$type</td>
-                                                        <td class='text-center'>";
+                                                        <td>$type</td>";
 
-                                                if (!$isArchivedView) {
-                                                    $html .= "
-                                                            <button type='button' class='btn btn-outline-danger btn-rounded archive-btn' 
+                                                if (isAdmin()) { // Only show action buttons if user is Admin
+                                                    $html .= "<td class='text-center'>";
+                                                    if (!$isArchivedView) {
+                                                        $html .= "
+                                                            <button type='button' class='btn btn-outline-danger btn-rounded archive-btn'
                                                                     data-id='$enrolleeID' data-bs-toggle='modal' data-bs-target='#archiveModal'>
                                                                 <i class='fas fa-archive'></i>
                                                             </button>";
-                                                } else {
-                                                    $html .= "
+                                                    } else {
+                                                        $html .= "
                                                             <form method='POST' action='' style='display:inline;'>
                                                                 <input type='hidden' name='enrollee_id' value='$enrolleeID'>
                                                                 <button type='submit' class='btn btn-outline-success btn-rounded' name='restore_enrollee'>
                                                                     <i class='fas fa-undo'></i>
                                                                 </button>
                                                             </form>";
+                                                    }
+                                                    $html .= "</td>";
                                                 }
-
-                                                $html .= "</td></tr>";
+                                                $html .= "</tr>";
 
                                                 echo $html;
                                             }
                                         } else {
-                                            echo "<tr><td colspan='6' class='text-center text-muted'>No enrollees found.</td></tr>";
+                                            echo "<tr><td colspan='" . (isAdmin() ? '6' : '5') . "' class='text-center text-muted'>No enrollees found.</td></tr>";
                                         }
                                         ?>
                                     </tbody>
 
                                 </table>
 
-                                <!-- Edit Modal -->
-                                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Edit Status</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body text-start">
-                                                <form>
-                                                    <div class="mb-3">
-                                                        <!-- Edit Status Dropdown -->
-                                                        <label for="recipient-status" class="col-form-label">Status</label>
-                                                        <select class="form-control" id="recipient-status">
-                                                            <option value="active">Active</option>
-                                                            <option value="inactive">Inactive</option>
-                                                        </select>
+                                <?php if (isAdmin()): ?>
+                                    <div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Archive User</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="POST" action="">
+                                                    <div class="modal-body text-start">
+                                                        <input type="hidden" name="enrollee_id" id="archive-enrollee-id">
+                                                        Are you sure you want to archive this user? This action will remove them from the active list, but their data will still be accessible in the archive.
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Cancel</button>
+                                                        <button type="submit" name="archive_enrollee" class="btn btn-info">Yes, Archive</button>
                                                     </div>
                                                 </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- DELETE Modal -->
-                                <div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Archive User</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <form method="POST" action="">
-                                                <div class="modal-body text-start">
-                                                    <input type="hidden" name="enrollee_id" id="archive-enrollee-id">
-                                                    Are you sure you want to archive this user? This action will remove them from the active list, but their data will still be accessible in the archive.
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Cancel</button>
-                                                    <button type="submit" name="archive_enrollee" class="btn btn-info">Yes, Archive</button>
-                                                </div>
-                                            </form>
 
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -239,10 +211,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
         <script src="assets/js/script.js"></script>
 </body>
 <script>
+    // This script should only be active for Admins
+    <?php if (isAdmin()): ?>
     $(document).on('click', '.archive-btn', function() {
         const enrolleeID = $(this).data('id');
         $('#archive-enrollee-id').val(enrolleeID);
     });
+    <?php endif; ?>
 </script>
 <script>
     $(document).ready(function() {
@@ -273,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_enrollee'])) {
             if (visibleCount === 0) {
                 const noRow = `
                     <tr class="no-result-row">
-                        <td colspan="6" class="text-center text-muted">No ${selectedType} found.</td>
+                        <td colspan="<?= isAdmin() ? '6' : '5' ?>" class="text-center text-muted">No ${selectedType} found.</td>
                     </tr>
                 `;
                 $('#enrollee-tbody').append(noRow);

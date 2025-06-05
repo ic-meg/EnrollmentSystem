@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['admin_id'] = $admin['admin_id'];
                 $_SESSION['username'] = $admin['username'];
                 $_SESSION['email'] = $admin['email'];
+                $_SESSION['Role'] = $admin['Role']; // <-- Use the Role from the database
 
                 header("Location: http://localhost/EnrollmentSystem/admin/adminDashboard.php");
                 exit();

@@ -1,6 +1,11 @@
 <?php 
 include "session_check.php";
 include '../dbcon.php';
+include "permissions.php";
+
+// Debug: Check current session role
+// Remove or comment this out after testing!
+echo '<!-- SESSION ROLE: ' . (isset($_SESSION['Role']) ? $_SESSION['Role'] : 'NOT SET') . ' -->';
 
 $query = "SELECT * FROM adminaccount";
 $result = mysqli_query($conn, $query);
@@ -74,17 +79,19 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
     <?php include "admin-sidebar.php"; ?>
     
     <main>
-    </div>
-    </div>
+        </div>
+        </div>
         <div class="wrapper">
             <div class="container">
                 <div class="content">
                     <div class="container">
                         <div class="page-title">
                             <h3>Users
+                                <?php if (canCreate()): ?>
                                 <button type="button" class="btn btn-sm btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#addUserModal">
                                     <i class="fas fa-user-shield"></i> Add New User
                                 </button>
+                                <?php endif; ?>
                             </h3>
                         </div>
 
@@ -104,6 +111,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                         <?php endif; ?>
 
                         <!-- Add New User Modal -->
+                        <?php if (canCreate()): ?>
                         <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -144,6 +152,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
 
                         <div class="box box-primary">
                             <div class="box-body">
@@ -167,20 +176,24 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                                             <td><?php echo htmlspecialchars($user['username']); ?></td>
                                             <td><?php echo htmlspecialchars($user['Role']); ?></td>
                                             <td class="text-center">
-                                                <!-- Info Button -->
+                                                <!-- Info Button (always visible) -->
                                                 <button type="button" class="btn btn-outline-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#infoModal<?php echo $user['admin_id']; ?>">
                                                     <i class="fa fa-info-circle"></i>
                                                 </button>
                                                 
-                                                <!-- Edit Button -->
+                                                <!-- Edit Button (Admin only) -->
+                                                <?php if (canEdit()): ?>
                                                 <button type="button" class="btn btn-outline-info btn-rounded" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $user['admin_id']; ?>">
                                                     <i class="fas fa-pen"></i>
                                                 </button>
+                                                <?php endif; ?>
                                                 
-                                                <!-- Delete Button -->
+                                                <!-- Delete Button (Admin only) -->
+                                                <?php if (canDelete()): ?>
                                                 <button type="button" class="btn btn-outline-danger btn-rounded" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $user['admin_id']; ?>">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -196,7 +209,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
 
 
     <?php foreach ($users as $user): ?>
-    <!-- Info Modal -->
+    <!-- Info Modal (always visible) -->
     <div class="modal fade" id="infoModal<?php echo $user['admin_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content text-center"> 
@@ -240,7 +253,8 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Edit Modal (Admin only) -->
+    <?php if (canEdit()): ?>
     <div class="modal fade" id="editModal<?php echo $user['admin_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -282,8 +296,10 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
-    <!-- Delete Modal -->
+    <!-- Delete Modal (Admin only) -->
+    <?php if (canDelete()): ?>
     <div class="modal fade" id="deleteModal<?php echo $user['admin_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -306,6 +322,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
             </div>
         </div>
     </div>
+    <?php endif; ?>
     <?php endforeach; ?>
 
     <script src="assets/vendor/jquery/jquery.min.js"></script>

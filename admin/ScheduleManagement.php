@@ -1,6 +1,7 @@
-<?php
+<?php 
 include "session_check.php";
 include "../dbcon.php";
+include "permissions.php"; // Assuming you have this file for role checking
 
 $perPage = 10;
 $page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
@@ -29,53 +30,55 @@ if (!$schedules) {
   die("Schedule query failed: " . mysqli_error($conn));
 }
 
-if (isset($_POST['addSchedule'])) {
-  $SubCode = $_POST['SubCode'];
-  $Section = $_POST['Section'];
-  $Day = $_POST['Day'];
-  $Start = $_POST['start'];
-  $End = $_POST['end'];
-  $Room = $_POST['room'];
+// Only allow modifications if user has edit permissions
+if (canEdit()) {
+    if (isset($_POST['addSchedule'])) {
+        $SubCode = $_POST['SubCode'];
+        $Section = $_POST['Section'];
+        $Day = $_POST['Day'];
+        $Start = $_POST['start'];
+        $End = $_POST['end'];
+        $Room = $_POST['room'];
 
-  $insertQuery = "INSERT INTO schedule (SubID, Section, Day, TimeStart, TimeEnd, Room) VALUES (?,?,?,?,?,?)";
+        $insertQuery = "INSERT INTO schedule (SubID, Section, Day, TimeStart, TimeEnd, Room) VALUES (?,?,?,?,?,?)";
 
-  $stmt = mysqli_prepare($conn, $insertQuery);
-  mysqli_stmt_bind_param($stmt, "ssssss", $SubCode, $Section, $Day, $Start, $End, $Room);
-  mysqli_stmt_execute($stmt);
+        $stmt = mysqli_prepare($conn, $insertQuery);
+        mysqli_stmt_bind_param($stmt, "ssssss", $SubCode, $Section, $Day, $Start, $End, $Room);
+        mysqli_stmt_execute($stmt);
 
-  header("Location: ScheduleManagement.php?success=1");
-  exit();
-}
+        header("Location: ScheduleManagement.php?success=1");
+        exit();
+    }
 
-if (isset($_POST['updateSched'])) {
-  $editSubCode = $_POST['editSubCode'];
-  $editSection = $_POST['editSection'];
-  $editDay = $_POST['editDay'];
-  $editStart = $_POST['editStart'];
-  $editEnd = $_POST['editEnd'];
-  $editRoom = $_POST['editRoom'];
+    if (isset($_POST['updateSched'])) {
+        $editSubCode = $_POST['editSubCode'];
+        $editSection = $_POST['editSection'];
+        $editDay = $_POST['editDay'];
+        $editStart = $_POST['editStart'];
+        $editEnd = $_POST['editEnd'];
+        $editRoom = $_POST['editRoom'];
+        $editSchedID = $_POST['editSchedID'];
 
-  $editSchedID = $_POST['editSchedID'];
+        $updateQuery = "UPDATE schedule SET SubID = ?, Section = ?, Day = ?, TimeStart = ?, TimeEnd = ?, Room = ? WHERE SchedID = ?";
 
-  $updateQuery = "UPDATE schedule SET SubID = ?, Section = ?, Day = ?, TimeStart = ?, TimeEnd = ?, Room = ? WHERE SchedID = ?";
+        $stmt = mysqli_prepare($conn, $updateQuery);
+        mysqli_stmt_bind_param($stmt, "ssssssi", $editSubCode, $editSection, $editDay, $editStart, $editEnd, $editRoom, $editSchedID);
+        mysqli_stmt_execute($stmt);
 
-  $stmt = mysqli_prepare($conn, $updateQuery);
-  mysqli_stmt_bind_param($stmt, "ssssssi", $editSubCode, $editSection, $editDay, $editStart, $editEnd, $editRoom, $editSchedID);
-  mysqli_stmt_execute($stmt);
+        header("Location: ScheduleManagement.php?success=1");
+        exit();
+    }
 
-  header("Location: ScheduleManagement.php?success=1");
-  exit();
-}
+    if (isset($_POST['deleteSched'])) {
+        $deleteID = $_POST['deleteSchedID'];
+        $deleteQuery = "DELETE FROM schedule WHERE SchedID = ?";
+        $stmt = mysqli_prepare($conn, $deleteQuery);
+        mysqli_stmt_bind_param($stmt, "i", $deleteID);
+        mysqli_stmt_execute($stmt);
 
-if (isset($_POST['deleteSched'])) {
-  $deleteID = $_POST['deleteSchedID'];
-  $deleteQuery = "DELETE FROM schedule WHERE SchedID = ?";
-  $stmt = mysqli_prepare($conn, $deleteQuery);
-  mysqli_stmt_bind_param($stmt, "i", $deleteID);
-  mysqli_stmt_execute($stmt);
-
-  header("Location: ScheduleManagement.php?success=1");
-  exit();
+        header("Location: ScheduleManagement.php?success=1");
+        exit();
+    }
 }
 ?>
 
@@ -112,6 +115,15 @@ if (isset($_POST['deleteSched'])) {
     max-width: 90%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
+  
+  /* Style for view-only mode */
+  .view-only-btn {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .view-only-btn:hover {
+    background-color: transparent !important;
+  }
 </style>
 
 <body>
@@ -125,19 +137,20 @@ if (isset($_POST['deleteSched'])) {
       <div class="top-bar">
         <h1 class="title">Subject Schedule Management</h1>
         <div>
+          <?php if (canEdit()): ?>
           <form action="import_schedule.php" method="POST" enctype="multipart/form-data" style="display: inline-block;">
-            <label class="btn btn-sm btn-outline-secondary me-2" style="  cursor: pointer;">
+            <label class="btn btn-sm btn-outline-secondary me-2" style="cursor: pointer;">
               📁 Import
               <input type="file" name="import_file" accept=".xlsx" hidden onchange="this.form.submit()">
             </label>
           </form>
           <button class="add-subject-btn btn btn-sm btn-outline-primary">+ Add New Schedule</button>
+          <?php endif; ?>
         </div>
       </div>
       <div class="table-container">
         <table>
           <thead>
-
             <tr>
               <th>Schedule ID</th>
               <th>Subject ID</th>
@@ -146,7 +159,9 @@ if (isset($_POST['deleteSched'])) {
               <th>Time Start</th>
               <th>Time End</th>
               <th>Room</th>
+              <?php if (canEdit()): ?>
               <th>Action</th>
+              <?php endif; ?>
             </tr>
           </thead>
           <tbody>
@@ -160,6 +175,7 @@ if (isset($_POST['deleteSched'])) {
                   <td><?= $row['TimeStart'] ?></td>
                   <td><?= $row['TimeEnd'] ?></td>
                   <td><?= $row['Room'] ?></td>
+                  <?php if (canEdit()): ?>
                   <td>
                     <button class="action-btn edit-btn"
                       data-schedid="<?= $row['SchedID'] ?>"
@@ -175,17 +191,16 @@ if (isset($_POST['deleteSched'])) {
                       <img src="adminPic/Trash_Full.svg" alt="Delete" class="icon-btn">
                     </button>
                   </td>
+                  <?php endif; ?>
                 </tr>
               <?php endwhile; ?>
             <?php else: ?>
               <tr>
-                <td colspan="8">No schedules found.</td>
+                <td colspan="<?= canEdit() ? '8' : '7' ?>">No schedules found.</td>
               </tr>
             <?php endif; ?>
           </tbody>
         </table>
-
-
       </div>
       <?php
       $startItem = ($page - 1) * $perPage + 1;
@@ -196,7 +211,6 @@ if (isset($_POST['deleteSched'])) {
       ?>
       <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px; font-family: sans-serif; font-size: 14px;">
         <span><?= "$startItem - $endItem of $totalItems" ?></span>
-
 
         <a href="ScheduleManagement.php?page=<?= $prevPage ?>" style="text-decoration: none; font-size: 18px;">❮</a>
 
@@ -219,7 +233,8 @@ if (isset($_POST['deleteSched'])) {
 
     </main>
 
-    <!-- Add Schedule Modal -->
+    <!-- Add Schedule Modal (only shown for admins) -->
+    <?php if (canEdit()): ?>
     <div id="addSubjectModal">
       <div class="modal-box">
         <button class="close-btn">&times;</button>
@@ -234,7 +249,6 @@ if (isset($_POST['deleteSched'])) {
               </option>
             <?php endwhile; ?>
           </select>
-
 
           <label for="section">Section</label>
           <select name="Section">
@@ -286,7 +300,6 @@ if (isset($_POST['deleteSched'])) {
             <option value="105">105</option>
           </select>
 
-
           <div class="button-group">
             <button type="button" class="cancel-btn">Cancel</button>
             <button type="submit" class="add-btn" name="addSchedule">Add Subject</button>
@@ -294,7 +307,10 @@ if (isset($_POST['deleteSched'])) {
         </form>
       </div>
     </div>
-    <!-- Edit Modal -->
+    <?php endif; ?>
+
+    <!-- Edit Modal (only shown for admins) -->
+    <?php if (canEdit()): ?>
     <div id="editSubjectModal">
       <div class="modal-box">
         <button class="close-btn">&times;</button>
@@ -313,7 +329,6 @@ if (isset($_POST['deleteSched'])) {
                 <?= htmlspecialchars($subject['SubCode']) ?>
               </option>
             <?php endwhile; ?>
-
           </select>
 
           <label for="editSection">Section</label>
@@ -363,7 +378,6 @@ if (isset($_POST['deleteSched'])) {
             <option value="105">105</option>
           </select>
 
-
           <div class="button-group">
             <button type="button" class="cancel-btn">Cancel</button>
             <button type="submit" class="save-btn" name="updateSched">Save Changes</button>
@@ -371,8 +385,10 @@ if (isset($_POST['deleteSched'])) {
         </form>
       </div>
     </div>
+    <?php endif; ?>
 
-    <!-- Delete Modal -->
+    <!-- Delete Modal (only shown for admins) -->
+    <?php if (canEdit()): ?>
     <div id="deleteModalOverlay" class="modal-overlay">
       <div class="modal-box">
         <form method="POST" action="ScheduleManagement.php">
@@ -386,9 +402,10 @@ if (isset($_POST['deleteSched'])) {
         </form>
       </div>
     </div>
-
+    <?php endif; ?>
 
     <script>
+      <?php if (canEdit()): ?>
       const addSubjectModal = document.getElementById("addSubjectModal");
       const addSubjectBtn = document.querySelector(".add-subject-btn");
       const closeModalBtn = document.querySelector(".close-btn");
@@ -443,16 +460,16 @@ if (isset($_POST['deleteSched'])) {
         button.addEventListener('click', () => {
           document.getElementById('editSubjectID').value = button.dataset.subid;
           document.getElementById('editSection').value = button.dataset.section;
-          document.getElementById('editDay').value = button.dataset.day; // "Tuesday"
-          document.getElementById('editStart').value = button.dataset.start; // "10:00:00"
-          document.getElementById('editEnd').value = button.dataset.end; // "13:00:00"
+          document.getElementById('editDay').value = button.dataset.day;
+          document.getElementById('editStart').value = button.dataset.start;
+          document.getElementById('editEnd').value = button.dataset.end;
           document.getElementById('editRoom').value = button.dataset.room;
           document.getElementById('editSchedID').value = button.dataset.schedid;
-
 
           document.getElementById('editSubjectModal').style.display = 'flex';
         });
       });
+      
       //delete modal
       document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', () => {
@@ -461,9 +478,8 @@ if (isset($_POST['deleteSched'])) {
           document.getElementById('deleteModalOverlay').style.display = 'flex';
         });
       });
+      <?php endif; ?>
     </script>
 
-
 </body>
-
 </html>

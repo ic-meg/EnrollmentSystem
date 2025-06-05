@@ -1,6 +1,7 @@
 <?php 
 include "session_check.php";
 include '../dbcon.php';
+include "permissions.php";
 
 $subjects = [];
 $subject_query = "SELECT SubjID, SubCode, SubName FROM subject";
@@ -8,13 +9,14 @@ $subject_result = mysqli_query($conn, $subject_query);
 while ($row = mysqli_fetch_assoc($subject_result)) {
     $subjects[] = $row;
 }
+
 // Clear success message from URL if present
 if (isset($_GET['success'])) {
     echo '<script>history.replaceState({}, document.title, window.location.pathname);</script>';
 }
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Handle form submissions (only for admins)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && canEdit()) {
     if (isset($_POST['add_course'])) {
         // Add new course
         $courseName = $_POST['course_name'];
@@ -129,12 +131,19 @@ if ($viewArchived) {
             background-color: #f8f9fa;
             opacity: 0.8;
         }
+        .view-only {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .view-only:hover {
+            background-color: transparent;
+        }
     </style>
 </head>
 <body>
     <?php include "admin-sidebar.php"; ?>
-	</div>
-	</div>
+    </div>
+    </div>
     <main>
         <div class="wrapper">
             <div class="container">
@@ -142,6 +151,7 @@ if ($viewArchived) {
                     <div class="container">
                         <div class="page-title">
                             <h3>Course Management
+                                <?php if (canEdit()): ?>
                                 <div class="btn-group float-end">
                                     <form action="import_course.php" method="POST" enctype="multipart/form-data" style="display: inline-block;">
                                         <label class="btn btn-md  me-2">
@@ -153,13 +163,15 @@ if ($viewArchived) {
                                         <i class="fas fa-user-shield"></i> Add New Course
                                     </button>
                                 </div>
+                                <?php endif; ?>
                             </h3>
                             <?php if (isset($_GET['success'])): ?>
                                 <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
                             <?php endif; ?>
                         </div>
                         
-                        <!-- Add Course Modal -->
+                        <!-- Add Course Modal (only for admins) -->
+                        <?php if (canEdit()): ?>
                         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -172,16 +184,6 @@ if ($viewArchived) {
                                             <div class="mb-3">
                                                 <label class="col-form-label">Course name:</label>
                                                 <input type="text" class="form-control" name="course_name" required>
-                                                <!-- <label class="col-form-label">Link Subject:</label>
-                                                <select class="form-control" name="link_subject">
-                                                    <option value="">-- Select Subject --</option>
-                                                    <?php foreach ($subjects as $subject): ?>
-                                                        <option value="<?php echo $subject['SubjID']; ?>">
-                                                            <?php echo htmlspecialchars($subject['SubCode'] . " - " . $subject['SubName']); ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select> -->
-
                                                 <label class="col-form-label">Units:</label>
                                                 <input type="number" class="form-control" name="total_units" required>
                                                 <label class="col-form-label">Description:</label>
@@ -196,6 +198,7 @@ if ($viewArchived) {
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
                         
                         <div class="box box-primary">
                             <div class="box-body">
@@ -206,7 +209,9 @@ if ($viewArchived) {
                                             <th>Link Subject</th>
                                             <th class="text-center">Total Units</th>
                                             <th class="text-center">No. of Students</th>
+                                            <?php if (canEdit()): ?>
                                             <th class="text-center">Action</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -223,12 +228,11 @@ if ($viewArchived) {
                                                     $subCodes[] = $sub['SubCode'];
                                                 }
                                                 echo implode(", ", $subCodes); 
-                                                
-
                                             ?>
                                             </td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['TotalUnits']); ?></td>
                                             <td class="text-center"><?php echo htmlspecialchars($course['NumOfStudents']); ?></td>
+                                            <?php if (canEdit()): ?>
                                             <td class="text-center">
                                                 <?php if (!$viewArchived): ?>
                                                     <!-- Info Button -->
@@ -255,9 +259,10 @@ if ($viewArchived) {
                                                     </form>
                                                 <?php endif; ?>
                                             </td>
+                                            <?php endif; ?>
                                         </tr>
 
-                                        <!-- Info Modal -->
+                                        <!-- Info Modal (visible to all) -->
                                         <div class="modal fade" id="infoModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
@@ -276,7 +281,8 @@ if ($viewArchived) {
                                             </div>
                                         </div>
 
-                                        <!-- Edit Modal -->
+                                        <!-- Edit Modal (only for admins) -->
+                                        <?php if (canEdit()): ?>
                                         <div class="modal fade" id="editModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
@@ -290,20 +296,8 @@ if ($viewArchived) {
                                                             <div class="mb-3">
                                                                 <label class="col-form-label">Course Name:</label>
                                                                 <input type="text" class="form-control" name="course_name" value="<?php echo htmlspecialchars($course['CourseName']); ?>" required>
-                                                                <!-- <label class="col-form-label">Link Subject:</label>
-                                                                <select class="form-control" name="link_subject" >
-                                                                <option value="">-- Select Subject --</option>
-                                                                <?php foreach ($subjects as $subject): ?>
-                                                                    <option value="<?php echo $subject['SubjID']; ?>" 
-                                                                        <?php echo ($course['SubjectID'] == $subject['SubjID']) ? 'selected' : ''; ?>>
-                                                                        <?php echo htmlspecialchars($subject['SubCode'] . " - " . $subject['SubName']); ?>
-                                                                    </option>
-
-                                                                <?php endforeach; ?>
-                                                            </select> -->
-
-                                                            <label class="col-form-label">Total Units:</label>
-                                                                <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
+                                                                <label class="col-form-label">Total Units:</label>
+                                                                    <input type="number" class="form-control" name="total_units" value="<?php echo htmlspecialchars($course['TotalUnits']); ?>" required>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -315,7 +309,7 @@ if ($viewArchived) {
                                             </div>
                                         </div>
 
-                                        <!-- Archive Modal -->
+                                        <!-- Archive Modal (only for admins) -->
                                         <div class="modal fade" id="archiveModal<?php echo $course['CourseID']; ?>" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
@@ -336,21 +330,24 @@ if ($viewArchived) {
                                                 </div>
                                             </div>
                                         </div>
+                                        <?php endif; ?>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         
-                        <!-- Floating button to toggle between active and archived courses -->
-                        <?php if ($viewArchived): ?>
-                            <a href="adminCourseManagement.php" class="btn btn-outline-secondary archive-btn">
-                                <i class="fas fa-arrow-left"></i> Back to Active Courses
-                            </a>
-                        <?php else: ?>
-                            <a href="?view=archived" class="btn btn-outline-secondary archive-btn">
-                                <i class="fas fa-archive"></i> View Archived Courses
-                            </a>
+                        <!-- Floating button to toggle between active and archived courses (only for admins) -->
+                        <?php if (canEdit()): ?>
+                            <?php if ($viewArchived): ?>
+                                <a href="adminCourseManagement.php" class="btn btn-outline-secondary archive-btn">
+                                    <i class="fas fa-arrow-left"></i> Back to Active Courses
+                                </a>
+                            <?php else: ?>
+                                <a href="?view=archived" class="btn btn-outline-secondary archive-btn">
+                                    <i class="fas fa-archive"></i> View Archived Courses
+                                </a>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>
