@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: http://localhost/EnrollmentSystem/main/signin.php");
+    header("Location: http://localhost/EnrollmentSystem/main/index.php");
     exit();
 }
 ?>

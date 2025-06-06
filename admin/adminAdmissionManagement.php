@@ -80,6 +80,10 @@ include "permissions.php";
                             <!-- Tabs -->
                             <ul class="nav nav-tabs mb-1" id="enrollmentTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
+                                    <button class="nav-link " id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">All</button>
+                                </li>
+
+                                <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">Pending</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -474,7 +478,7 @@ include "permissions.php";
                 let visibleCount = 0;
 
                 rows.forEach(row => {
-                    // Skip no-data-message row
+                    // Skip no-data-message rows
                     if (row.classList.contains('no-data-message')) {
                         row.remove();
                         return;
@@ -484,7 +488,12 @@ include "permissions.php";
                     if (!statusCell) return;
                     const rowStatus = statusCell.textContent.trim();
 
-                    if (status === 'All' || rowStatus === status) {
+                    const isArchived = rowStatus.toLowerCase() === "archived";
+
+                    if (
+                        (status === 'All' && !isArchived) ||
+                        (status !== 'All' && rowStatus === status)
+                    ) {
                         row.style.display = '';
                         visibleCount++;
                     } else {
@@ -496,13 +505,14 @@ include "permissions.php";
                     const messageRow = document.createElement('tr');
                     messageRow.className = 'no-data-message';
                     messageRow.innerHTML = `
-                    <td colspan="6" class="text-center text-muted">
-                        No ${status.toLowerCase()} applications found.
-                    </td>
-                `;
+      <td colspan="6" class="text-center text-muted">
+        No ${status.toLowerCase()} applications found.
+      </td>
+    `;
                     tableBody.appendChild(messageRow);
                 }
             }
+
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {

@@ -89,7 +89,7 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                             ?>
 
                             <div class="d-flex justify-content-end mb-3">
-                                <a href="adminEnrollee.php<?= $isArchivedView ? '' : '?view=archived' ?>" class="btn btn-outline-<?= $isArchivedView ? 'primary' : 'secondary' ?>">
+                                <a href="adminEnrollee.php<?= $isArchivedView ? '' : '?view=archived' ?>" id="viewArchivedBtn" class="btn btn-outline-<?= $isArchivedView ? 'primary' : 'secondary' ?>">
                                     <i class="fas fa-archive me-1"></i>
                                     <?= $isArchivedView ? 'View Active Enrollees' : 'View Archived Enrollees' ?>
                                 </a>
@@ -100,7 +100,8 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
 
                         <div class="box box-primary">
                             <ul class="nav nav-tabs mb-1" id="typeTabs" role="tablist">
-                                <li class="nav-item"><button class="nav-link active filter-tab" data-type="Freshmen">Freshmen</button></li>
+                                <li class="nav-item"><button class="nav-link active filter-tab" data-type="All">All</button></li>
+                                <li class="nav-item"><button class="nav-link  filter-tab" data-type="Freshmen">Freshmen</button></li>
                                 <li class="nav-item"><button class="nav-link filter-tab" data-type="Transferee">Transferee</button></li>
                                 <li class="nav-item"><button class="nav-link filter-tab" data-type="Returnee">Returnee</button></li>
                                 <li class="nav-item"><button class="nav-link filter-tab" data-type="Nonsequential">Nonsequential</button></li>
@@ -125,7 +126,6 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                                     <tbody id="enrollee-tbody">
 
                                         <?php
-                                        // dbcon.php is already included at the top
                                         $statusFilter = $isArchivedView ? "Archived" : "Approved";
 
                                         $query = "SELECT EnrolleeID, name, program, enrollment_type, section
@@ -234,17 +234,13 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
             const $rows = $('#enrollee-tbody tr');
             let visibleCount = 0;
 
-
             $('#enrollee-tbody .no-result-row').remove();
-
-            // Update tab UI
             $('.filter-tab').removeClass('active');
             $(this).addClass('active');
 
-
             $rows.each(function() {
                 const rowType = $(this).data('type');
-                if (rowType === selectedType) {
+                if (selectedType === "All" || rowType === selectedType) {
                     $(this).show();
                     visibleCount++;
                 } else {
@@ -252,19 +248,31 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                 }
             });
 
-
             if (visibleCount === 0) {
                 const noRow = `
-                    <tr class="no-result-row">
-                        <td colspan="<?= isAdmin() ? '6' : '5' ?>" class="text-center text-muted">No ${selectedType} found.</td>
-                    </tr>
-                `;
+            <tr class="no-result-row">
+                <td colspan="<?= isAdmin() ? '6' : '5' ?>" class="text-center text-muted">No ${selectedType} found.</td>
+            </tr>
+        `;
                 $('#enrollee-tbody').append(noRow);
             }
         });
 
+
         // Trigger default tab on load
         $('.filter-tab.active').trigger('click');
+
+        window.addEventListener('load', () => {
+            const trigger = localStorage.getItem('triggerViewArchived');
+            if (trigger === 'true') {
+                const archivedBtn = document.getElementById('viewArchivedBtn');
+                if (archivedBtn) {
+                    archivedBtn.click();
+                    localStorage.removeItem('triggerViewArchived');
+                }
+            }
+        });
+
     });
 </script>
 
