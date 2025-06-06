@@ -89,6 +89,47 @@ $update->bind_param("si", $section, $enrolleeId);
 
 $update->execute();
 $update->close();
+// Calculate totals
+$tuitionFee = 0;
+$miscFee = 300.00;
+$totalUnits = 0;
+
+foreach ($subjects as $subject) {
+    $tuitionFee += floatval($subject['Fee']);
+    $totalUnits += intval($subject['Units']);
+}
+
+$totalFee = $tuitionFee + $miscFee;
+
+// Fetch name and program again (or reuse if already stored)
+$infoQuery = $conn->prepare("SELECT name, program, user_id FROM enrollee WHERE EnrolleeID = ?");
+$infoQuery->bind_param("i", $enrolleeId);
+$infoQuery->execute();
+$infoResult = $infoQuery->get_result();
+
+if ($infoResult && $infoResult->num_rows > 0) {
+    $info = $infoResult->fetch_assoc();
+
+    // Insert into paymentinfo
+    $insertPayment = $conn->prepare("INSERT INTO paymentinfo 
+        (user_id, Name, Program, TuitionFee, MiscellanousFee, TotalFees, PaymentStatus) 
+        VALUES (?, ?, ?, ?, ?, ?, 'Pending')");
+
+    $insertPayment->bind_param(
+        "issddd",
+        $info['user_id'],
+        $info['name'],
+        $info['program'],
+        $tuitionFee,
+        $miscFee,
+        $totalFee
+    );
+
+    $insertPayment->execute();
+    $insertPayment->close();
+}
+
+$infoQuery->close();
 
 
 // Fetch email from useraccount

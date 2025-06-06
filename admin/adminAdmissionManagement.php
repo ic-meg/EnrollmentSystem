@@ -1,11 +1,12 @@
-<?php 
+<?php
 include "session_check.php";
 include '../dbcon.php';
-include "permissions.php"; // Assuming you have this file for role checking
+include "permissions.php";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -50,12 +51,13 @@ include "permissions.php"; // Assuming you have this file for role checking
         background-color: #0056b3;
         color: white;
     }
-    
+
     /* Style for view-only mode */
     .view-only-btn {
         cursor: not-allowed;
         opacity: 0.6;
     }
+
     .view-only-btn:hover {
         background-color: transparent !important;
     }
@@ -99,7 +101,7 @@ include "permissions.php"; // Assuming you have this file for role checking
                                                 <th class="text-center">Application Status</th>
                                                 <th class="text-center">Documents Uploaded</th>
                                                 <?php if (canEdit()): ?>
-                                                <th class="text-center">Action</th>
+                                                    <th class="text-center">Action</th>
                                                 <?php endif; ?>
                                             </tr>
                                         </thead>
@@ -113,7 +115,7 @@ include "permissions.php"; // Assuming you have this file for role checking
                                                 while ($row = $result->fetch_assoc()) {
                                                     $modalID1 = "deleteModal" . $row['user_id'];
 
-                                                    $modalID = preg_replace('/\s+/', '', $row['name']); 
+                                                    $modalID = preg_replace('/\s+/', '', $row['name']);
                                                     $userID = $row['user_id'];
                                                     $_SESSION['selected_user_id'] = $userID;
 
@@ -210,20 +212,20 @@ include "permissions.php"; // Assuming you have this file for role checking
                                                         </td>
 
                                                         <?php if (canEdit()): ?>
-                                                        <td class="text-center">
-                                                            <button class='btn btn-outline-primary btn-rounded' data-bs-toggle='modal' data-bs-target='#infoModal<?php echo $modalID; ?>'>
-                                                                <i class='fa fa-info-circle'></i>
-                                                            </button>
-
-                                                            <?php if (strtolower($row['Status']) !== 'approved'): ?>
-                                                                <button type="button" class="btn btn-outline-danger btn-rounded reject-btn"
-                                                                    data-userid="<?php echo $userID; ?>"
-                                                                    data-username="<?php echo $row['name']; ?>"
-                                                                    data-status="<?php echo $row['Status']; ?>">
-                                                                    <i class="fas fa-times"></i>
+                                                            <td class="text-center">
+                                                                <button class='btn btn-outline-primary btn-rounded' data-bs-toggle='modal' data-bs-target='#infoModal<?php echo $modalID; ?>'>
+                                                                    <i class='fa fa-info-circle'></i>
                                                                 </button>
-                                                            <?php endif; ?>
-                                                        </td>
+
+                                                                <?php if (strtolower($row['Status']) !== 'approved' && strtolower($row['Status']) !== 'rejected'): ?>
+                                                                    <button type="button" class="btn btn-outline-danger btn-rounded reject-btn"
+                                                                        data-userid="<?php echo $userID; ?>"
+                                                                        data-username="<?php echo $row['name']; ?>"
+                                                                        data-status="<?php echo $row['Status']; ?>">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
+                                                            </td>
                                                         <?php endif; ?>
                                                     </tr>
 
@@ -364,45 +366,55 @@ include "permissions.php"; // Assuming you have this file for role checking
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
                                                                 </div>
-                                                                <div class="modal-footer">
-                                                                    <?php if (canEdit() && strtolower($row['Status']) !== 'approved'): ?>
+                                                                <?php if (canEdit() && strtolower($row['Status']) !== 'approved' && strtolower($row['Status']) !== 'rejected'): ?>
+                                                                    <div class="modal-footer">
+
                                                                         <a href="creditSubject.php?user_id=<?= $row['user_id'] ?>" class="btn btn-success">Approve</a>
-                                                                    <?php endif; ?>
-                                                                </div>
+
+                                                                    </div>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <!-- Rejection Modal (only shown for admins) -->
                                                     <?php if (canEdit()): ?>
-                                                    <div class="modal fade" id="deleteModal<?php echo $userID; ?>" tabindex="-1" aria-labelledby="deleteLabel<?php echo $userID; ?>" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="deleteLabel<?php echo $userID; ?>">Reject Applicant <?php echo $userID; ?></h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    This action will reject <?php echo $row['name']; ?>'s application. Do you want to continue?
-                                                                    <form>
-                                                                        <div class="mb-3">
-                                                                            <label for="message-text<?php echo $userID; ?>" class="col-form-label">Reason:</label>
-                                                                            <textarea class="form-control" id="message-text<?php echo $userID; ?>"></textarea>
-                                                                            <div class="suggested-reasons mt-2">
-                                                                                <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Incomplete application</button>
-                                                                                <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Does not meet qualifications</button>
-                                                                                <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Failed background check</button>
+                                                        <div class="modal fade" id="deleteModal<?php echo $userID; ?>" tabindex="-1" aria-labelledby="deleteLabel<?php echo $userID; ?>" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="deleteLabel<?php echo $userID; ?>">Reject Applicant <?php echo $userID; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        This action will reject <?php echo $row['name']; ?>'s application. Do you want to continue?
+                                                                        <form action="reject.php" method="POST" onsubmit="return confirmAndSetReason(event, <?php echo $userID; ?>);">
+
+                                                                            <!-- hidden fields that actually get submitted -->
+                                                                            <input type="hidden" name="user_id" value="<?php echo $userID; ?>">
+                                                                            <input type="hidden" name="reason" id="reasonField<?php echo $userID; ?>">
+
+                                                                            <div class="mb-3">
+                                                                                <label for="message-text<?php echo $userID; ?>" class="col-form-label">Reason:</label>
+                                                                                <textarea required class="form-control" id="message-text<?php echo $userID; ?>"></textarea>
+                                                                                <div class="suggested-reasons mt-2">
+                                                                                    <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Incomplete application</button>
+                                                                                    <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Does not meet qualifications</button>
+                                                                                    <button type="button" class="btn btn-outline-secondary btn-sm reason-btn">Failed background check</button>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
-                                                                    <button type="button" class="btn btn-danger confirm-reject-btn" data-userid="<?php echo $userID; ?>">Yes</button>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No</button>
+                                                                                <button type="submit" class="btn btn-danger">Yes</button>
+                                                                            </div>
+                                                                        </form>
+
+
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
                                                     <?php endif; ?>
 
                                                     <!-- Already Rejected Modal -->
@@ -505,11 +517,47 @@ include "permissions.php"; // Assuming you have this file for role checking
                 });
             });
 
-            // Initial load
+
             filterTable('Pending');
         });
-    </script>
+        document.querySelectorAll('.confirm-reject-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userId = this.getAttribute('data-userid');
+                const reason = document.querySelector(`#message-text${userId}`).value;
+                const hiddenField = document.querySelector(`input#reasonField${userId}`);
+                if (hiddenField) hiddenField.value = reason;
+            });
+        });
 
+        function confirmAndSetReason(event, userId) {
+            const textarea = document.getElementById(`message-text${userId}`);
+            const hidden = document.getElementById(`reasonField${userId}`);
+
+            if (!textarea || !hidden) {
+                alert("Missing reason fields.");
+                return false;
+            }
+
+            const value = textarea.value.trim();
+            if (value === "") {
+                alert("Please provide a reason.");
+                event.preventDefault();
+                return false;
+            }
+
+            // Set the reason field 
+            hidden.value = value;
+
+            //  confirmation 
+            const confirmed = confirm("Are you sure you want to reject this applicant?");
+            if (!confirmed) {
+                event.preventDefault();
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 
 </body>
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include "session_check.php";
 include "../dbcon.php";
 
@@ -12,15 +12,16 @@ $approvedQuery = "SELECT COUNT(*) as total FROM enrollee WHERE Status = 'Approve
 $approvedResult = mysqli_query($conn, $approvedQuery);
 $approvedApplications = mysqli_fetch_assoc($approvedResult)['total'];
 
-// Fetch messages from applicants (from supportpage table)
-$messagesQuery = "SELECT COUNT(*) as total FROM supportpage";
-$messagesResult = mysqli_query($conn, $messagesQuery);
-$messages = mysqli_fetch_assoc($messagesResult)['total'];
+// Fetch pending applications (assuming status is stored in enrollee table)
+$pendingQuery = "SELECT COUNT(*) as total FROM enrollee WHERE Status = 'Pending'";
+$pendingResult = mysqli_query($conn, $pendingQuery);
+$pendingApplicant = mysqli_fetch_assoc($pendingResult)['total'];
+
 
 // Fetch completed enrollments (assuming this means approved and payment completed)
 $completedQuery = "SELECT COUNT(*) as total FROM enrollee e 
                   JOIN paymentinfo p ON e.user_id = p.user_id 
-                  WHERE e.Status = 'Approved' AND p.PaymentStatus = 'Completed'";
+                  WHERE e.Status = 'Approved' AND p.PaymentStatus = 'Paid'";
 $completedResult = mysqli_query($conn, $completedQuery);
 $completedEnrollments = mysqli_fetch_assoc($completedResult)['total'];
 
@@ -54,8 +55,8 @@ while ($row = mysqli_fetch_assoc($recentResult)) {
 <body>
     <?php include "admin-sidebar.php"; ?>
     <main>
-    </div>
-    </div>
+        </div>
+        </div>
 
         <div class="container">
             <!--------------- BOXES ------------------->
@@ -63,7 +64,7 @@ while ($row = mysqli_fetch_assoc($recentResult)) {
                 <div class="box box1">
                     <div class="text">
                         <h2 class="topic-heading"><?php echo number_format($totalStudents); ?></h2>
-                        <h2 class="topic">Total Students Enrolled</h2>
+                        <h2 class="topic">Total Applicants</h2>
                     </div>
                     <img src="./adminPic/people.png" alt="Views">
                 </div>
@@ -78,8 +79,8 @@ while ($row = mysqli_fetch_assoc($recentResult)) {
 
                 <div class="box box3">
                     <div class="text">
-                        <h2 class="topic-heading"><?php echo number_format($messages); ?></h2>
-                        <h2 class="topic">Messages from Applicants</h2>
+                        <h2 class="topic-heading"><?php echo number_format($pendingApplicant); ?></h2>
+                        <h2 class="topic">Pending Applications</h2>
                     </div>
                     <img src="./adminPic/chat.png" alt="Comments">
                 </div>
@@ -112,7 +113,7 @@ while ($row = mysqli_fetch_assoc($recentResult)) {
                     <div class="items">
                         <?php if (!empty($recentApplicants)): ?>
                             <?php foreach ($recentApplicants as $index => $applicant): ?>
-                                <?php 
+                                <?php
                                 // Determine document status
                                 $docStatus = ($applicant['documents_uploaded'] >= 3) ? 'Complete' : 'Incomplete';
                                 $docClass = ($docStatus == 'Complete') ? 'du-green' : 'du-red';
@@ -140,4 +141,5 @@ while ($row = mysqli_fetch_assoc($recentResult)) {
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

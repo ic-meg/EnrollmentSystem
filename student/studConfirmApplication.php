@@ -124,19 +124,33 @@ foreach ($tables as $table => $column) {
         <div class="notice-container">
             <div class="notice-header">Submission Status</div>
             <div class="notice-content">
-                <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success">
-                <p class="notice-text">You've successfully passed your requirements.</p>
+                <?php if (strtolower($status) === 'rejected'): ?>
+                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828665.png" alt="Rejected" style="width: 100px;">
+                <?php else: ?>
+                    <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success" style="width: 100px;">
+                <?php endif; ?>
 
-                <?php if ($referenceNo): ?>
-                    <div class="reference">
-                        Reference Number: <strong><?php echo htmlspecialchars($referenceNo); ?></strong>
-                        <div class="estimate">Please allow up to 3 working days for verification and approval.</div>
+                <?php if (strtolower($status) === 'rejected'): ?>
+                    <p class="notice-text" style="color: #e53935;">Your application has been <strong>rejected</strong>.</p>
+                    <div class="reference" style="color: #e53935;">
+                        Please contact the admissions office for more information.
                     </div>
                 <?php else: ?>
-                    <div class="reference" style="color: #e53935;">
-                        Unable to retrieve reference number. Please contact support.
-                    </div>
+                    <p class="notice-text">You've successfully passed your requirements.</p>
+
+                    <?php if ($referenceNo): ?>
+                        <div class="reference">
+                            Reference Number: <strong><?php echo htmlspecialchars($referenceNo); ?></strong>
+                            <div class="estimate">Please allow up to 3 working days for verification and approval.</div>
+                        </div>
+                    <?php else: ?>
+                        <div class="reference" style="color: #e53935;">
+                            Unable to retrieve reference number. Please contact support.
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
+
+
             </div>
         </div>
     </main>

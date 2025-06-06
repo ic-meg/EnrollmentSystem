@@ -3,6 +3,13 @@ include "session_check.php";
 include "../dbcon.php";
 include "permissions.php"; // Include the permissions file for isAdmin()
 
+// Fetch total students enrolled
+$approvedQuery = "SELECT COUNT(*) as total FROM enrollee WHERE Status = 'Approved'";
+$approvedResult = mysqli_query($conn, $approvedQuery);
+$approvedApplications = mysqli_fetch_assoc($approvedResult)['total'];
+
+
+
 // --- Server-side restriction for Admin actions ---
 if (isAdmin()) { // Only allow these actions if the user is an Admin
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_enrollee'])) {
@@ -75,7 +82,7 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                     <div class="container">
                         <div class="page-title">
                             <h3><span style="color: #2db2ff;">Enrollee</span> <span style="color: #000000;">List</span>
-                                <span style="color: #6941C6; font-size:17px; margin-left: 10px;"> 100 users</span>
+                                <span style="color: #6941C6; font-size:17px; margin-left: 10px;"> <?php echo number_format($approvedApplications); ?> users</span>
                             </h3>
                             <?php
                             $isArchivedView = isset($_GET['view']) && $_GET['view'] === 'archived';
@@ -109,7 +116,8 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                                             <th>Name</th>
                                             <th>Program</th>
                                             <th>Enrollment Type</th>
-                                            <?php if (isAdmin()): // Only show Action column for Admins ?>
+                                            <?php if (isAdmin()): // Only show Action column for Admins 
+                                            ?>
                                                 <th class="text-center">Action</th>
                                             <?php endif; ?>
                                         </tr>
@@ -213,10 +221,10 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
 <script>
     // This script should only be active for Admins
     <?php if (isAdmin()): ?>
-    $(document).on('click', '.archive-btn', function() {
-        const enrolleeID = $(this).data('id');
-        $('#archive-enrollee-id').val(enrolleeID);
-    });
+        $(document).on('click', '.archive-btn', function() {
+            const enrolleeID = $(this).data('id');
+            $('#archive-enrollee-id').val(enrolleeID);
+        });
     <?php endif; ?>
 </script>
 <script>
@@ -226,14 +234,14 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
             const $rows = $('#enrollee-tbody tr');
             let visibleCount = 0;
 
-         
+
             $('#enrollee-tbody .no-result-row').remove();
 
             // Update tab UI
             $('.filter-tab').removeClass('active');
             $(this).addClass('active');
 
-      
+
             $rows.each(function() {
                 const rowType = $(this).data('type');
                 if (rowType === selectedType) {
@@ -244,7 +252,7 @@ if (isAdmin()) { // Only allow these actions if the user is an Admin
                 }
             });
 
-       
+
             if (visibleCount === 0) {
                 const noRow = `
                     <tr class="no-result-row">

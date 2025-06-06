@@ -382,7 +382,7 @@ if (isset($_POST["submitReg"])) {
                                             <option value="Bachelor of Science in Nursing">Bachelor of Science in Nursing</option>
                                             <option value="Bachelor of Science in Law">Bachelor of Science in Law</option>
                                             <option value="Bachelor of Science in Criminology">Bachelor of Science in Criminology</option>
-                                            <option value="Bachelor of Science in Nursing">Bachelor of Science in Tourism</option>
+                                            <option value="Bachelor of Science in Tourism">Bachelor of Science in Tourism</option>
 
 
 
