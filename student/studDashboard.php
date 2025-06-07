@@ -274,11 +274,7 @@ $user = $result->fetch_assoc();
         </div>
 
         <main>
-            </div>
-            </div>
-            <!-- WAG TANGGALIN MAIN AT CONTAINER-->
             <div class="container">
-                <!--Content here-->
                 <div class="Welcome">
                     <img src="studPic/image1.png" alt="logo">
                     <div class="text-content">
@@ -287,45 +283,64 @@ $user = $result->fetch_assoc();
                     </div>
                 </div>
 
-                <!-- Cards Section -->
-                <div class="schedule-news-calendar">
-                    <div class="cards" style="margin-top: -30px;">
-                        <div class="card">
-                            <img src="studPic/Approval.png" alt="logo" class="stud-db-logo" style="display: block; margin: 0 auto;">
-                            <p class="label" style="white-space: nowrap;">STATUS:</p>
-                            <p class="value" style="white-space: nowrap;">Enrolled</p>
+                <!-- Responsive Flex Layout -->
+                <div class="dashboard-wrapper">
+                    <!-- Left Section: Status + Schedule + News -->
+                    <div class="left-section">
+                        <div class="cards">
+                            <div class="card">
+                                <img src="studPic/Approval.png" alt="logo" class="stud-db-logo">
+                                <p class="label">STATUS:</p>
+                                <p class="value">Enrolled</p>
+                            </div>
+                            <div class="card">
+                                <img src="studPic/Stack of coins.png" alt="logo" class="stud-db-logo">
+                                <p class="label">Total Fee:</p>
+                                <p class="value">123,456.78</p>
+                            </div>
+                            <div class="card">
+                                <img src="studPic/Books.png" alt="logo" class="stud-db-logo">
+                                <p class="label">Enrolled <br>Subject</p>
+                            </div>
                         </div>
-                        <div class="card">
-                            <img src="studPic/Stack of coins.png" alt="logo" class="stud-db-logo" style="display: block; margin: 0 auto;">
-                            <p class="label" style="white-space: nowrap;">Total Fee:</p>
-                            <p class="value" style="white-space: nowrap;">123,456.78</p>
-                        </div>
-                        <div class="card" style="height: auto;">
-                            <img src="studPic/Books.png" alt="logo" class="stud-db-logo" style="display: block; margin: 0 auto;">
-                            <p class="label" style="white-space: nowrap;">Enrolled <br>Subject</p>
+
+                        <!-- Schedule and News -->
+                        <div class="cards1">
+                            <div class="card1">
+                                <img src="studPic/Approval.png" alt="logo" class="stud-db-logo">
+                                <p class="label" style="text-align: center;">Schedule</p>
+                            </div>
+                            <div class="card1">
+                                <b>News and Update</b>
+                                <hr style="border: 1px solid grey;">
+                                <p></p>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Right Section: Calendar -->
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <button id="prevBtn">‹</button>
+                            <span id="monthYear"></span>
+                            <button id="nextBtn">›</button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div>Sun</div>
+                            <div>Mon</div>
+                            <div>Tue</div>
+                            <div>Wed</div>
+                            <div>Thu</div>
+                            <div>Fri</div>
+                            <div>Sat</div>
+                            <!-- The dates will go here -->
+                            </div>
+                    </div>
+
                 </div>
-
-                <!-- Schedule and News Section -->
-                <div class="cards1">
-                    <div class="card1">
-                        <img src="studPic/Approval.png" alt="logo" style="display: block; margin: 0 auto;">
-                        <p class="label" style="display: block; margin: 0 auto; text-align: center;">Schedule</p>
-                    </div>
-                    <div class="card1" style="height: auto; width: 42%;">
-                        <b style="white-space: nowrap;">News and Update</b>
-                        <hr style="border: 1px solid grey;">
-                        <p></p>
-                    </div>
-                </div>
-
-
-
-            </div>
-            </div>
             </div>
         </main>
+
 
 
         <script>
@@ -370,6 +385,66 @@ $user = $result->fetch_assoc();
                 this.value = this.value.replace(/\D/g, '').slice(0, 11);
             });
         </script>
+
+        <script>
+            const calendarGrid = document.querySelector(".calendar-grid");
+            const monthYear = document.getElementById("monthYear");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+
+            let currentDate = new Date();
+
+            function renderCalendar(date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const today = new Date();
+
+                const firstDayOfMonth = new Date(year, month, 1);
+                const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
+                const startDay = firstDayOfMonth.getDay();
+
+                // Keep weekday headers (first 7 elements), remove the rest
+                while (calendarGrid.children.length > 7) {
+                    calendarGrid.removeChild(calendarGrid.lastChild);
+                }
+
+                monthYear.textContent = `${date.toLocaleString('default', { month: 'long' })} ${year}`;
+
+                // Add blank cells before the 1st of the month
+                for (let i = 0; i < startDay; i++) {
+                    const blank = document.createElement("div");
+                    blank.innerHTML = "&nbsp;";
+                    calendarGrid.appendChild(blank);
+                }
+
+                // Add days of the month
+                for (let day = 1; day <= lastDateOfMonth; day++) {
+                    const dateEl = document.createElement("div");
+                    dateEl.textContent = day;
+
+                    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                    if (isToday) {
+                        dateEl.classList.add("current-day");
+                    }
+
+                    calendarGrid.appendChild(dateEl);
+                }
+            }
+
+            renderCalendar(currentDate);
+
+            prevBtn.onclick = () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar(currentDate);
+            };
+
+            nextBtn.onclick = () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar(currentDate);
+            };
+
+        </script>
+
 </body>
 <?php if (isset($_SESSION['success'])): ?>
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
@@ -390,7 +465,10 @@ $user = $result->fetch_assoc();
             toast.show();
         }
     </script>
+    
+    
     <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
+    
 
 </html>
