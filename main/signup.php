@@ -38,7 +38,7 @@ if (isset($_POST['signup'])) {
 
         if ($stmt->execute()) {
             $_SESSION['success'] = "Registration successful! You can now Sign in</a>";
-            header("Location: signup.php");
+            header("Location: signin.php");
             exit();
         } else {
             $errors[] = "Error: " . $stmt->error;

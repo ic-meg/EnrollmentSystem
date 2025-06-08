@@ -3,20 +3,22 @@ error_reporting(E_ALL & ~E_NOTICE);
 include "../dbcon.php";
 include "sessioncheck.php";
 
-$user_id = $_SESSION['user_id'];
+require_once 'getProfile.php';
 
-$profile = null;
-$stmt3 = $conn->prepare("SELECT * FROM studentprofile WHERE user_id = ?");
-$stmt3->bind_param("i", $user_id);
-$stmt3->execute();
-$result1 = $stmt3->get_result();
-if ($result1 && $result1->num_rows > 0) {
-    $profile = $result1->fetch_assoc();
-} else {
-    echo "<script>console.warn('No profile data found for user_id = $user_id');</script>";
+$user_id = $_SESSION['user_id'];
+$profile = getStudentProfile($conn, $user_id);
+
+function safe_value($array, $key, $fallback = '')
+{
+    return isset($array[$key]) ? htmlspecialchars($array[$key]) : $fallback;
 }
 
-$stmt3->close();
+
+
+// echo "<pre>";
+// print_r($profile);
+// echo "</pre>";
+
 
 $email = null;
 $stmt4 = $conn->prepare("SELECT email FROM useraccount WHERE user_id = ?");
@@ -113,6 +115,9 @@ if (isset($_POST["submitReg"])) {
         $conn->begin_transaction();
         try {
             $stmt1 = $conn->prepare("INSERT INTO freshmen (user_id, FirstName, MiddleInitial, LastName, Suffix, DateOfBirth, Sex, Phone, Email, StreetAddress, City, Province, ZipCode, Program, Form137, Form138, Picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            if (!$stmt1) {
+                throw new Exception("Prepare statement for freshmen table failed: " . $conn->error);
+            }
             $stmt1->bind_param(
                 "issssssssssssssss",
                 $user_id,
@@ -138,6 +143,9 @@ if (isset($_POST["submitReg"])) {
 
             if ($stmt1->execute()) {
                 $stmt2 = $conn->prepare("INSERT INTO enrollee (user_id, name, Status, enrollment_type, program, documents_uploaded) VALUES (?, ?, ?, ?, ?, ?)");
+                if (!$stmt2) {
+                    throw new Exception("Prepare statement for enrollee table failed: " . $conn->error);
+                }
                 $stmt2->bind_param("issssi", $user_id, $fullName, $status, $enrollmentType, $program, $documents_uploaded);
 
                 if ($stmt2->execute()) {
@@ -153,7 +161,7 @@ if (isset($_POST["submitReg"])) {
                         </div>
                         </div>
                     </div>
-
+        
                     <script>
                         setTimeout(() => {
                         const toast = document.getElementById('successToast');
@@ -168,16 +176,16 @@ if (isset($_POST["submitReg"])) {
                     </script>
                     ";
                 } else {
-                    throw new Exception("Failed to insert into enrollee table.");
+                    throw new Exception("Failed to insert into enrollee table: " . $stmt2->error);
                 }
                 $stmt2->close();
             } else {
-                throw new Exception("Failed to insert into freshmen table.");
+                throw new Exception("Failed to insert into freshmen table: " . $stmt1->error);
             }
             $stmt1->close();
         } catch (Exception $e) {
             $conn->rollback();
-            echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
+            echo "<script>alert('Database Error: " . htmlspecialchars($e->getMessage()) . "');</script>";
         }
     }
 }
@@ -255,9 +263,13 @@ if (isset($_POST["submitReg"])) {
 </style>
 
 <body>
-    <?php include "stud-sidebar.php"; ?>
+
+    <?php require_once "stud-sidebar.php"; ?>
+
 
     <main>
+        </div>
+        </div>
         <div class="container">
             <div class="header">
                 <h1>Student Enrollment</h1>
@@ -296,56 +308,62 @@ if (isset($_POST["submitReg"])) {
                         <div class="form-section">
                             <!-- Name Section -->
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label for="first-name">*First Name</label>
-                                    <input type="text" id="first-name" name="first-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['first_name']) : '' ?>" readonly required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="middle-initial">Middle Initial</label>
-                                    <input type="text" id="middle-initial" name="middle-initial" placeholder="Enter your middle initial">
-                                </div>
-                                <div class="form-group">
-                                    <label for="last-name">*Last Name</label>
-                                    <input type="text" id="last-name" name="last-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['last_name']) : '' ?>" readonly required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="suffix">Suffix</label>
-                                    <input type="text" id="suffix" name="suffix">
-                                </div>
-                            </div>
+                                <!-- Name Section -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="first-name">*First Name</label>
+                                        <input type="text" id="first-name" name="first-name"
+                                            value="<?= safe_value($profile, 'last_name') ?>" readonly required />
+                                    </div>
 
-                            <!-- Additional Details -->
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="dob">*Date of Birth</label>
-                                    <input type="date" id="dob" name="dob" value="<?= isset($profile['birthdate']) ? htmlspecialchars($profile['birthdate']) : '' ?>" readonly required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="sex">*Sex</label>
-                                    <select id="sex" name="sex" required>
-                                        <option value="" disabled selected hidden>Select</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">*Phone Number</label>
-                                    <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11" readonly required />
+                                    <div class="form-group">
+                                        <label for="middle-initial">Middle Initial</label>
+                                        <input type="text" id="middle-initial" name="middle-initial"
+                                            value="<?= safe_value($profile, 'middle_name') ?>" readonly />
+                                    </div>
 
-                                    <script>
-                                        document.getElementById("phone").addEventListener("input", function(e) {
-                                            this.value = this.value.replace(/\D/g, ''); // Remove non-numeric characters
-                                            if (this.value.length > 11) {
-                                                this.value = this.value.slice(0, 11); // Ensure max length of 11
-                                            }
-                                        });
-                                    </script>
+                                    <div class="form-group">
+                                        <label for="last-name">*Last Name</label>
+                                        <input type="text" id="last-name" name="last-name"
+                                            value="<?= safe_value($profile, 'first_name') ?>" readonly required />
+                                    </div>
 
+                                    <div class="form-group">
+                                        <label for="suffix">Suffix</label>
+                                        <input type="text" id="suffix" name="suffix">
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="email">*Email</label>
-                                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" readonly required>
+
+                                <!-- Additional Details -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="dob">*Date of Birth</label>
+                                        <input type="date" id="dob" name="dob"
+                                            value="<?= safe_value($profile, 'birthdate') ?>" readonly required />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="sex">*Sex</label>
+                                        <select id="sex" name="sex" required>
+                                            <option value="" disabled hidden <?= empty($_POST['sex']) ? 'selected' : '' ?>>Select</option>
+                                            <option value="male" <?= (isset($_POST['sex']) && $_POST['sex'] == 'male') ? 'selected' : '' ?>>Male</option>
+                                            <option value="female" <?= (isset($_POST['sex']) && $_POST['sex'] == 'female') ? 'selected' : '' ?>>Female</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="phone">*Phone Number</label>
+                                        <input type="tel" id="phone" name="phone"
+                                            value="<?= safe_value($profile, 'phone') ?>" maxlength="11" readonly required />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email">*Email</label>
+                                        <input type="email" id="email" name="email"
+                                            value="<?= htmlspecialchars($email) ?>" readonly required />
+                                    </div>
                                 </div>
+
                             </div>
 
                             <!-- Address Section -->
