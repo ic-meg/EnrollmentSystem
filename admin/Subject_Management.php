@@ -22,6 +22,7 @@ if (isAdmin()) { //
   if (isset($_POST['add_subject'])) {
     $SubCode = $_POST['SubCode'];
     $SubName = $_POST['SubName'];
+    $Year = $_POST['Year'];
     $Units = $_POST['Units'];
     $rawPrerequisites = $_POST['PreRequisites'];
     $decodedPrereqs = json_decode($rawPrerequisites, true);
@@ -31,7 +32,6 @@ if (isAdmin()) { //
     if (is_array($decodedPrereqs)) {
       foreach ($decodedPrereqs as $item) {
         if (isset($item['value'])) {
-
           $code = explode(" - ", $item['value'])[0];
           $prereqValues[] = $code;
         }
@@ -42,8 +42,8 @@ if (isAdmin()) { //
     $Fee = $_POST['Fee'];
     $LinkProgram = !empty($_POST['LinkProgram']) ? $_POST['LinkProgram'] : "NULL";
 
-    $query = "INSERT INTO subject (SubCode, SubName, Units, PreRequisites, Fee, CourseID)
-                VALUES ('$SubCode', '$SubName', '$Units', '$PreRequisites', '$Fee', $LinkProgram)";
+    $query = "INSERT INTO subject (SubCode, SubName, Year, Units, PreRequisites, Fee, CourseID)
+                VALUES ('$SubCode', '$SubName', '$Year', '$Units', '$PreRequisites', '$Fee', $LinkProgram)";
     mysqli_query($conn, $query);
   }
 
@@ -51,6 +51,7 @@ if (isAdmin()) { //
     $SubjID = $_POST['SubjID'];
     $SubCode = $_POST['editSubCode'];
     $SubName = $_POST['editSubName'];
+    $Year = $_POST['editYear'];
     $Units = $_POST['editUnits'];
     $rawPrerequisites = $_POST['editPreRequisites'];
     $decodedPrereqs = json_decode($rawPrerequisites, true);
@@ -70,8 +71,8 @@ if (isAdmin()) { //
     $CourseID = $_POST['editCourse'];
 
     $query = "UPDATE subject SET SubCode = '$SubCode', SubName = '$SubName',
-                Units = '$Units', PreRequisites = '$PreRequisites', Fee = '$Fee',
-                CourseID = '$CourseID'
+                Year = '$Year', Units = '$Units', PreRequisites = '$PreRequisites', 
+                Fee = '$Fee', CourseID = '$CourseID'
                 WHERE SubjID = '$SubjID'";
 
     mysqli_query($conn, $query);
@@ -85,14 +86,13 @@ if (isAdmin()) { //
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Subject Management</title>
+  <title>Subject Management | Admin Panel</title>
   <link rel="stylesheet" href="Subject_management.css">
   <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" />
 
@@ -189,6 +189,7 @@ if (isAdmin()) { //
         <thead>
           <tr>
             <th>Link Program</th>
+            <th>Year Level</th>
             <th>Subject Code</th>
             <th>Subject Title</th>
             <th>Units</th>
@@ -220,6 +221,7 @@ if (isAdmin()) { //
           while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
             echo "<td>" . htmlspecialchars($row['CourseName']) . "</td>";
+            echo "<td>" . $row['Year'] . "</td>";
             echo "<td>" . $row['SubCode'] . "</td>";
             echo "<td>" . $row['SubName'] . "</td>";
             echo "<td>" . $row['Units'] . "</td>";
@@ -253,13 +255,20 @@ if (isAdmin()) { //
 
               <label for='editCourse{$row['SubjID']}'>Link Program</label>
               <select name='editCourse' class='form-control' id='editCourse'{$row['SubjID']}' required>
-
                 <option value=''>-- Select Program --</option>";
               foreach ($courses as $course) {
                 $selected = ($course['CourseID'] == $row['CourseID']) ? "selected" : "";
                 $modals .= "<option value='{$course['CourseID']}' $selected>" . htmlspecialchars($course['CourseName']) . "</option>";
               }
               $modals .= "
+              </select>
+              
+              <label for='editYear{$row['SubjID']}'>Year Level</label>
+              <select name='editYear' id='editYear{$row['SubjID']}' class='form-control' required>
+                <option value='1' ".($row['Year'] == 1 ? "selected" : "").">1st Year</option>
+                <option value='2' ".($row['Year'] == 2 ? "selected" : "").">2nd Year</option>
+                <option value='3' ".($row['Year'] == 3 ? "selected" : "").">3rd Year</option>
+                <option value='4' ".($row['Year'] == 4 ? "selected" : "").">4th Year</option>
               </select>
 
               <label for='editSubName{$row['SubjID']}'>Subject Title</label>
@@ -272,7 +281,6 @@ if (isAdmin()) { //
             <div style='width: 100%; margin-bottom: 15px;'>
               <label for='editPreRequisites{$row['SubjID']}' style='display: block; margin-bottom: 5px;'>Pre-requisites</label>
               <input
-
                 id='editPreRequisites{$row['SubjID']}'
                 name='editPreRequisites'
                 class='form-control tagify-input'
@@ -369,6 +377,14 @@ if (isAdmin()) { //
               </option>
             <?php endforeach; ?>
           </select>
+          
+          <label for="Year">Year Level</label>
+          <select id="Year" name="Year" required>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
 
           <label for="SubName">Subject Title</label>
           <input type="text" id="SubName" name="SubName" placeholder="Enter Subject Title" required />
@@ -378,9 +394,7 @@ if (isAdmin()) { //
 
           <label for="PreRequisites">Pre-requisites</label>
           <input id="PreRequisites" name="PreRequisites">
-
           </input>
-
 
           <label for="Fee">Fee</label>
           <input type="text" id="Fee" name="Fee" placeholder="Enter Fee" required />
