@@ -1,8 +1,11 @@
 <?php
-    require_once 'getProfile.php'; 
-    $sidebarUser = getStudentProfile($conn, $user_id);
+include "../dbcon.php";
+$user_id = $_SESSION['user_id'];
+require 'getProfile.php';
+$sidebarUser = getStudentProfile($conn, $user_id);
+include 'sessioncheck.php'
 
-    ?>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -85,7 +88,15 @@
 
           <!-- User Details -->
           <div class="user-details">
-            <p class="name" style="margin: 0;"><?php echo htmlspecialchars($sidebarUser['first_name'] . ' ' . $sidebarUser['last_name']); ?></p>
+            <p class="name" style="margin: 0;">
+              <?php
+              if ($sidebarUser && isset($sidebarUser['first_name'], $sidebarUser['last_name'])) {
+                echo htmlspecialchars($sidebarUser['first_name'] . ' ' . $sidebarUser['last_name']);
+              } else {
+                echo 'Complete Profile';
+              }
+              ?>
+            </p>
 
           </div>
         </a>

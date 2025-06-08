@@ -97,30 +97,30 @@ $enrolleeStmt->close();
             <p style="color: gray;">No enrollment record found.</p>
           <?php elseif ($enrollmentType === 'freshmen'): ?>
             <?php if (!empty($documents['Form137'])): ?>
-              <a href="../uploads/<?= $documents['Form137'] ?>" class="doc-button" target="_blank">Form 137</a>
+              <a href="../student/uploads/<?= $documents['Form137'] ?>" class="doc-button" target="_blank">Form 137</a>
             <?php endif; ?>
             <?php if (!empty($documents['Form138'])): ?>
-              <a href="../uploads/<?= $documents['Form138'] ?>" class="doc-button" target="_blank">Form 138</a>
+              <a href="../student/uploads/<?= $documents['Form138'] ?>" class="doc-button" target="_blank">Form 138</a>
             <?php endif; ?>
             <?php if (!empty($documents['Picture'])): ?>
-              <a href="../uploads/<?= $documents['Picture'] ?>" class="doc-button" target="_blank">1x1 Picture</a>
+              <a href="../student/uploads/<?= $documents['Picture'] ?>" class="doc-button" target="_blank">1x1 Picture</a>
             <?php endif; ?>
           <?php elseif ($enrollmentType === 'transferee' || $enrollmentType === 'nonsequential'): ?>
             <?php if (!empty($documents['TOR'])): ?>
-              <a href="../uploads/<?= $documents['TOR'] ?>" class="doc-button" target="_blank">TOR</a>
+              <a href="../student/uploads/<?= $documents['TOR'] ?>" class="doc-button" target="_blank">TOR</a>
             <?php endif; ?>
             <?php if (!empty($documents['GoodMoral'])): ?>
-              <a href="../uploads/<?= $documents['GoodMoral'] ?>" class="doc-button" target="_blank">Good Moral</a>
+              <a href="../student/uploads/<?= $documents['GoodMoral'] ?>" class="doc-button" target="_blank">Good Moral</a>
             <?php endif; ?>
           <?php elseif ($enrollmentType === 'returnee'): ?>
             <?php if (!empty($documents['TOR'])): ?>
-              <a href="../uploads/<?= $documents['TOR'] ?>" class="doc-button" target="_blank">TOR</a>
+              <a href="../student/uploads/<?= $documents['TOR'] ?>" class="doc-button" target="_blank">TOR</a>
             <?php endif; ?>
             <?php if (!empty($documents['MedCert'])): ?>
-              <a href="../uploads/<?= $documents['MedCert'] ?>" class="doc-button" target="_blank">Medical Certificate</a>
+              <a href="../student/uploads/<?= $documents['MedCert'] ?>" class="doc-button" target="_blank">Medical Certificate</a>
             <?php endif; ?>
             <?php if (!empty($documents['IDPhoto'])): ?>
-              <a href="../uploads/<?= $documents['IDPhoto'] ?>" class="doc-button" target="_blank">1x1 Picture</a>
+              <a href="../student/uploads/<?= $documents['IDPhoto'] ?>" class="doc-button" target="_blank">1x1 Picture</a>
             <?php endif; ?>
           <?php endif; ?>
         </div>

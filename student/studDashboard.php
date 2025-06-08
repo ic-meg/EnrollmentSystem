@@ -14,9 +14,10 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $hasProfile = true;
+    $user = $result->fetch_assoc();
+} else {
+    $user = ['first_name' => 'Student'];
 }
-
-$user = $result->fetch_assoc();
 
 $status = 'Unknown';
 $totalFee = '0.00';
@@ -533,7 +534,8 @@ $enrolleeQuery->close();
                 <div class="Welcome">
                     <img src="studPic/image1.png" alt="logo">
                     <div class="text-content">
-                        <div class="welcome-greeting">Hi, <?php echo htmlspecialchars($user['first_name']); ?>!</div>
+                        <div class="welcome-greeting">Hi, <?php echo htmlspecialchars($user['first_name'] ?? 'Student'); ?>!</div>
+
                         <div class="message">Always stay updated in your profile</div>
                     </div>
                 </div>

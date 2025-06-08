@@ -8,50 +8,69 @@ $email = "";
 
 // Fetch user details from useraccount table
 if ($user_id) {
-    $query = "SELECT username, email FROM useraccount WHERE user_id = '$user_id'";
-    $result = mysqli_query($conn, $query);
+  $query = "SELECT username, email FROM useraccount WHERE user_id = '$user_id'";
+  $result = mysqli_query($conn, $query);
 
-    if ($row = mysqli_fetch_assoc($result)) {
-        $name = htmlspecialchars($row['username']); // Escape for security
-        $email = htmlspecialchars($row['email']);
-    }
+  if ($row = mysqli_fetch_assoc($result)) {
+    $name = htmlspecialchars($row['username']);
+    $email = htmlspecialchars($row['email']);
+  }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $topic = mysqli_real_escape_string($conn, $_POST['topic']);
-    $message = mysqli_real_escape_string($conn, $_POST['message']);
+  $topic = mysqli_real_escape_string($conn, $_POST['topic']);
+  $message = mysqli_real_escape_string($conn, $_POST['message']);
 
-    if (!$user_id) {
-        echo "<script>alert('You need to be logged in to submit a support request.'); window.location.href='login.php';</script>";
-        exit();
-    }
+  if (!$user_id) {
+    echo "<script>alert('You need to be logged in to submit a support request.'); window.location.href='login.php';</script>";
+    exit();
+  }
 
-    $sql = "INSERT INTO supportpage (user_id, Name, Email, Topic, userMessage, DateSubmitted, status) 
+  $sql = "INSERT INTO supportpage (user_id, Name, Email, Topic, userMessage, DateSubmitted, status) 
             VALUES ('$user_id', '$name', '$email', '$topic', '$message', NOW(), 'Pending')";
 
-    if (mysqli_query($conn, $sql)) {
-        echo "<script>alert('Support request submitted successfully!'); window.location.href='studentSupport.php';</script>";
-    } else {
-        echo "Error: " . mysqli_error($conn);
-    }
+  if (mysqli_query($conn, $sql)) {
+    $_SESSION['success'] = "Support request submitted successfully!";
+    header("Location: studentSupport.php");
+    exit();
+  } else {
+    echo "Error: " . mysqli_error($conn);
+  }
 
-    mysqli_close($conn);
+  mysqli_close($conn);
 }
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oxford Academe | Support Page</title>
   <link rel="stylesheet" href="support.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
+
 <body>
   <?php include "stud-sidebar.php"; ?>
-  
-  <main> 
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+      <div class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <?= $_SESSION['success'];
+            unset($_SESSION['success']); ?>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
+  <main>
     <div class="container">
       <section class="faq">
         <h2>Need some help?</h2>
@@ -76,8 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <section class="contact-form">
         <h2>Contact Support</h2>
         <form method="POST" action="">
-        <input type="text" name="name" value="<?php echo $name; ?>" placeholder="Name" disabled required>
-        <input type="email" name="email" value="<?php echo $email; ?>" placeholder="Email" disabled required>
+          <input type="text" name="name" value="<?php echo $name; ?>" placeholder="Name" disabled required>
+          <input type="email" name="email" value="<?php echo $email; ?>" placeholder="Email" disabled required>
 
           <select name="topic" required>
             <option value="">Select Topic</option>
@@ -101,5 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       });
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>

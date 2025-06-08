@@ -21,7 +21,7 @@ if ($profileResult->num_rows > 0) {
   $headerProfile = $profileResult->fetch_assoc();
   $notifications[] = [
     'message' => 'Thank you for completing your profile. You can now proceed to enroll.',
-    'date' => date("F j, Y", strtotime($profile['created_at'])),
+    'date' => date("F j, Y", strtotime($headerProfile['created_at'])),
     'status' => 'unread'
   ];
 }
@@ -96,6 +96,7 @@ foreach ($notifications as $notif) {
 <html lang="en">
 
 <head>
+  <audio id="notifSound" src="assets/ding.mp3" preload="auto"></audio>
   <meta charset="UTF-8">
   <title>Profile and Notifications Dropdowns</title>
   <link rel="stylesheet" href="header-style.css">
@@ -158,6 +159,46 @@ foreach ($notifications as $notif) {
     line-height: 1;
     animation: pulse 1s ease-in-out infinite alternate;
     z-index: 10;
+  }
+
+  /* Base Styles */
+  .notification_dd {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 10px;
+    background: #fff;
+    width: 320px;
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+    transition: all 0.3s ease;
+  }
+
+  .bell-wrapper:hover .notification_dd {
+    display: block;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .notification_dd {
+      width: 95vw;
+      right: 2.5vw;
+      left: auto;
+    }
+
+    .notification_dd_body {
+      max-height: 60vh;
+    }
+
+    .notif-count-badge {
+      top: -5px;
+      right: -5px;
+      font-size: 12px;
+      padding: 4px 7px;
+    }
   }
 </style>
 
@@ -308,5 +349,17 @@ foreach ($notifications as $notif) {
         }
       })
       .catch(err => console.error('Failed to mark notifications as read:', err));
+  }
+</script>
+
+<script>
+  const unreadCount = <?= json_encode($unreadCount) ?>;
+  const hasPlayed = sessionStorage.getItem("studentNotifPlayed");
+
+  if (unreadCount > 0 && !hasPlayed) {
+    const sound = document.getElementById("notifSound");
+    sound.play().catch(e => console.warn("Sound auto-play blocked:", e));
+
+    sessionStorage.setItem("studentNotifPlayed", "true");
   }
 </script>

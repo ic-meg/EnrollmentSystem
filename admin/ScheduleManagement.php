@@ -1,7 +1,7 @@
 <?php 
 include "session_check.php";
 include "../dbcon.php";
-include "permissions.php"; // Assuming you have this file for role checking
+include "permissions.php"; 
 
 $perPage = 10;
 $page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
@@ -131,8 +131,6 @@ if (canEdit()) {
   <main>
     </div>
     </div>
-    <br>
-    <br>
     <main class="main-content">
       <div class="top-bar">
         <h1 class="title">Subject Schedule Management</h1>
