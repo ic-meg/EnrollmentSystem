@@ -12,7 +12,10 @@ $stmt3->execute();
 $result1 = $stmt3->get_result();
 if ($result1 && $result1->num_rows > 0) {
     $profile = $result1->fetch_assoc();
+} else {
+    echo "<script>console.warn('No profile data found for user_id = $user_id');</script>";
 }
+
 $stmt3->close();
 
 $email = null;

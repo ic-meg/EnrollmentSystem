@@ -17,6 +17,37 @@ if ($result->num_rows > 0) {
 }
 
 $user = $result->fetch_assoc();
+
+$status = 'Unknown';
+$totalFee = '0.00';
+
+$enrolleeQuery = $conn->prepare("SELECT Status, EnrolleeID FROM enrollee WHERE user_id = ?");
+if (!$enrolleeQuery) {
+    die("Prepare failed (enrollee): (" . $conn->errno . ") " . $conn->error);
+}
+$enrolleeQuery->bind_param("i", $user_id);
+$enrolleeQuery->execute();
+$enrolleeResult = $enrolleeQuery->get_result();
+if ($enrolleeResult->num_rows > 0) {
+    $enrolleeData = $enrolleeResult->fetch_assoc();
+    $status = $enrolleeData['Status'];
+    $enrolleeID = $enrolleeData['EnrolleeID'];
+
+    $feeQuery = $conn->prepare("SELECT SUM(TotalFees) AS total FROM paymentinfo WHERE user_id = ?");
+    if (!$feeQuery) {
+        die("Prepare failed (paymentinfo): (" . $conn->errno . ") " . $conn->error);
+    }
+    $feeQuery->bind_param("i", $user_id);
+    $feeQuery->execute();
+    $feeResult = $feeQuery->get_result();
+    if ($feeResult->num_rows > 0) {
+        $total = $feeResult->fetch_assoc();
+        $totalFee = number_format((float)$total['total'], 2);
+    }
+    $feeQuery->close();
+}
+$enrolleeQuery->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +57,7 @@ $user = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oxford Academe | Dashboard</title>
-    <link rel="stylesheet" href="studDashboard.css">
+
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-straight/css/uicons-regular-straight.css'>
@@ -36,11 +67,12 @@ $user = $result->fetch_assoc();
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <link rel="stylesheet" href="css/style.css">
+
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-   
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 
 </head>
@@ -150,6 +182,229 @@ $user = $result->fetch_assoc();
     select#relationship:focus {
         border-color: #3F83E6;
         outline: none;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+    :root {
+        --color: white;
+        --background: #3F83E6;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    main {
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Welcome Banner */
+    .Welcome {
+        background: var(--background);
+        min-height: 30vh;
+        width: 100%;
+        border-radius: 25px;
+        padding: 20px 30px;
+        color: var(--color);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .Welcome img {
+        max-width: 100px;
+        height: auto;
+        border-radius: 50%;
+    }
+
+    .text-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .welcome-greeting {
+        font-size: 50px;
+        font-weight: bold;
+    }
+
+    .message {
+        font-weight: 100;
+        font-size: 15px;
+        margin-top: 2%;
+    }
+
+    /* Dashboard Flex Layout */
+    .dashboard-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    /* Left: Status + Schedule + News */
+    .left-section {
+        flex: 1 1 60%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Right: Calendar */
+    .right-section {
+        flex: 1 1 35%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Card Containers */
+    .cards,
+    .cards1 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    /* Individual Cards */
+    .card,
+    .card1 {
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        flex: 1 1 30%;
+        min-width: 150px;
+    }
+
+    .card1 b {
+        font-size: 16px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .stud-db-logo {
+        max-width: 50px;
+        margin: 0 auto 10px;
+        display: block;
+    }
+
+    /* Calendar Styling */
+
+    .calendar {
+        font-family: Arial, sans-serif;
+        padding: 10px 0;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .calendar-header button {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0 10px;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        text-align: center;
+        font-size: 13px;
+        padding: 10px 10px 10px;
+        margin-top: 30px;
+    }
+
+    .calendar-grid div {
+        padding: 5px;
+        background: #e7f3ff;
+        border-radius: 4px;
+        position: relative;
+    }
+
+    .calendar-grid div.current-day::after {
+        content: '';
+        width: 5px;
+        height: 5px;
+        background-color: red;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 768px) {
+        .dashboard-wrapper {
+            flex-direction: column;
+        }
+
+        .cards,
+        .cards1 {
+            flex-direction: column;
+        }
+
+        .card,
+        .card1 {
+            flex: 1 1 100%;
+        }
+
+        .right-section {
+            order: 2;
+        }
+
+        .left-section {
+            order: 1;
+        }
+
+        .welcome-greeting {
+            font-size: 32px;
+        }
+
+        .message {
+            font-size: 13px;
+        }
+
+        .Welcome {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .Welcome img {
+            max-width: 80px;
+        }
+    }
+
+    /* Medium screens (tablets) */
+    @media (min-width: 601px) and (max-width: 1024px) {
+
+        .cards,
+        .cards1 {
+            justify-content: center;
+        }
+
+        .card,
+        .card1 {
+            width: 45%;
+            margin: 2.5%;
+        }
+
+        .welcome-greeting {
+            font-size: 40px;
+        }
     }
 </style>
 
@@ -291,12 +546,14 @@ $user = $result->fetch_assoc();
                             <div class="card">
                                 <img src="studPic/Approval.png" alt="logo" class="stud-db-logo">
                                 <p class="label">STATUS:</p>
-                                <p class="value">Enrolled</p>
+                                <p class="value"><?php echo htmlspecialchars($status); ?></p>
+
                             </div>
                             <div class="card">
                                 <img src="studPic/Stack of coins.png" alt="logo" class="stud-db-logo">
                                 <p class="label">Total Fee:</p>
-                                <p class="value">123,456.78</p>
+                                <p class="value"><?php echo $totalFee; ?></p>
+
                             </div>
                             <div class="card">
                                 <img src="studPic/Books.png" alt="logo" class="stud-db-logo">
@@ -334,7 +591,7 @@ $user = $result->fetch_assoc();
                             <div>Fri</div>
                             <div>Sat</div>
                             <!-- The dates will go here -->
-                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -442,7 +699,6 @@ $user = $result->fetch_assoc();
                 currentDate.setMonth(currentDate.getMonth() + 1);
                 renderCalendar(currentDate);
             };
-
         </script>
 
 </body>
@@ -465,10 +721,10 @@ $user = $result->fetch_assoc();
             toast.show();
         }
     </script>
-    
-    
+
+
     <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
-    
+
 
 </html>
