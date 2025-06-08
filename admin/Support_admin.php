@@ -21,7 +21,7 @@ $total_pages = ceil($total_entries / $perPage);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Inbox</title>
+  <title>Support Inbox | Admin Panel</title>
   <link rel="stylesheet" href="Support_admin.css">
   <style>
     .hidden {

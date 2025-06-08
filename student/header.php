@@ -142,64 +142,6 @@ foreach ($notifications as $notif) {
       transform: scale(1.15);
     }
   }
-
-
-
-  .notif-count-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(50%, -50%);
-    background: red;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 10px;
-    font-weight: bold;
-    line-height: 1;
-    animation: pulse 1s ease-in-out infinite alternate;
-    z-index: 10;
-  }
-
-  /* Base Styles */
-  .notification_dd {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    margin-top: 10px;
-    background: #fff;
-    width: 320px;
-    max-height: 400px;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    display: none;
-    transition: all 0.3s ease;
-  }
-
-  .bell-wrapper:hover .notification_dd {
-    display: block;
-  }
-
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
-    .notification_dd {
-      width: 95vw;
-      right: 2.5vw;
-      left: auto;
-    }
-
-    .notification_dd_body {
-      max-height: 60vh;
-    }
-
-    .notif-count-badge {
-      top: -5px;
-      right: -5px;
-      font-size: 12px;
-      padding: 4px 7px;
-    }
-  }
 </style>
 
 <body>

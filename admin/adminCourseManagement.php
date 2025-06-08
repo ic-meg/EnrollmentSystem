@@ -82,22 +82,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && canEdit()) {
 $viewArchived = isset($_GET['view']) && $_GET['view'] === 'archived';
 
 if ($viewArchived) {
-    // Get archived courses
+    // Get archived courses with student counts
     $courses = [];
-    $result = $conn->query("SELECT * FROM course WHERE is_archived = TRUE");
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $courses[] = $row;
-        }
-    }
+    $result = $conn->query("
+        SELECT c.*, COUNT(e.EnrolleeID) AS student_count 
+        FROM course c
+        LEFT JOIN enrollee e ON c.CourseName = e.program AND e.Status = 'Approved'
+        WHERE c.is_archived = TRUE
+        GROUP BY c.CourseID
+    ");
 } else {
-    // Get active courses
+    // No.of students in active courses
     $courses = [];
-    $result = $conn->query("SELECT * FROM course WHERE is_archived = FALSE");
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $courses[] = $row;
-        }
+    $result = $conn->query("
+        SELECT c.*, COUNT(e.EnrolleeID) AS student_count 
+        FROM course c
+        LEFT JOIN enrollee e ON c.CourseName = e.program AND e.Status = 'Approved'
+        WHERE c.is_archived = FALSE
+        GROUP BY c.CourseID
+    ");
+}
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $courses[] = $row;
     }
 }
 
@@ -248,7 +256,7 @@ if ($viewArchived) {
                                                     ?>
                                                 </td>
                                                 <td class="text-center"><?php echo htmlspecialchars($course['TotalUnits']); ?></td>
-                                                <td class="text-center"><?php echo htmlspecialchars($course['NumOfStudents']); ?></td>
+                                                <td class="text-center"><?php echo htmlspecialchars($course['student_count']); ?></td>
                                                 <?php if (canEdit()): ?>
                                                     <td class="text-center">
                                                         <?php if (!$viewArchived): ?>

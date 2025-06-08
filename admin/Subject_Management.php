@@ -1,7 +1,7 @@
 <?php
 include "../dbcon.php";
 include "session_check.php";
-include "permissions.php"; // Include the permissions file
+include "permissions.php"; 
 
 $allSubjects = [];
 $subject_query = "SELECT SubjID, SubCode, SubName FROM subject";
@@ -162,6 +162,30 @@ if (isAdmin()) { //
   .tagify {
     width: 100% !important;
   }
+
+  .filter-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-options {
+    min-width: 100px;
+    box-shadow: 0 2px 5px rgba(122, 122, 122, 0.2);
+    right: 0;
+}
+.filter-options div:hover {
+    background-color:rgb(194, 194, 194);
+}
+.filter-active {
+    background-color: #e0e0e0;
+    font-weight: bold;
+}
+
+.filter-options,
+.filter-options div {
+    color: #000 !important;
+    
+}
 </style>
 
 <body>
@@ -189,7 +213,21 @@ if (isAdmin()) { //
         <thead>
           <tr>
             <th>Link Program</th>
-            <th>Year Level</th>
+            <th>
+              <div style='display: flex; align-items: center;'>
+                Year Level
+                <div class='filter-dropdown' style='margin-left: 5px; position: relative;'>
+                  <img src='adminPic/dropdown.png' alt='Filter' style='width:16px; height:16px; cursor:pointer;'>
+                  <div class='filter-options' style='display:none; position:absolute; background:white; border:1px solid #ddd; padding:5px; z-index:100;'>
+                    <div style='padding:5px; cursor:pointer;' onclick='filterByYear(0)'>All Years</div>
+                    <div style='padding:5px; cursor:pointer;' onclick='filterByYear(1)'>1st Year</div>
+                    <div style='padding:5px; cursor:pointer;' onclick='filterByYear(2)'>2nd Year</div>
+                    <div style='padding:5px; cursor:pointer;' onclick='filterByYear(3)'>3rd Year</div>
+                    <div style='padding:5px; cursor:pointer;' onclick='filterByYear(4)'>4th Year</div>
+                  </div>
+                </div>
+              </div>
+            </th>
             <th>Subject Code</th>
             <th>Subject Title</th>
             <th>Units</th>
@@ -211,10 +249,16 @@ if (isAdmin()) { //
           $total_subjects = $total_row['total'];
           $total_pages = ceil($total_subjects / $perPage);
 
+          $yearFilter = isset($_GET['year']) && is_numeric($_GET['year']) ? (int)$_GET['year'] : 0;
           $query = "SELECT subject.*, course.CourseName
             FROM subject
-            LEFT JOIN course ON subject.CourseID = course.CourseID
-            LIMIT $start, $perPage";
+            LEFT JOIN course ON subject.CourseID = course.CourseID";
+
+          if ($yearFilter > 0) {
+              $query .= " WHERE subject.Year = $yearFilter";
+          }
+
+          $query .= " LIMIT $start, $perPage";
 
           $result = mysqli_query($conn, $query);
           $modals = '';
@@ -487,6 +531,51 @@ if (isAdmin()) { //
       });
     <?php endif; ?>
   </script>
+  <script>
+// Toggle filter dropdown
+document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+    const icon = dropdown.querySelector('img');
+    const options = dropdown.querySelector('.filter-options');
+    icon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        options.style.display = options.style.display === 'none' ? 'block' : 'none';
+    });
+});
+
+// Close dropdown when clicking elsewhere
+document.addEventListener('click', function() {
+    document.querySelectorAll('.filter-options').forEach(options => {
+        options.style.display = 'none';
+    });
+});
+
+// Filter by year function
+function filterByYear(year) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (year > 0) {
+        urlParams.set('year', year);
+    } else {
+        urlParams.delete('year');
+    }
+    urlParams.delete('page');
+    window.location.href = 'Subject_management.php?' + urlParams.toString();
+}
+
+// Highlight the active filter
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedYear = urlParams.get('year');
+    if (selectedYear) {
+        const filterOptions = document.querySelectorAll('.filter-options div');
+        filterOptions.forEach(option => {
+            if (option.textContent.includes(selectedYear + (selectedYear == 1 ? 'st' : selectedYear == 2 ? 'nd' : selectedYear == 3 ? 'rd' : 'th'))) {
+                option.style.backgroundColor = '#f0f0f0';
+                option.style.fontWeight = 'bold';
+            }
+        });
+    }
+});
+</script>
 
 </body>
 

@@ -12,36 +12,20 @@ if (isset($_FILES['import_file']['tmp_name'])) {
   $sheet = $spreadsheet->getSheet(1);
   $data = $sheet->toArray();
 
-  for ($i = 1; $i < count($data); $i++) {
-    $row = $data[$i];
+    // Skip header
+    for ($i = 1; $i < count($data); $i++) {
+        $row = $data[$i];
+        $courseID = $row[0];
+        $subCode = $row[2];
+        $subName = $row[3];
+        $units = $row[4];
+        $preReq = $row[5];
+        $fee = $row[6];
 
-    if (!is_array($row) || count($row) < 8 || empty($row[0])) {
-      continue;
+        $stmt = $conn->prepare("INSERT INTO subject (CourseID, SubCode, SubName, Units, PreRequisites, Fee) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issisd", $courseID, $subCode, $subName, $units, $preReq, $fee);
+        $stmt->execute();
     }
-
-    $courseID = $row[0];
-    $subCode = $row[2];
-    $subName = $row[3];
-    $units = $row[4];
-    $preReq = $row[5];
-    $fee = $row[6];
-    $year = $row[7];
-
-    $stmt = $conn->prepare("
-      INSERT INTO subject (CourseID, SubCode, SubName, Units, PreRequisites, Fee, Year)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE 
-        SubName = VALUES(SubName),
-        Units = VALUES(Units),
-        PreRequisites = VALUES(PreRequisites),
-        Fee = VALUES(Fee),
-        Year = VALUES(Year)
-    ");
-
-    $stmt->bind_param("issisds", $courseID, $subCode, $subName, $units, $preReq, $fee, $year);
-    $stmt->execute();
-  }
-
 
   header("Location: Subject_management.php?success=Subjects+imported+successfully");
   exit();
