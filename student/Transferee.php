@@ -13,6 +13,7 @@ $result1 = $stmt1->get_result();
 
 if ($result1 && $result1->num_rows > 0) {
   $profile = $result1->fetch_assoc();
+  // echo "<pre>"; print_r($profile); echo "</pre>";
 }
 $stmt1->close();
 

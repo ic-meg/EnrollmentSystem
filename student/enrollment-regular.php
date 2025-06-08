@@ -12,6 +12,8 @@ $stmt3->execute();
 $result1 = $stmt3->get_result();
 if ($result1 && $result1->num_rows > 0) {
     $profile = $result1->fetch_assoc();
+    // echo "<pre>"; print_r($profile); echo "</pre>";
+
 } else {
     echo "<script>console.warn('No profile data found for user_id = $user_id');</script>";
 }
@@ -113,6 +115,9 @@ if (isset($_POST["submitReg"])) {
         $conn->begin_transaction();
         try {
             $stmt1 = $conn->prepare("INSERT INTO freshmen (user_id, FirstName, MiddleInitial, LastName, Suffix, DateOfBirth, Sex, Phone, Email, StreetAddress, City, Province, ZipCode, Program, Form137, Form138, Picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            if (!$stmt1) {
+                throw new Exception("Prepare statement for freshmen table failed: " . $conn->error);
+            }
             $stmt1->bind_param(
                 "issssssssssssssss",
                 $user_id,
@@ -133,13 +138,16 @@ if (isset($_POST["submitReg"])) {
                 $form138,
                 $picture
             );
-
+        
             $documents_uploaded = ($form137 ? 1 : 0) + ($form138 ? 1 : 0) + ($picture ? 1 : 0);
-
+        
             if ($stmt1->execute()) {
                 $stmt2 = $conn->prepare("INSERT INTO enrollee (user_id, name, Status, enrollment_type, program, documents_uploaded) VALUES (?, ?, ?, ?, ?, ?)");
+                if (!$stmt2) {
+                    throw new Exception("Prepare statement for enrollee table failed: " . $conn->error);
+                }
                 $stmt2->bind_param("issssi", $user_id, $fullName, $status, $enrollmentType, $program, $documents_uploaded);
-
+        
                 if ($stmt2->execute()) {
                     $conn->commit();
                     echo "
@@ -153,7 +161,7 @@ if (isset($_POST["submitReg"])) {
                         </div>
                         </div>
                     </div>
-
+        
                     <script>
                         setTimeout(() => {
                         const toast = document.getElementById('successToast');
@@ -168,16 +176,16 @@ if (isset($_POST["submitReg"])) {
                     </script>
                     ";
                 } else {
-                    throw new Exception("Failed to insert into enrollee table.");
+                    throw new Exception("Failed to insert into enrollee table: " . $stmt2->error);
                 }
                 $stmt2->close();
             } else {
-                throw new Exception("Failed to insert into freshmen table.");
+                throw new Exception("Failed to insert into freshmen table: " . $stmt1->error);
             }
             $stmt1->close();
         } catch (Exception $e) {
             $conn->rollback();
-            echo "<script>alert('Database Error: " . $e->getMessage() . "');</script>";
+            echo "<script>alert('Database Error: " . htmlspecialchars($e->getMessage()) . "');</script>";
         }
     }
 }
@@ -298,15 +306,23 @@ if (isset($_POST["submitReg"])) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="first-name">*First Name</label>
-                                    <input type="text" id="first-name" name="first-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['first_name']) : '' ?>" readonly required>
+                                    <input type="text" id="first-name" name="first-name"
+                                        value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['first_name']) : '' ?>" readonly >
+
+
                                 </div>
                                 <div class="form-group">
                                     <label for="middle-initial">Middle Initial</label>
-                                    <input type="text" id="middle-initial" name="middle-initial" placeholder="Enter your middle initial">
+                                    <input type="text" id="middle-initial" name="middle-initial"
+                                        value="<?= isset($profile['middle_name']) ? htmlspecialchars($profile['middle_name']) : '' ?>">
+
                                 </div>
                                 <div class="form-group">
                                     <label for="last-name">*Last Name</label>
-                                    <input type="text" id="last-name" name="last-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['last_name']) : '' ?>" readonly required>
+                                    <input type="text" id="last-name" name="last-name"
+                                        value="<?= isset($profile['last_name']) ? htmlspecialchars($profile['last_name']) : '' ?>" readonly >
+
+
                                 </div>
                                 <div class="form-group">
                                     <label for="suffix">Suffix</label>
@@ -330,7 +346,9 @@ if (isset($_POST["submitReg"])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="phone">*Phone Number</label>
-                                    <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11" readonly required />
+                                    <input type="tel" id="phone" name="phone"
+                                        value="<?= isset($profile['phone']) ? htmlspecialchars($profile['phone']) : '' ?>" maxlength="11" readonly >
+
 
                                     <script>
                                         document.getElementById("phone").addEventListener("input", function(e) {

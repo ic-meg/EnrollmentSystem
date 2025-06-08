@@ -138,6 +138,26 @@ foreach ($notifications as $notif) {
       transform: scale(1.15);
     }
   }
+
+  .bell-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .notif-count-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    animation: pulse 1s ease-in-out infinite alternate;
+    z-index: 10;
+  }
 </style>
 
 <body>
@@ -154,14 +174,18 @@ foreach ($notifications as $notif) {
     </div>
     <div class="navbar_right">
       <div class="notifications">
-        <div class="icon_wrap">
-          <svg class="notif-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M21.636,17.869c-0.016-0.016-1.581-1.635-1.581-3.952v-2.9c0-3.996-2.957-7.309-6.806-7.91V2.25C13.25,1.56,12.69,1,12,1 s-1.25,0.56-1.25,1.25v0.857c-3.849,0.601-6.806,3.914-6.806,7.91v2.9c0,2.317-1.565,3.936-1.576,3.947 c-0.359,0.357-0.467,0.895-0.274,1.363C2.288,19.695,2.744,20,3.25,20H9c0,1.657,1.343,3,3,3s3-1.343,3-3h5.75 c0.503,0,0.956-0.305,1.15-0.77C22.095,18.766,21.989,18.228,21.636,17.869z"></path>
+        <div class="icon_wrap bell-wrapper">
+          <svg class="notif-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M21.636,17.869c-0.016-0.016-1.581-1.635-1.581-3.952v-2.9c0-3.996-2.957-7.309-6.806-7.91V2.25C13.25,1.56,12.69,1,12,1
+    s-1.25,0.56-1.25,1.25v0.857c-3.849,0.601-6.806,3.914-6.806,7.91v2.9c0,2.317-1.565,3.936-1.576,3.947
+    c-0.359,0.357-0.467,0.895-0.274,1.363C2.288,19.695,2.744,20,3.25,20H9c0,1.657,1.343,3,3,3s3-1.343,3-3h5.75
+    c0.503,0,0.956-0.305,1.15-0.77C22.095,18.766,21.989,18.228,21.636,17.869z" />
           </svg>
           <?php if ($unreadCount > 0): ?>
             <span class="notif-count-badge"><?= $unreadCount ?></span>
           <?php endif; ?>
         </div>
+
         <!-- Dropdown -->
         <div class="notification_dd">
           <ul class="notification_ul">
