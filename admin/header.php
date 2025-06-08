@@ -111,16 +111,18 @@ foreach ($adminNotifications as $notif) {
 
   .notif-count-badge {
     position: absolute;
-    top: -6px;
-    right: -6px;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
     background: red;
     color: white;
     border-radius: 50%;
-    padding: 3px 7px;
+    padding: 2px 6px;
     font-size: 10px;
     font-weight: bold;
     line-height: 1;
-
+    animation: pulse 1s ease-in-out infinite alternate;
+    z-index: 10;
   }
 
   .notif-count-badge {

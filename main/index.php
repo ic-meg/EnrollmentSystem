@@ -33,11 +33,8 @@
             z-index: -1;
         }
 
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1s ease forwards;
-        }
+
+
 
         .fade-in.delay-1 {
             animation-delay: 0.3s;

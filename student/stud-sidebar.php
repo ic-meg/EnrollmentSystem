@@ -1,19 +1,15 @@
-<?php 
-  include '../dbcon.php';
-  include 'sessioncheck.php';
+<?php
+include "../dbcon.php";
+$user_id = $_SESSION['user_id'];
+require 'getProfile.php';
+$sidebarUser = getStudentProfile($conn, $user_id);
+include 'sessioncheck.php'
 
-  $user_id = $_SESSION['user_id'];
-  
-  $stmt = $conn->prepare("SELECT * FROM studentprofile WHERE user_id = ?");
-  $stmt->bind_param("i", $user_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  
-  $user = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,37 +19,39 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <style>
-
-#sidebar ul {
-  padding: 0;
-  list-style-type: none; 
-}
-
-
+  #sidebar ul {
+    padding: 0;
+    list-style-type: none;
+  }
 </style>
+
 <body>
 
   <nav id="sidebar">
     <ul>
       <li>
-      <span class="logo">
-        <span style="color: #2DB2FF;">oxfo</span><span style="color: black;">rd.</span>
-      </span>
+        <span class="logo">
+          <span style="color: #2DB2FF;">oxfo</span><span style="color: black;">rd.</span>
+        </span>
         <button onclick=toggleSidebar() id="toggle-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-480 155 156q11 11 11.5 27.5T468-268q-11 11-28 11t-28-11L228-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T468-692q11 11 11 28t-11 28L313-480Zm264 0 155 156q11 11 11.5 27.5T732-268q-11 11-28 11t-28-11L492-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T732-692q11 11 11 28t-11 28L577-480Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+            <path d="m313-480 155 156q11 11 11.5 27.5T468-268q-11 11-28 11t-28-11L228-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T468-692q11 11 11 28t-11 28L313-480Zm264 0 155 156q11 11 11.5 27.5T732-268q-11 11-28 11t-28-11L492-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T732-692q11 11 11 28t-11 28L577-480Z" />
+          </svg>
         </button>
       </li>
       <li>
         <a href="studDashboard.php">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
             <path d="M 24 4 A 2 2 0 0 0 22 6 A 2 2 0 0 0 22.115234 6.6621094 L 18.367188 11.035156 A 2 2 0 0 0 18 11 A 2 2 0 0 0 17.115234 11.207031 L 13.994141 9.1269531 A 2 2 0 0 0 14 9 A 2 2 0 0 0 12 7 A 2 2 0 0 0 10.005859 8.8789062 L 7.0996094 10.332031 A 2 2 0 0 0 6 10 A 2 2 0 0 0 4 12 A 2 2 0 0 0 6 14 A 2 2 0 0 0 7.9941406 12.121094 L 10.900391 10.667969 A 2 2 0 0 0 12 11 A 2 2 0 0 0 12.884766 10.792969 L 16.005859 12.873047 A 2 2 0 0 0 16 13 A 2 2 0 0 0 18 15 A 2 2 0 0 0 20 13 A 2 2 0 0 0 19.884766 12.337891 L 23.632812 7.9648438 A 2 2 0 0 0 24 8 A 2 2 0 0 0 26 6 A 2 2 0 0 0 24 4 z M 12 16 A 2 2 0 0 0 10 18 A 2 2 0 0 0 10.115234 18.662109 L 6.3671875 23.035156 A 2 2 0 0 0 6 23 A 2 2 0 0 0 4 25 A 2 2 0 0 0 6 27 A 2 2 0 0 0 8 25 A 2 2 0 0 0 7.8847656 24.337891 L 11.632812 19.964844 A 2 2 0 0 0 12 20 A 2 2 0 0 0 12.515625 19.929688 L 16.068359 23.482422 A 2 2 0 0 0 16 24 A 2 2 0 0 0 18 26 A 2 2 0 0 0 20 24 A 2 2 0 0 0 19.994141 23.873047 L 23.115234 21.792969 A 2 2 0 0 0 24 22 A 2 2 0 0 0 26 20 A 2 2 0 0 0 24 18 A 2 2 0 0 0 22 20 A 2 2 0 0 0 22.005859 20.126953 L 18.884766 22.207031 A 2 2 0 0 0 18 22 A 2 2 0 0 0 17.484375 22.070312 L 13.931641 18.517578 A 2 2 0 0 0 14 18 A 2 2 0 0 0 12 16 z"></path>
-        </svg>
+          </svg>
           <span>Dashboard</span>
         </a>
       </li>
       <li>
         <a href="stud-programs.php">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+            <path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z" />
+          </svg>
           <span>Programs</span>
         </a>
       </li>
@@ -62,37 +60,46 @@
         <a href="stud-tracking.php">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
             <path d="M 8 1 C 6.895 1 6 1.895 6 3 L 6 27 C 6 28.105 6.895 29 8 29 L 22 29 C 23.105 29 24 28.105 24 27 L 24 22.482422 C 23.384 22.895422 22.711 23.224563 22 23.476562 L 22 27 L 8 27 L 8 3 L 11 3 L 11.414062 3.4140625 C 11.789062 3.7890625 12.298125 4 12.828125 4 L 17.171875 4 C 17.701875 4 18.210938 3.7890625 18.585938 3.4140625 L 19 3 L 22 3 L 22 6.5234375 C 22.711 6.7754375 23.384 7.1045781 24 7.5175781 L 24 3 C 24 1.895 23.105 1 22 1 L 8 1 z M 13.5 2 L 15.5 2 C 15.776 2 16 2.224 16 2.5 C 16 2.776 15.776 3 15.5 3 L 13.5 3 C 13.224 3 13 2.776 13 2.5 C 13 2.224 13.224 2 13.5 2 z M 17.5 2 C 17.776 2 18 2.224 18 2.5 C 18 2.776 17.776 3 17.5 3 C 17.224 3 17 2.776 17 2.5 C 17 2.224 17.224 2 17.5 2 z M 19 8 C 15.134 8 12 11.134 12 15 C 12 18.866 15.134 22 19 22 C 22.866 22 26 18.866 26 15 C 26 11.134 22.866 8 19 8 z M 18 10 L 20 10 L 20 11.419922 C 21.088 11.708922 21.791453 12.468375 21.814453 13.484375 L 20.160156 13.484375 C 20.121156 12.986375 19.647578 12.638672 19.017578 12.638672 C 18.387578 12.638672 17.972656 12.93725 17.972656 13.40625 C 17.972656 13.79225 18.284344 14.015109 19.027344 14.162109 L 19.935547 14.339844 C 21.327547 14.608844 21.951172 15.236469 21.951172 16.355469 C 21.951172 17.527469 21.227 18.321656 20 18.597656 L 20 20 L 18 20 L 18 18.605469 C 16.802 18.346469 16.072828 17.601578 16.048828 16.517578 L 17.757812 16.517578 C 17.801813 17.030578 18.314641 17.357422 19.056641 17.357422 C 19.725641 17.357422 20.183594 17.034312 20.183594 16.570312 C 20.183594 16.179312 19.875312 15.969594 19.070312 15.808594 L 18.142578 15.623047 C 16.853578 15.379047 16.189453 14.675406 16.189453 13.566406 C 16.189453 12.482406 16.88 11.700109 18 11.412109 L 18 10 z"></path>
-        </svg>
+          </svg>
           <span>Fee</span>
         </a>
-   
+
       </li>
       <li>
-        
+
         <a href="studentSupport.php">
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
             <path d="M 11 3 C 9.895 3 9 3.895 9 5 L 9 14 C 9 15.105 9.895 16 11 16 L 25 16 C 26.105 16 27 15.105 27 14 L 27 5 C 27 3.895 26.105 3 25 3 L 11 3 z M 17.138672 6 L 18.861328 6 L 21.292969 13 L 19.705078 13 L 19.175781 11.332031 L 16.716797 11.332031 L 16.177734 13 L 14.707031 13 L 17.138672 6 z M 17.910156 7.4550781 L 17.03125 10.201172 L 18.865234 10.201172 L 17.996094 7.4550781 L 17.910156 7.4550781 z M 5 14 C 3.895 14 3 14.895 3 16 L 3 25 C 3 26.105 3.895 27 5 27 L 19 27 C 20.105 27 21 26.105 21 25 L 21 18 L 14.542969 18 C 15.057969 18.626 15.351563 19.487828 15.351562 20.548828 C 15.351562 21.799828 14.960859 22.800297 14.255859 23.404297 L 15.119141 24.71875 L 13.710938 24.71875 L 13.226562 24.033203 C 12.859562 24.153203 12.444859 24.216797 12.005859 24.216797 C 9.9428594 24.216797 8.6464844 22.825828 8.6464844 20.548828 C 8.6464844 19.344828 9.0275938 18.395719 9.6835938 17.761719 C 8.1255938 17.214719 7 15.745 7 14 L 5 14 z M 12.005859 18.167969 C 10.875859 18.167969 10.140625 19.089828 10.140625 20.548828 C 10.140625 22.017828 10.868766 22.935547 12.009766 22.935547 C 12.183766 22.935547 12.348672 22.911047 12.513672 22.873047 L 11.720703 21.712891 L 13.044922 21.712891 L 13.367188 22.103516 C 13.686188 21.760516 13.865234 21.220828 13.865234 20.548828 C 13.865234 19.090828 13.131859 18.167969 12.005859 18.167969 z"></path>
-        </svg>
+          </svg>
           <span>Support</span>
         </a>
 
 
       </li>
 
-        <!-- ACCOUNT -->
-        <li class="head" style="display: flex; align-items: center;">
-          <a href="studentProfile.php">
-            <div class="user-img" style="margin-right: 10px; margin-top: -2px;">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="26" height="26" viewBox="0 0 24 24">
-                <path d="M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10s10-4.477,10-10C22,6.477,17.523,2,12,2z M12,4.75 c1.795,0,3.25,1.455,3.25,3.25s-1.455,3.25-3.25,3.25S8.75,9.795,8.75,8S10.205,4.75,12,4.75z M12,20 c-2.438,0-4.621-1.091-6.088-2.812c-0.381-0.447-0.296-1.118,0.173-1.471C7.602,14.576,10.366,14,12,14s4.398,0.576,5.916,1.717 c0.469,0.353,0.554,1.025,0.173,1.471C16.621,18.909,14.438,20,12,20z"></path>
-              </svg>
-            </div>
+      <!-- ACCOUNT -->
+      <li class="head" style="display: flex; align-items: center;">
+        <a href="studentProfile.php">
+          <div class="user-img" style="margin-right: 10px; margin-top: -2px;">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="26" height="26" viewBox="0 0 24 24">
+              <path d="M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10s10-4.477,10-10C22,6.477,17.523,2,12,2z M12,4.75 c1.795,0,3.25,1.455,3.25,3.25s-1.455,3.25-3.25,3.25S8.75,9.795,8.75,8S10.205,4.75,12,4.75z M12,20 c-2.438,0-4.621-1.091-6.088-2.812c-0.381-0.447-0.296-1.118,0.173-1.471C7.602,14.576,10.366,14,12,14s4.398,0.576,5.916,1.717 c0.469,0.353,0.554,1.025,0.173,1.471C16.621,18.909,14.438,20,12,20z"></path>
+            </svg>
+          </div>
 
-            <!-- User Details -->
-            <div class="user-details">
-              <p class="name" style="margin: 0;"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></p>
-            </div>
-          </a>
+          <!-- User Details -->
+          <div class="user-details">
+            <p class="name" style="margin: 0;">
+              <?php
+              if ($sidebarUser && isset($sidebarUser['first_name'], $sidebarUser['last_name'])) {
+                echo htmlspecialchars($sidebarUser['first_name'] . ' ' . $sidebarUser['last_name']);
+              } else {
+                echo 'Complete Profile';
+              }
+              ?>
+            </p>
+
+          </div>
+        </a>
       </li>
       <li>
         <a href="logout.php">
@@ -104,23 +111,24 @@
     </ul>
     </li>
   </nav>
- <main>
+  <main>
 
-  <?php 
-      include "header.php";
-  ?>
+    <?php
+    include "header.php";
+    ?>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const currentPage = window.location.pathname.split('/').pop(); 
-    const sidebarLinks = document.querySelectorAll("#sidebar a"); 
-    
-    sidebarLinks.forEach(link => {
-      if (link.getAttribute("href").includes(currentPage)) {
-        link.parentElement.classList.add("active"); 
-      }
-    });
-  });
-</script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPage = window.location.pathname.split('/').pop();
+        const sidebarLinks = document.querySelectorAll("#sidebar a");
+
+        sidebarLinks.forEach(link => {
+          if (link.getAttribute("href").includes(currentPage)) {
+            link.parentElement.classList.add("active");
+          }
+        });
+      });
+    </script>
 </body>
+
 </html>

@@ -262,7 +262,8 @@ if (isset($_POST["submitN"])) {
                 </div>
                 <div class="form-group">
                   <label for="phone">*Phone Number</label>
-                  <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11" readonly required>
+                  <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?= isset($profile['ContactNum']) ? htmlspecialchars($profile['ContactNum']) : '' ?>"
+                    maxlength="11" readonly required>
 
 
                 </div>

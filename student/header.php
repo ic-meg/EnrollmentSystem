@@ -1,4 +1,14 @@
 <?php
+
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+if (!isset($_SESSION['read_notifications']) || !is_array($_SESSION['read_notifications'])) {
+  $_SESSION['read_notifications'] = [];
+}
+
+
 $user_id = $_SESSION['user_id'];
 $notifications = [];
 
@@ -8,10 +18,10 @@ $profileStmt->bind_param("i", $user_id);
 $profileStmt->execute();
 $profileResult = $profileStmt->get_result();
 if ($profileResult->num_rows > 0) {
-  $profile = $profileResult->fetch_assoc();
+  $headerProfile = $profileResult->fetch_assoc();
   $notifications[] = [
     'message' => 'Thank you for completing your profile. You can now proceed to enroll.',
-    'date' => date("F j, Y", strtotime($profile['created_at'])),
+    'date' => date("F j, Y", strtotime($headerProfile['created_at'])),
     'status' => 'unread'
   ];
 }
@@ -86,6 +96,7 @@ foreach ($notifications as $notif) {
 <html lang="en">
 
 <head>
+  <audio id="notifSound" src="assets/ding.mp3" preload="auto"></audio>
   <meta charset="UTF-8">
   <title>Profile and Notifications Dropdowns</title>
   <link rel="stylesheet" href="header-style.css">
@@ -115,19 +126,12 @@ foreach ($notifications as $notif) {
     border-radius: 4px;
   }
 
-  .notif-count-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: red;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 7px;
-    font-size: 10px;
-    font-weight: bold;
-    line-height: 1;
-    animation: pulse 1s ease-in-out infinite alternate;
+
+  .bell-wrapper {
+    position: relative;
+    display: inline-block;
   }
+
 
   @keyframes pulse {
     from {
@@ -137,26 +141,6 @@ foreach ($notifications as $notif) {
     to {
       transform: scale(1.15);
     }
-  }
-
-  .bell-wrapper {
-    position: relative;
-    display: inline-block;
-  }
-
-  .notif-count-badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: red;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 6px;
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 1;
-    animation: pulse 1s ease-in-out infinite alternate;
-    z-index: 10;
   }
 </style>
 
@@ -307,5 +291,17 @@ foreach ($notifications as $notif) {
         }
       })
       .catch(err => console.error('Failed to mark notifications as read:', err));
+  }
+</script>
+
+<script>
+  const unreadCount = <?= json_encode($unreadCount) ?>;
+  const hasPlayed = sessionStorage.getItem("studentNotifPlayed");
+
+  if (unreadCount > 0 && !hasPlayed) {
+    const sound = document.getElementById("notifSound");
+    sound.play().catch(e => console.warn("Sound auto-play blocked:", e));
+
+    sessionStorage.setItem("studentNotifPlayed", "true");
   }
 </script>

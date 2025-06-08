@@ -3,6 +3,8 @@ error_reporting(E_ALL & ~E_NOTICE);
 include "../dbcon.php";
 include "sessioncheck.php";
 
+require_once 'getProfile.php';
+
 $user_id = $_SESSION['user_id'];
 
 $profile = null;
@@ -12,8 +14,6 @@ $stmt3->execute();
 $result1 = $stmt3->get_result();
 if ($result1 && $result1->num_rows > 0) {
     $profile = $result1->fetch_assoc();
-    // echo "<pre>"; print_r($profile); echo "</pre>";
-
 } else {
     echo "<script>console.warn('No profile data found for user_id = $user_id');</script>";
 }
@@ -263,9 +263,13 @@ if (isset($_POST["submitReg"])) {
 </style>
 
 <body>
-    <?php include "stud-sidebar.php"; ?>
+
+    <?php require_once "stud-sidebar.php"; ?>
+
 
     <main>
+        </div>
+        </div>
         <div class="container">
             <div class="header">
                 <h1>Student Enrollment</h1>
@@ -306,23 +310,15 @@ if (isset($_POST["submitReg"])) {
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="first-name">*First Name</label>
-                                    <input type="text" id="first-name" name="first-name"
-                                        value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['first_name']) : '' ?>" readonly >
-
-
+                                    <input type="text" id="first-name" name="first-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['first_name']) : '' ?>" readonly required>
                                 </div>
                                 <div class="form-group">
                                     <label for="middle-initial">Middle Initial</label>
-                                    <input type="text" id="middle-initial" name="middle-initial"
-                                        value="<?= isset($profile['middle_name']) ? htmlspecialchars($profile['middle_name']) : '' ?>">
-
+                                    <input type="text" id="middle-initial" name="middle-initial" placeholder="Enter your middle initial">
                                 </div>
                                 <div class="form-group">
                                     <label for="last-name">*Last Name</label>
-                                    <input type="text" id="last-name" name="last-name"
-                                        value="<?= isset($profile['last_name']) ? htmlspecialchars($profile['last_name']) : '' ?>" readonly >
-
-
+                                    <input type="text" id="last-name" name="last-name" value="<?= isset($profile['first_name']) ? htmlspecialchars($profile['last_name']) : '' ?>" readonly required>
                                 </div>
                                 <div class="form-group">
                                     <label for="suffix">Suffix</label>
@@ -346,9 +342,7 @@ if (isset($_POST["submitReg"])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="phone">*Phone Number</label>
-                                    <input type="tel" id="phone" name="phone"
-                                        value="<?= isset($profile['phone']) ? htmlspecialchars($profile['phone']) : '' ?>" maxlength="11" readonly >
-
+                                    <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11" readonly required />
 
                                     <script>
                                         document.getElementById("phone").addEventListener("input", function(e) {
@@ -364,6 +358,7 @@ if (isset($_POST["submitReg"])) {
                                     <label for="email">*Email</label>
                                     <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" readonly required>
                                 </div>
+
                             </div>
 
                             <!-- Address Section -->

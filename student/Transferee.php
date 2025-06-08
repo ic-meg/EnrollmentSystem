@@ -194,7 +194,7 @@ if (isset($_POST["submitReg"])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="enrollment-regular.css">
   <title>Oxford Academe | Enrollment Form - Transferee</title>
-  
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -258,7 +258,8 @@ if (isset($_POST["submitReg"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="contact-number">*Contact Number</label>
-                  <input type="text" id="contact-number" name="contact-number" value="<?php echo htmlspecialchars($profile['phone']); ?>" maxlength="11" readonly required />
+                  <input type="text" id="contact-number" name="contact-number" value="<?= isset($profile['ContactNum']) ? htmlspecialchars($profile['ContactNum']) : '' ?>"
+                    maxlength="11" readonly required />
 
                   <script>
                     document.getElementById("contact-number").addEventListener("input", function(e) {
