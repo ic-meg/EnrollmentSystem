@@ -10,18 +10,18 @@ if (isset($_FILES['import_file']['tmp_name'])) {
     $sheet = $spreadsheet->getSheet(1); 
     $data = $sheet->toArray();
 
-    // Skip header
     for ($i = 1; $i < count($data); $i++) {
         $row = $data[$i];
         $courseID = $row[0];
+        $Year = $row[1]; 
         $subCode = $row[2];
         $subName = $row[3];
         $units = $row[4];
         $preReq = $row[5];
         $fee = $row[6];
 
-        $stmt = $conn->prepare("INSERT INTO subject (CourseID, SubCode, SubName, Units, PreRequisites, Fee) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("issisd", $courseID, $subCode, $subName, $units, $preReq, $fee);
+        $stmt = $conn->prepare("INSERT INTO subject (CourseID, Year, SubCode, SubName, Units, PreRequisites, Fee) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iissisd", $courseID, $Year, $subCode, $subName, $units, $preReq, $fee);
         $stmt->execute();
     }
 
