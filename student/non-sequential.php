@@ -143,31 +143,12 @@ if (isset($_POST["submitN"])) {
 
         if ($stmt2->execute()) {
           $conn->commit();
-          echo "
-          <div class='toast-container position-fixed top-0 end-0 p-3' style='z-index: 9999;'>
-            <div id='successToast' class='toast align-items-center text-white bg-success border-0 show' role='alert' aria-live='assertive' aria-atomic='true'>
-              <div class='d-flex'>
-                <div class='toast-body'>
-                  Your application has been successfully submitted. Please wait for further updates.
-                </div>
-                <button type='button' class='btn-close btn-close-white me-2 m-auto' data-bs-dismiss='toast' aria-label='Close'></button>
-              </div>
-            </div>
-          </div>
-
-          <script>
-            setTimeout(() => {
-              const toast = document.getElementById('successToast');
-              if (toast) {
-                var toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
-                toastBootstrap.show();
-              }
-              setTimeout(() => {
-                window.location.href = 'studConfirmApplication.php';
-              }, 3000);
-            }, 300);
-          </script>
-          ";
+          header('Content-Type: application/json');
+          echo json_encode([
+            'status' => 'success',
+            'message' => 'Your application has been successfully submitted. Please wait for further updates.'
+          ]);
+          exit;
         } else {
           throw new Exception("Failed to insert into enrollee table.");
         }
@@ -236,7 +217,7 @@ if (isset($_POST["submitN"])) {
           <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
             <strong style="color: red;">*</strong> indicates required fields.
           </p>
-          <form method="POST" enctype="multipart/form-data">
+          <form method="POST" enctype="multipart/form-data" id="nonseqForm">
             <div class="form-section">
               <!-- Name Section -->
               <div class="form-row">
@@ -456,5 +437,51 @@ if (isset($_POST["submitN"])) {
   setupFilePreview("tor");
   setupFilePreview("cert-moral");
 </script>
+<script>
+  document.querySelector("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("non-sequential.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          showToast(data.message);
+          setTimeout(() => {
+            window.location.href = "studConfirmApplication.php";
+          }, 3000);
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        alert("An unexpected error occurred.");
+      });
+  });
+
+  function showToast(message) {
+    const toastContainer = document.createElement("div");
+    toastContainer.className = "toast-container position-fixed top-0 end-0 p-3";
+    toastContainer.style.zIndex = 9999;
+    toastContainer.innerHTML = `
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  `;
+    document.body.appendChild(toastContainer);
+
+    const toast = bootstrap.Toast.getOrCreateInstance(document.getElementById("successToast"));
+    toast.show();
+  }
+</script>
+
 
 </html>

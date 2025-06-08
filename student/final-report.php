@@ -299,6 +299,7 @@ $conn->close();
           </table>
 
           <div class="action-buttons" style="margin-top: 20px;">
+            <a href="curriculum.php" class="btn-curriculum">View Curriculum</a>
             <button id="downloadPdf">Download PDF</button>
           </div>
 

@@ -150,31 +150,9 @@ if (isset($_POST["submitReg"])) {
 
                 if ($stmt2->execute()) {
                     $conn->commit();
-                    echo "
-                    <div class='toast-container position-fixed top-0 end-0 p-3' style='z-index: 9999;'>
-                        <div id='successToast' class='toast align-items-center text-white bg-success border-0 show' role='alert' aria-live='assertive' aria-atomic='true'>
-                        <div class='d-flex'>
-                            <div class='toast-body'>
-                            Your application has been successfully submitted. Please wait for further updates.
-                            </div>
-                            <button type='button' class='btn-close btn-close-white me-2 m-auto' data-bs-dismiss='toast' aria-label='Close'></button>
-                        </div>
-                        </div>
-                    </div>
-        
-                    <script>
-                        setTimeout(() => {
-                        const toast = document.getElementById('successToast');
-                        if (toast) {
-                            var toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
-                            toastBootstrap.show();
-                        }
-                        setTimeout(() => {
-                            window.location.href = 'studConfirmApplication.php';
-                        }, 3000);
-                        }, 300);
-                    </script>
-                    ";
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully.']);
+                    exit;
                 } else {
                     throw new Exception("Failed to insert into enrollee table: " . $stmt2->error);
                 }
@@ -457,6 +435,53 @@ if (isset($_POST["submitReg"])) {
             <div id="file-preview-content"></div>
         </div>
     </div>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message) {
+            const toastBody = document.getElementById('toastMessage');
+            toastBody.textContent = message;
+
+            const toastEl = document.getElementById('successToast');
+            const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+            toast.show();
+        }
+    </script>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch("", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        showToast(data.message);
+
+                        // Redirect after 3s
+                        setTimeout(() => {
+                            window.location.href = "studConfirmApplication.php";
+                        }, 3000);
+                    } else {
+                        alert("An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Submission error:", error);
+                    alert("Submission failed.");
+                });
+        });
+    </script>
 </body>
 
 </html>

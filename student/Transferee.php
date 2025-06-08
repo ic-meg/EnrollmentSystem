@@ -144,31 +144,9 @@ if (isset($_POST["submitReg"])) {
 
         if ($stmt2->execute()) {
           $conn->commit();
-          echo "
-          <div class='toast-container position-fixed top-0 end-0 p-3' style='z-index: 9999;'>
-            <div id='successToast' class='toast align-items-center text-white bg-success border-0 show' role='alert' aria-live='assertive' aria-atomic='true'>
-              <div class='d-flex'>
-                <div class='toast-body'>
-                  Your application has been successfully submitted. Please wait for further updates.
-                </div>
-                <button type='button' class='btn-close btn-close-white me-2 m-auto' data-bs-dismiss='toast' aria-label='Close'></button>
-              </div>
-            </div>
-          </div>
-
-          <script>
-            setTimeout(() => {
-              const toast = document.getElementById('successToast');
-              if (toast) {
-                var toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
-                toastBootstrap.show();
-              }
-              setTimeout(() => {
-                window.location.href = 'studConfirmApplication.php';
-              }, 3000);
-            }, 300);
-          </script>
-          ";
+          header('Content-Type: application/json');
+          echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully.']);
+          exit;
         } else {
           throw new Exception("Failed to insert into enrollee table.");
         }
@@ -468,5 +446,48 @@ if (isset($_POST["submitReg"])) {
   setupFilePreview("tor");
   setupFilePreview("good-moral");
 </script>
+<script>
+  document.querySelector("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("transferee.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          showToast(data.message);
+          setTimeout(() => {
+            window.location.href = "studConfirmApplication.php";
+          }, 3000);
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(err => {
+        console.error("Submission failed:", err);
+        alert("An error occurred while submitting your form.");
+      });
+  });
+
+  function showToast(message) {
+    const toastContainer = document.createElement("div");
+    toastContainer.className = "toast-container position-fixed top-0 end-0 p-3";
+    toastContainer.style.zIndex = 9999;
+    toastContainer.innerHTML = `
+    <div class="toast text-white bg-success border-0 show" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  `;
+    document.body.appendChild(toastContainer);
+    bootstrap.Toast.getOrCreateInstance(toastContainer.querySelector(".toast")).show();
+  }
+</script>
+
 
 </html>
