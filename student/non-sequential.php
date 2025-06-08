@@ -143,11 +143,7 @@ if (isset($_POST["submitN"])) {
 
         if ($stmt2->execute()) {
           $conn->commit();
-          header('Content-Type: application/json');
-          echo json_encode([
-            'status' => 'success',
-            'message' => 'Your application has been successfully submitted. Please wait for further updates.'
-          ]);
+          header("Location: studConfirmApplication.php");
           exit;
         } else {
           throw new Exception("Failed to insert into enrollee table.");
@@ -217,7 +213,7 @@ if (isset($_POST["submitN"])) {
           <p class="description--1" style="color: #888; font-size: 13px; margin-bottom: 25px;">
             <strong style="color: red;">*</strong> indicates required fields.
           </p>
-          <form method="POST" enctype="multipart/form-data" id="nonseqForm">
+          <form method="POST" enctype="multipart/form-data">
             <div class="form-section">
               <!-- Name Section -->
               <div class="form-row">
@@ -243,7 +239,7 @@ if (isset($_POST["submitN"])) {
                 </div>
                 <div class="form-group">
                   <label for="phone">*Phone Number</label>
-                  <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?= isset($profile['ContactNum']) ? htmlspecialchars($profile['ContactNum']) : '' ?>"
+                  <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?= isset($profile['phone']) ? htmlspecialchars($profile['phone']) : '' ?>"
                     maxlength="11" readonly required>
 
 
@@ -437,51 +433,5 @@ if (isset($_POST["submitN"])) {
   setupFilePreview("tor");
   setupFilePreview("cert-moral");
 </script>
-<script>
-  document.querySelector("form").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-
-    fetch("non-sequential.php", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          showToast(data.message);
-          setTimeout(() => {
-            window.location.href = "studConfirmApplication.php";
-          }, 3000);
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        alert("An unexpected error occurred.");
-      });
-  });
-
-  function showToast(message) {
-    const toastContainer = document.createElement("div");
-    toastContainer.className = "toast-container position-fixed top-0 end-0 p-3";
-    toastContainer.style.zIndex = 9999;
-    toastContainer.innerHTML = `
-    <div id="successToast" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">${message}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  `;
-    document.body.appendChild(toastContainer);
-
-    const toast = bootstrap.Toast.getOrCreateInstance(document.getElementById("successToast"));
-    toast.show();
-  }
-</script>
-
 
 </html>

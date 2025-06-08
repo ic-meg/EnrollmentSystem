@@ -27,7 +27,6 @@ if ($result2 && $result2->num_rows > 0) {
   $email = $result2->fetch_assoc()['email'];
 }
 $stmt2->close();
-header('Content-Type: application/json');
 
 if (isset($_POST["submitRet"])) {
   $user_id = $_SESSION['user_id'];
@@ -137,10 +136,7 @@ if (isset($_POST["submitRet"])) {
 
         if ($stmt2->execute()) {
           $conn->commit();
-          echo json_encode([
-            'status' => 'success',
-            'message' => 'Your application has been successfully submitted. Please wait for further updates.'
-          ]);
+          header("Location: studConfirmApplication.php");
           exit;
         } else {
           throw new Exception("Failed to insert into enrollee table.");
@@ -250,7 +246,7 @@ if (isset($_POST["submitRet"])) {
               <div class="form-row">
                 <div class="form-group">
                   <label for="last-enrollment">*Last Enrollment Date</label>
-                  <input type="date" id="last-enrollment" name="last-enrollment" required>
+                  <input type="date" id="last-enrollment" name="last-enrollment" required >
                 </div>
                 <div class="form-group">
                   <label for="reason">*Reason for Returning</label>
@@ -395,50 +391,6 @@ if (isset($_POST["submitRet"])) {
   setupFilePreview("tor");
   setupFilePreview("clearance");
   setupFilePreview("id-photo");
-</script>
-<script>
-  document.querySelector("form").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-
-    fetch("returnee.php", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          showToast(data.message);
-          setTimeout(() => {
-            window.location.href = "studConfirmApplication.php";
-          }, 3000);
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(err => {
-        console.error("Submission failed:", err);
-        alert("An error occurred while submitting your form.");
-      });
-  });
-
-  function showToast(message) {
-    const toastContainer = document.createElement("div");
-    toastContainer.className = "toast-container position-fixed top-0 end-0 p-3";
-    toastContainer.style.zIndex = 9999;
-    toastContainer.innerHTML = `
-    <div class="toast text-white bg-success border-0 show" role="alert">
-      <div class="d-flex">
-        <div class="toast-body">${message}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
-  `;
-    document.body.appendChild(toastContainer);
-
-    const toast = bootstrap.Toast.getOrCreateInstance(toastContainer.querySelector(".toast"));
-    toast.show();
-  }
 </script>
 
 </html>

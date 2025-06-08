@@ -150,8 +150,7 @@ if (isset($_POST["submitReg"])) {
 
                 if ($stmt2->execute()) {
                     $conn->commit();
-                    header('Content-Type: application/json');
-                    echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully.']);
+                    header("Location: studConfirmApplication.php");
                     exit;
                 } else {
                     throw new Exception("Failed to insert into enrollee table: " . $stmt2->error);
@@ -242,7 +241,7 @@ if (isset($_POST["submitReg"])) {
 
 <body>
 
-    <?php require_once "stud-sidebar.php"; ?>
+    <?php include "stud-sidebar.php"; ?>
 
 
     <main>
@@ -390,18 +389,21 @@ if (isset($_POST["submitReg"])) {
                                     <div class="form-group">
                                         <label for="form-137">*Form 137</label>
                                         <input type="file" id="form-137" name="form-137" accept=".jpg,.jpeg,.png,.pdf">
+                                        <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                                         <div id="preview-form-137"></div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="form-138">*Form 138</label>
                                         <input type="file" id="form-138" name="form-138" accept=".jpg,.jpeg,.png,.pdf">
+                                        <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                                         <div id="preview-form-138"></div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="picture">*1x1 Picture</label>
                                         <input type="file" id="picture" name="picture" accept=".jpg,.jpeg,.png">
+                                        <p style="font-size: 12px; color: #666;">Accepted formats: JPG, PNG, PDF | Max size: 5MB</p>
                                         <div id="preview-picture"></div>
                                     </div>
                                 </div>
@@ -435,53 +437,6 @@ if (isset($_POST["submitReg"])) {
             <div id="file-preview-content"></div>
         </div>
     </div>
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body" id="toastMessage"></div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showToast(message) {
-            const toastBody = document.getElementById('toastMessage');
-            toastBody.textContent = message;
-
-            const toastEl = document.getElementById('successToast');
-            const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-            toast.show();
-        }
-    </script>
-    <script>
-        document.querySelector("form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            fetch("", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        showToast(data.message);
-
-                        // Redirect after 3s
-                        setTimeout(() => {
-                            window.location.href = "studConfirmApplication.php";
-                        }, 3000);
-                    } else {
-                        alert("An error occurred.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Submission error:", error);
-                    alert("Submission failed.");
-                });
-        });
-    </script>
 </body>
 
 </html>
