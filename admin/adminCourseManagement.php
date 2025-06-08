@@ -92,7 +92,7 @@ if ($viewArchived) {
         GROUP BY c.CourseID
     ");
 } else {
-    // Get active courses with student counts
+    // No.of students in active courses
     $courses = [];
     $result = $conn->query("
         SELECT c.*, COUNT(e.EnrolleeID) AS student_count 
